@@ -1,8 +1,10 @@
+package main.java.com;
+
 
 public class User {
     private String username;
 
-	private String getUsername() {
+	public String getUsername() {
 		return username;
 	}
 
