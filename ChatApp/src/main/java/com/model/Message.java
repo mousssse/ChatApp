@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.sql.Time;
 
 public class Message {
-	// Testing again
     private String content;
     private Date date;
     private Time time;
