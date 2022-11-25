@@ -1,3 +1,8 @@
+/**
+ * The ClientThread class is an active conversation between two online users.
+ */
+
+
 package main.java.com.model;
 
 import java.io.BufferedReader;
@@ -8,11 +13,24 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * 
+ * @author Sandro
+ * @author Sarah
+ *
+ */
 public class ClientThread extends Thread {
 
 	private ServerSocket servSocket;
 	private Socket localSocket, remoteSocket;
 
+	/**
+	 * 
+	 * @param threadID Thread name.
+	 * @param servSocket corresponds to the local user's ServerSocket instance.
+	 * @param localSocket corresponds to the local user's Socket instance.
+	 * @param remoteSocket corresponds to the remote user's Socket instance.
+	 */
 	public ClientThread(String threadID, ServerSocket servSocket, Socket localSocket, Socket remoteSocket) {
 		super(threadID);
 		this.servSocket = servSocket;
@@ -20,14 +38,27 @@ public class ClientThread extends Thread {
 		this.remoteSocket = remoteSocket;
 	}
 
+	/**
+	 * 
+	 * @return Socket of the local user
+	 */
 	public Socket getLocalSocket() {
 		return this.localSocket;
 	}
 	
+	/**
+	 * 
+	 * @return Socket of the remote user
+	 */
 	public Socket getRemoteSocket() {
 		return this.remoteSocket;
 	}
 	
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private void handleLocalSocket() throws IOException, InterruptedException {
 		InputStream inputStream = this.localSocket.getInputStream();
 		OutputStream outputStream = this.localSocket.getOutputStream();
@@ -35,9 +66,7 @@ public class ClientThread extends Thread {
 		String nextLine;
 		
 		while ((nextLine = bufferReader.readLine()) != null) {
-			if ("leavemealone".equalsIgnoreCase(nextLine)) {
-				break;
-			}
+			if("leavemealone".toLowerCase().equals(nextLine)) break;
 			String output = "You typed: " + nextLine + "\n";
 			outputStream.write(output.getBytes());
 		}
