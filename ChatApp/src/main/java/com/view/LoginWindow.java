@@ -1,5 +1,70 @@
+/**
+ * The LoginWindow class is the very first frame displayed to a user who launches the ChatApp.
+ * The User is asked to enter their ID and password, or otherwise register. 
+ */
+
 package main.java.com.view;
 
-public class LoginWindow {
+import javax.swing.*;
 
+import main.java.com.model.User;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+
+public class LoginWindow extends JFrame {
+	/**
+	 * TODO Remember to ask yourself: the hell is serialization ?
+	 */
+	private static final long serialVersionUID = 6781528607158272898L;
+	private final User user;
+	JTextField loginField = new JTextField();
+	JPasswordField passwordField = new JPasswordField();
+	JButton loginButton = new JButton("Login");
+
+	public LoginWindow() {
+		super("Login");
+
+		this.user = new User();
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(loginField);
+		panel.add(passwordField);
+		panel.add(loginButton);
+
+		loginButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onSuccessfulLogin();
+			}
+		});
+
+		getContentPane().add(panel, BorderLayout.CENTER);
+		pack();
+		setVisible(true);
+	}
+
+	private void onSuccessfulLogin() {
+		String login = loginField.getText();
+		//TODO getText() is deprecated, might want to use getPassword() but I need to figure out the type issue.
+		String password = passwordField.getText();
+
+		if (user.connect(login, password)) {
+			// As soon as the user is logged in, the online users frame is created, and the login frame disappears.
+			setVisible(false);
+			OnlineUsersFrame onlineUsersFrame = new OnlineUsersFrame();
+			JFrame frame = new JFrame("Online users");
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.setSize(300, 500);
+			frame.getContentPane().add(onlineUsersFrame, BorderLayout.CENTER);
+			frame.setVisible(true);
+		} else {
+			// Display an error message if the user enters an invalid ID or password.
+			JOptionPane.showMessageDialog(this, "Invalid ID/password.");
+		}
+	}
 }

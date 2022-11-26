@@ -4,6 +4,10 @@ package main.java.com.model;
 public class User {
     private String username;
 
+	public User() {
+		super();
+	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -12,7 +16,7 @@ public class User {
 		this.username = username;
 	}
 	
-	private boolean connect(String id, String password) {
+	public boolean connect(String id, String password) {
 		return false;
 	}
 	
