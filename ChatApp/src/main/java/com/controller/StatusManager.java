@@ -21,7 +21,7 @@ public class StatusManager {
 	 * 
 	 * @param username is the username of the user who logged in
 	 */
-	public void onUserLogin(String username) {
+	public void onLogin(String username) {
 		if(!activeUsers.contains(username))
 			activeUsers.add(username);
 	}
@@ -30,7 +30,7 @@ public class StatusManager {
 	 * 
 	 * @param  username is the username of the user who logged out
 	 */
-	public void onUserLogout(String username) {
+	public void onLogout(String username) {
 		activeUsers.remove(username);
 	}
 	
