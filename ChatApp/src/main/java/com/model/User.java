@@ -20,8 +20,12 @@ public class User {
 		
 	}
 	
-	private void sendMessage(String username, String message) {
+	private void startConversation(String username) {
 		
+	}
+	
+	private void sendMessage(String username, String content) {
+		Message message = new Message(content);
 	}
 	
 	private void endConversation(String username) {

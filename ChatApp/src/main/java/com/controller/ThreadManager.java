@@ -22,8 +22,12 @@ import main.java.com.model.ClientThread;
  */
 public class ThreadManager {
 	
-	private Map<String, ArrayList<ClientThread>> threadsMap = new HashMap<String, ArrayList<ClientThread>>();
+	private Map<String, ArrayList<ClientThread>> threadsMap;
 	public final static int ACCEPT_PORT = 9000;
+	
+	public ThreadManager() {
+		threadsMap = new HashMap<String, ArrayList<ClientThread>>();
+	}
 	
 	/**
 	 * 
@@ -79,4 +83,9 @@ public class ThreadManager {
 			}
 		}
 	}
+	
+//	public static void main(String [] args) {
+//		ThreadManager manager = new ThreadManager();
+//		
+//	}
 }
