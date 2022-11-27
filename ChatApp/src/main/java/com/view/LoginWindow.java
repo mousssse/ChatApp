@@ -20,19 +20,22 @@ public class LoginWindow extends JFrame {
 	 */
 	private static final long serialVersionUID = 6781528607158272898L;
 	private final User user;
+	JLabel loginLabel = new JLabel("ID: ");
 	JTextField loginField = new JTextField();
+	JLabel passwordLabel = new JLabel("Password: ");
 	JPasswordField passwordField = new JPasswordField();
 	JButton loginButton = new JButton("Login");
 
 	public LoginWindow() {
 		super("Login");
-
 		this.user = new User();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(loginLabel);
 		panel.add(loginField);
+		panel.add(passwordLabel);
 		panel.add(passwordField);
 		panel.add(loginButton);
 
@@ -67,4 +70,9 @@ public class LoginWindow extends JFrame {
 			JOptionPane.showMessageDialog(this, "Invalid ID/password.");
 		}
 	}
+	
+    public static void main(String[] args) {
+        LoginWindow loginWin = new LoginWindow();
+        loginWin.setVisible(true);
+    }
 }

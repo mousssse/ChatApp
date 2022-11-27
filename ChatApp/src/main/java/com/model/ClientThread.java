@@ -66,7 +66,6 @@ public class ClientThread extends Thread {
 		String nextLine;
 		
 		while ((nextLine = bufferReader.readLine()) != null) {
-			if("leavemealone".toLowerCase().equals(nextLine)) break;
 			String output = "You typed: " + nextLine + "\n";
 			outputStream.write(output.getBytes());
 		}
