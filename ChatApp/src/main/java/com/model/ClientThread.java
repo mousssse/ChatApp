@@ -5,15 +5,12 @@
 
 package main.java.com.model;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.ServerSocket;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
-import main.java.com.controller.ThreadManager;
 
 /**
  * 
@@ -21,10 +18,11 @@ import main.java.com.controller.ThreadManager;
  * @author sarah
  *
  */
-public class ClientThread extends Thread {
+public class ClientThread extends UserThread {
 
-	private ServerSocket servSocket;
-	private Socket localSocket, remoteSocket;
+	//private Socket localSocket, remoteSocket;
+	private String serverIP;
+	private Socket clientSocket;
 
 	/**
 	 * 
@@ -32,66 +30,84 @@ public class ClientThread extends Thread {
 	 * @param servSocket corresponds to the local user's ServerSocket instance.
 	 * @param localSocket corresponds to the local user's Socket instance.
 	 * @param remoteSocket corresponds to the remote user's Socket instance.
+	 * @throws IOException 
+	 * @throws UnknownHostException 
 	 */
-	public ClientThread(String threadID, ServerSocket servSocket, Socket localSocket, Socket remoteSocket) {
-		super(threadID);
-		this.servSocket = servSocket;
-		this.localSocket = localSocket;
-		this.remoteSocket = remoteSocket;
+//	public ClientThread(String threadID, Socket localSocket, Socket remoteSocket) {
+//		super(threadID);
+//		this.localSocket = localSocket;
+//		this.remoteSocket = remoteSocket;
+//	}
+	
+	public ClientThread(String threadID, String serverID, String serverIP) throws UnknownHostException, IOException {
+		super(threadID, serverID);
+		this.serverIP = serverIP;
+		this.clientSocket = new Socket(this.serverIP, ACCEPT_PORT);
 	}
-
-	public ServerSocket getServSocket() {
-		return servSocket;
+	
+	public Socket getClientSocket() {
+		return this.clientSocket;
 	}
 
 	/**
 	 * 
 	 * @return Socket of the local user
 	 */
-	public Socket getLocalSocket() {
-		return this.localSocket;
-	}
-	
-	/**
-	 * 
-	 * @return Socket of the remote user
-	 */
-	public Socket getRemoteSocket() {
-		return this.remoteSocket;
-	}
+//	public Socket getLocalSocket() {
+//		return this.localSocket;
+//	}
+//	
+//	/**
+//	 * 
+//	 * @return Socket of the remote user
+//	 */
+//	public Socket getRemoteSocket() {
+//		return this.remoteSocket;
+//	}
 	
 	/**
 	 * 
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void handleSockets() throws IOException, InterruptedException {
-		InputStream localInputStream = this.localSocket.getInputStream();
-		InputStream remoteInputStream = this.remoteSocket.getInputStream();
-		OutputStream localOutputStream = this.localSocket.getOutputStream();
-		OutputStream remoteOutputStream = this.remoteSocket.getOutputStream();
-		BufferedReader localBufferReader = new BufferedReader(new InputStreamReader(localInputStream));
-		BufferedReader remoteBufferReader = new BufferedReader(new InputStreamReader(remoteInputStream));
-		
-		String localNextLine, remoteNextLine;
-		
-		while ((localNextLine = localBufferReader.readLine()) != null && (remoteNextLine = remoteBufferReader.readLine()) != null) {
-			String localOutput = "You typed: " + localNextLine + "\n";
-			String remoteOutput = "You typed: " + remoteNextLine + "\n";
-			localOutputStream.write(localOutput.getBytes());
-			remoteOutputStream.write(remoteOutput.getBytes());
-		}
-		
-		//ThreadManager.threadManager.destroyThread(this.getName(), localSocket, remoteNextLine);
-	}
+//	private void handleSocket() throws IOException, InterruptedException {
+//		DataInputStream localInputStream = new DataInputStream(this.localSocket.getInputStream());
+//		DataInputStream remoteInputStream = new DataInputStream(this.remoteSocket.getInputStream());
+//		DataOutputStream localOutputStream = new DataOutputStream(this.localSocket.getOutputStream());
+//		DataOutputStream remoteOutputStream =  new DataOutputStream(this.remoteSocket.getOutputStream());
+//		BufferedReader localBufferReader = new BufferedReader(new InputStreamReader(localInputStream));
+//		BufferedReader remoteBufferReader = new BufferedReader(new InputStreamReader(remoteInputStream));
+//		
+//		localOutputStream.writeInt(1);
+//		String localNextLine, remoteNextLine;
+//		boolean end = false;
+//		
+//		while (!end) {
+//			if ((localNextLine = localBufferReader.readLine()) != null) {
+//				String localOutput = "You typed: " + localNextLine + "\n";
+//				localOutputStream.write(localOutput.getBytes());
+//			}
+//			if ((remoteNextLine = remoteBufferReader.readLine()) != null) {
+//				String remoteOutput = "They typed: " + remoteNextLine + "\n";
+//				remoteOutputStream.write(remoteOutput.getBytes());
+//			}
+//		}
+//		
+//		//ThreadManager.threadManager.destroyThread(this.getName(), localSocket, remoteNextLine);
+//	}
 
 	@Override
 	public void run() {
 		try {
-			handleSockets();
+	        DataInputStream in = new DataInputStream(this.clientSocket.getInputStream());
+	        int serverPort = in.readInt();
+	        this.clientSocket.close();
+	        
+	        // sending one message
+	        this.clientSocket = new Socket(this.serverIP, serverPort);
+	        DataOutputStream out = new DataOutputStream(this.clientSocket.getOutputStream());
+	        out.writeUTF("Coucou!");
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

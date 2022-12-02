@@ -12,6 +12,7 @@ import main.java.com.model.User;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.UnknownHostException;
 
 
 public class LoginWindow extends JFrame {
@@ -26,7 +27,7 @@ public class LoginWindow extends JFrame {
 	JPasswordField passwordField = new JPasswordField();
 	JButton loginButton = new JButton("Login");
 
-	public LoginWindow() {
+	public LoginWindow() throws UnknownHostException {
 		super("Login");
 		this.user = new User();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,7 +72,7 @@ public class LoginWindow extends JFrame {
 		}
 	}
 	
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
         LoginWindow loginWin = new LoginWindow();
         loginWin.setVisible(true);
     }

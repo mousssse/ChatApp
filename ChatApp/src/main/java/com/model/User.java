@@ -1,33 +1,38 @@
 package main.java.com.model;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import main.java.com.controller.ThreadManager;
 
 
 public class User {
     private String username;
     private String id;
+    private String userIP;
 
-	public User() {
+	public User() throws UnknownHostException {
 		super();
-		ThreadManager.threadManager.addNewUser(this.id);
+		this.userIP = InetAddress.getLocalHost().toString();
+		ThreadManager.getInstance().addNewUser(this.id);
 	}
 
 	public String getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	public String getUserIP() {
+		return this.userIP;
+	}
 
 	public String getUsername() {
-		return username;
+		return this.username;
 	}
 
-	private void setUsername(String username) {
-		this.username = username;
-	}
-	
 	public boolean connect(String id, String password) {
 		return false;
 	}
