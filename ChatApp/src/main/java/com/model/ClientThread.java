@@ -2,7 +2,6 @@
  * The ClientThread class is an active conversation between two online users.
  */
 
-
 package main.java.com.model;
 
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
 
 /**
  * 
@@ -20,27 +18,18 @@ import java.net.UnknownHostException;
  */
 public class ClientThread extends UserThread {
 
-	//private Socket localSocket, remoteSocket;
 	private String serverIP;
 	private Socket clientSocket;
 
 	/**
 	 * 
-	 * @param threadID Thread name.
-	 * @param servSocket corresponds to the local user's ServerSocket instance.
-	 * @param localSocket corresponds to the local user's Socket instance.
-	 * @param remoteSocket corresponds to the remote user's Socket instance.
-	 * @throws IOException 
-	 * @throws UnknownHostException 
+	 * @param serverID is the ID of the user playing the role of the server
+	 * @param serverIP is the IP of the user playing the role of the server
+	 * @throws UnknownHostException
+	 * @throws IOException
 	 */
-//	public ClientThread(String threadID, Socket localSocket, Socket remoteSocket) {
-//		super(threadID);
-//		this.localSocket = localSocket;
-//		this.remoteSocket = remoteSocket;
-//	}
-	
-	public ClientThread(String threadID, String serverID, String serverIP) throws UnknownHostException, IOException {
-		super(threadID, serverID);
+	public ClientThread(String serverID, String serverIP) throws UnknownHostException, IOException {
+		super(serverID);
 		this.serverIP = serverIP;
 		this.clientSocket = new Socket(this.serverIP, ACCEPT_PORT);
 	}
@@ -48,28 +37,28 @@ public class ClientThread extends UserThread {
 	public Socket getClientSocket() {
 		return this.clientSocket;
 	}
-
-	/**
-	 * 
-	 * @return Socket of the local user
-	 */
-//	public Socket getLocalSocket() {
-//		return this.localSocket;
-//	}
-//	
+	
+	@Override
+	public void run() {
+		try {
+			// The client receives the conversation-specific port from the server
+	        DataInputStream newServerInput = new DataInputStream(this.clientSocket.getInputStream());
+	        int serverPort = newServerInput.readInt();
+	        this.clientSocket.close();
+	        this.clientSocket = new Socket(this.serverIP, serverPort);
+	        // Chat is now running
+	        DataOutputStream out = new DataOutputStream(this.clientSocket.getOutputStream());
+	        out.writeUTF("Coucou!");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 //	/**
 //	 * 
-//	 * @return Socket of the remote user
+//	 * @throws IOException
+//	 * @throws InterruptedException
 //	 */
-//	public Socket getRemoteSocket() {
-//		return this.remoteSocket;
-//	}
-	
-	/**
-	 * 
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
 //	private void handleSocket() throws IOException, InterruptedException {
 //		DataInputStream localInputStream = new DataInputStream(this.localSocket.getInputStream());
 //		DataInputStream remoteInputStream = new DataInputStream(this.remoteSocket.getInputStream());
@@ -95,22 +84,5 @@ public class ClientThread extends UserThread {
 //		
 //		//ThreadManager.threadManager.destroyThread(this.getName(), localSocket, remoteNextLine);
 //	}
-
-	@Override
-	public void run() {
-		try {
-	        DataInputStream in = new DataInputStream(this.clientSocket.getInputStream());
-	        int serverPort = in.readInt();
-	        this.clientSocket.close();
-	        
-	        // sending one message
-	        this.clientSocket = new Socket(this.serverIP, serverPort);
-	        DataOutputStream out = new DataOutputStream(this.clientSocket.getOutputStream());
-	        out.writeUTF("Coucou!");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 
 }
