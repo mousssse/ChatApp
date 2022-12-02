@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 
  * @author Sandro
- * @author Sarah
+ * @author sarah
  *
  */
 public class StatusManager {

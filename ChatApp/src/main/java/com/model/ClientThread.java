@@ -13,10 +13,12 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import main.java.com.controller.ThreadManager;
+
 /**
  * 
  * @author Sandro
- * @author Sarah
+ * @author sarah
  *
  */
 public class ClientThread extends Thread {
@@ -36,6 +38,10 @@ public class ClientThread extends Thread {
 		this.servSocket = servSocket;
 		this.localSocket = localSocket;
 		this.remoteSocket = remoteSocket;
+	}
+
+	public ServerSocket getServSocket() {
+		return servSocket;
 	}
 
 	/**
@@ -59,22 +65,30 @@ public class ClientThread extends Thread {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void handleLocalSocket() throws IOException, InterruptedException {
-		InputStream inputStream = this.localSocket.getInputStream();
-		OutputStream outputStream = this.localSocket.getOutputStream();
-		BufferedReader bufferReader = new BufferedReader(new InputStreamReader(inputStream));
-		String nextLine;
+	private void handleSockets() throws IOException, InterruptedException {
+		InputStream localInputStream = this.localSocket.getInputStream();
+		InputStream remoteInputStream = this.remoteSocket.getInputStream();
+		OutputStream localOutputStream = this.localSocket.getOutputStream();
+		OutputStream remoteOutputStream = this.remoteSocket.getOutputStream();
+		BufferedReader localBufferReader = new BufferedReader(new InputStreamReader(localInputStream));
+		BufferedReader remoteBufferReader = new BufferedReader(new InputStreamReader(remoteInputStream));
 		
-		while ((nextLine = bufferReader.readLine()) != null) {
-			String output = "You typed: " + nextLine + "\n";
-			outputStream.write(output.getBytes());
+		String localNextLine, remoteNextLine;
+		
+		while ((localNextLine = localBufferReader.readLine()) != null && (remoteNextLine = remoteBufferReader.readLine()) != null) {
+			String localOutput = "You typed: " + localNextLine + "\n";
+			String remoteOutput = "You typed: " + remoteNextLine + "\n";
+			localOutputStream.write(localOutput.getBytes());
+			remoteOutputStream.write(remoteOutput.getBytes());
 		}
+		
+		//ThreadManager.threadManager.destroyThread(this.getName(), localSocket, remoteNextLine);
 	}
 
 	@Override
 	public void run() {
 		try {
-			handleLocalSocket();
+			handleSockets();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
