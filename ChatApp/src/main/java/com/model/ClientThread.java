@@ -22,7 +22,7 @@ public class ClientThread extends UserThread {
 	private Socket clientSocket;
 
 	/**
-	 * 
+	 * TODO RADICAL CHANGES COMING
 	 * @param serverID is the ID of the user playing the role of the server
 	 * @param serverIP is the IP of the user playing the role of the server
 	 * @throws UnknownHostException
@@ -53,36 +53,5 @@ public class ClientThread extends UserThread {
 			e.printStackTrace();
 		}
 	}
-	
-//	/**
-//	 * 
-//	 * @throws IOException
-//	 * @throws InterruptedException
-//	 */
-//	private void handleSocket() throws IOException, InterruptedException {
-//		DataInputStream localInputStream = new DataInputStream(this.localSocket.getInputStream());
-//		DataInputStream remoteInputStream = new DataInputStream(this.remoteSocket.getInputStream());
-//		DataOutputStream localOutputStream = new DataOutputStream(this.localSocket.getOutputStream());
-//		DataOutputStream remoteOutputStream =  new DataOutputStream(this.remoteSocket.getOutputStream());
-//		BufferedReader localBufferReader = new BufferedReader(new InputStreamReader(localInputStream));
-//		BufferedReader remoteBufferReader = new BufferedReader(new InputStreamReader(remoteInputStream));
-//		
-//		localOutputStream.writeInt(1);
-//		String localNextLine, remoteNextLine;
-//		boolean end = false;
-//		
-//		while (!end) {
-//			if ((localNextLine = localBufferReader.readLine()) != null) {
-//				String localOutput = "You typed: " + localNextLine + "\n";
-//				localOutputStream.write(localOutput.getBytes());
-//			}
-//			if ((remoteNextLine = remoteBufferReader.readLine()) != null) {
-//				String remoteOutput = "They typed: " + remoteNextLine + "\n";
-//				remoteOutputStream.write(remoteOutput.getBytes());
-//			}
-//		}
-//		
-//		//ThreadManager.threadManager.destroyThread(this.getName(), localSocket, remoteNextLine);
-//	}
 
 }

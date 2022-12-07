@@ -14,7 +14,7 @@ public class ServerThread extends UserThread {
 	private int serverPort;	
 	
 	/**
-	 * 
+	 * TODO RADICAL CHANGES COMING
 	 * @param serverPort is the port of the server socket
 	 * @param clientID is the ID of the user playing the role of the client
 	 * @throws IOException

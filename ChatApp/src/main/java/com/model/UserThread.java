@@ -7,7 +7,6 @@ public abstract class UserThread extends Thread {
 	
 	/**
 	 * 
-	 * @param threadName is the threadName attribute of the Thread class
 	 * @param receiverID is the ID of the other user concerned by the current thread
 	 */
 	public UserThread(String receiverID) {

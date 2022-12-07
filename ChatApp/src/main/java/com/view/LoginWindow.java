@@ -14,7 +14,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.UnknownHostException;
 
-
+/**
+ * 
+ * @author Sandro
+ * @author sarah
+ *
+ */
 public class LoginWindow extends JFrame {
 	/**
 	 * TODO Remember to ask yourself: the hell is serialization ?

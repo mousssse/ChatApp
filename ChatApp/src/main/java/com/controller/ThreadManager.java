@@ -22,7 +22,6 @@ import main.java.com.model.UserThread;
  *
  */
 public class ThreadManager {
-	
 	// The ThreadManager is a singleton
 	private static final ThreadManager threadManager = new ThreadManager();
 	// Mapping of online users and their running conversations
@@ -59,7 +58,7 @@ public class ThreadManager {
 	}
 	
 	/**
-	 * 
+	 * TODO THIS NEEDS TO BE CHANGED COMPLETELY TOMORROW, SERVERTHREAD IS BEING CREATED INFINITELY I THINK
 	 * @param clientID is the local ID
 	 * @param remoteID is the remote ID
 	 */
