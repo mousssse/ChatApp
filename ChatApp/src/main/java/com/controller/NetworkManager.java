@@ -1,8 +1,5 @@
 package main.java.com.controller;
 
-import java.net.DatagramSocket;
-import java.net.SocketException;
-
 import main.java.com.model.TCPServer;
 import main.java.com.model.UDPServer;
 
@@ -24,7 +21,7 @@ public class NetworkManager {
 		return manager;
 	}
 	
-	public static void main(String[] args) throws SocketException {
+	public static void main(String[] args) {
 		UDPServer UDPServer = new UDPServer();
 		(new Thread(UDPServer)).start();
 	}
