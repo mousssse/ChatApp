@@ -15,6 +15,7 @@ public class DBManager {
 
 	private DBManager() {
 		super();
+		this.initTables();
 	}
 	
 	public static DBManager getInstance() {
@@ -27,26 +28,21 @@ public class DBManager {
 			this.conn =  DriverManager.getConnection(url);			
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-		} finally {
-			if (this.conn != null) {
-				try {
-					this.conn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 	
-	public void initTables () throws ClassNotFoundException {
-        Class.forName("org.sqlite.JDBC");
-        String sql = "CREATE TABLE IF NOT EXISTS history (\n"
-                + " id int PRIMARY KEY, \n"
-                + "    from_ip text, \n"
-                + " to_ip text, \n"
-                + " date text, \n"
-                + "    content text \n"
+	private void initTables () {
+        try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        String sql = "CREATE TABLE IF NOT EXISTS messages (\n"
+                + " messageId INT PRIMARY KEY, \n"
+                + " content TEXT NOT NULL, \n"
+                + " time TEXT NOT NULL, \n"
+                + " type TEXT NOT NULL \n"
                 + ");";
         try {
         	this.connect(); 
@@ -56,10 +52,24 @@ public class DBManager {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        
         sql = "CREATE TABLE IF NOT EXISTS users (\n"
-                + "ip text PRIMARY KEY, \n"
-                + "pseudo text, \n"
-                + "connected bool \n"
+                + "id TEXT PRIMARY KEY, \n"
+                + "username TEXT NOT NULL UNIQUE, \n"
+                + "password TEXT \n"
+                + ");";
+        try {
+        	this.connect();
+            Statement stmt = conn.createStatement();
+            // create a new table
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        sql = "CREATE TABLE IF NOT EXISTS conversations (\n"
+                + "toUserId TEXT PRIMARY KEY, \n"
+                + "isActive BOOLEAN DEFAULT FALSE \n"
                 + ");";
         try {
         	this.connect();
@@ -72,7 +82,7 @@ public class DBManager {
     }
 	
 	public static void main(String[] args) throws ClassNotFoundException {
-		DBManager.getInstance().initTables();
+		DBManager.getInstance();
 		System.out.println("fin");
 	}
 }
