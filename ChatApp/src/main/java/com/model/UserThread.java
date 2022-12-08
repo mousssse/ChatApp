@@ -1,20 +1,39 @@
 package main.java.com.model;
 
-public abstract class UserThread extends Thread {
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 
-	public final static int ACCEPT_PORT = 9000;
-	private String receiverID;
+public abstract class UserThread extends Thread {
 	
+	protected Socket socket;
+	protected BufferedReader in;
+	protected BufferedWriter out;
+
 	/**
 	 * 
-	 * @param receiverID is the ID of the other user concerned by the current thread
+	 * @param socket
+	 * @throws IOException
 	 */
-	public UserThread(String receiverID) {
-		super();
-		this.receiverID = receiverID;
+	public UserThread(Socket socket) throws IOException {
+		this.socket = socket;
+		this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+	}
+
+	public Socket getSocket() {
+		return socket;
 	}
 	
-	public String getReceiverID() {
-		return this.receiverID;
+	public void kill() throws IOException {
+		this.in.close();
+		this.out.close();
+		this.socket.close();
 	}
+	
+	
+
 }

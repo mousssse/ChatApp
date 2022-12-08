@@ -1,8 +1,5 @@
 package main.java.com.model;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.sql.Date;
-import java.sql.Time;
 
 public class Message {
     private String content;

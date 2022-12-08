@@ -9,11 +9,11 @@ import main.java.com.controller.ThreadManager;
 public class User {
     private String username;
     private String id;
-    private String userIP;
+    private InetAddress userIP;
 
 	public User() throws UnknownHostException {
 		super();
-		this.userIP = InetAddress.getLocalHost().toString();
+		this.userIP = InetAddress.getLocalHost();
 	}
 
 	public String getId() {
@@ -24,7 +24,7 @@ public class User {
 		this.id = id;
 	}
 	
-	public String getUserIP() {
+	public InetAddress getUserIP() {
 		return this.userIP;
 	}
 
@@ -44,7 +44,7 @@ public class User {
 	 */
 	public boolean connect(String id, String password) {
 		// If connection successful, add the user to the ThreadManager's map.
-		ThreadManager.getInstance().addUser(id);
+		ThreadManager.getInstance().addUser(this);
 		return false;
 	}
 	
@@ -52,7 +52,7 @@ public class User {
 	 * Log-off method
 	 */
 	private void disconnect() {
-		ThreadManager.getInstance().removeUser(this.id);
+		ThreadManager.getInstance().removeUser(this);
 	}
 	
 	/** TODO how to start a conversation with someone whose ID we don't know? Obviously, same for sendMessage, endConvo etc.
