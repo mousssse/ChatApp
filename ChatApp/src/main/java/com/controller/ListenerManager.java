@@ -51,8 +51,8 @@ public class ListenerManager {
 		chatListeners.forEach(chatListener -> chatListener.onChatRequest(user));
 	}
 	
-	public void fireOnChatClosure(User user1, User user2) {
-		chatListeners.forEach(chatListener -> chatListener.onChatClosure(user1, user2));
+	public void fireOnChatClosure(User user) {
+		chatListeners.forEach(chatListener -> chatListener.onChatClosure(user));
 	}
 	
 	public void fireOnMessageToSend(User user, Message message) {

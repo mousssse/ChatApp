@@ -11,7 +11,7 @@ public interface ChatListener {
 	// What happens when you want to start a conversation
 	public void onChatRequest(User user);
 	// What happens when one of both parties decides to end the chat?
-	public void onChatClosure(User user1, User user2);
+	public void onChatClosure(User user);
 	// What happens when a user wants to send a message?
 	public void onMessageToSend(User user, Message message);
 	// What happens when a user has to receive a message?

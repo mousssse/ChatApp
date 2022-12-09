@@ -30,6 +30,8 @@ public class ConversationThread implements Runnable {
 	
 	public void close() {
 		try {
+			this.in.close();
+			this.out.close();
 			this.conversationSocket.close();
 		} catch (IOException e) {
 			e.printStackTrace();

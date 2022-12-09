@@ -31,7 +31,7 @@ public class User {
 		return this.userIP;
 	}
 
-	/**
+	/** TODO All of the following will be removed but keep it for now.
 	 * Log-in method
 	 * @param username is the username entered by the user in the ID text field of the login frame
 	 * @param password is the password entered by the user in the password field of the login frame

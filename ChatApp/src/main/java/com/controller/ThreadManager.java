@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import main.java.com.controller.listener.ChatListener;
-import main.java.com.controller.listener.LoginListener;
 import main.java.com.model.ConversationThread;
 import main.java.com.model.Message;
 import main.java.com.model.TCPServer;
@@ -25,14 +24,14 @@ import main.java.com.model.User;
  * @author sarah
  *
  */
-public class ThreadManager implements ChatListener, LoginListener {
+public class ThreadManager implements ChatListener {
 	// The ThreadManager is a singleton
 	private static ThreadManager threadManager = null;
-	// Mapping of online users and their running conversations
-	private Map<User, ArrayList<ConversationThread>> conversationsMap;
+	// Mapping of user's running conversations
+	private Map<User, ConversationThread> conversationsMap;
 	
 	private ThreadManager() {
-		conversationsMap = new HashMap<User, ArrayList<ConversationThread>>();
+		conversationsMap = new HashMap<User, ConversationThread>();
 	}
 	
 	/**
@@ -45,17 +44,7 @@ public class ThreadManager implements ChatListener, LoginListener {
 	}
 	
 	public void addConversation(User user, ConversationThread conversation) {
-		conversationsMap.get(user).add(conversation);
-	}
-	
-	@Override
-	public void onLogin(User user) {
-		conversationsMap.put(user, new ArrayList<ConversationThread>());
-	}
-
-	@Override
-	public void onLogout(User user) {
-		conversationsMap.remove(user);
+		conversationsMap.put(user, conversation);
 	}
 
 	@Override
@@ -72,21 +61,8 @@ public class ThreadManager implements ChatListener, LoginListener {
 	}
 
 	@Override
-	public void onChatClosure(User user1, User user2) {
-		for (ConversationThread conversation: conversationsMap.get(user1)) {
-			if (conversation.getRemoteUser() == user2) {
-				conversation.close();
-				conversationsMap.get(user2).remove(conversation);
-				break;
-			}
-		}
-		for (ConversationThread conversation: conversationsMap.get(user2)) {
-			if (conversation.getRemoteUser() == user1) {
-				conversation.close();
-				conversationsMap.get(user1).remove(conversation);
-				break;
-			}
-		}
+	public void onChatClosure(User user) {
+		conversationsMap.remove(user);
 	}
 
 	@Override
