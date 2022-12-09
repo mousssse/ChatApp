@@ -4,6 +4,6 @@ import main.java.com.model.User;
 
 public interface UsernameListener {
 	
-	void onUsernameModification(User user);
+	void onUsernameModification(User user, String newUsername);
 
 }

@@ -9,19 +9,31 @@ import main.java.com.controller.listener.UsernameListener;
 import main.java.com.model.Message;
 import main.java.com.model.User;
 
+/**
+ * 
+ * @author Sandro
+ * @author sarah
+ *
+ */
 public class ListenerManager {
 	
-	private static final ListenerManager listenerManager = new ListenerManager();
+	private static ListenerManager listenerManager = null;
 	
 	private List<ChatListener> chatListeners;
 	private List<LoginListener> loginListeners;
 	private List<UsernameListener> usernameListeners;
 	
-	public ListenerManager() {
+	private ListenerManager() {
 		chatListeners = new ArrayList<>();
 		loginListeners = new ArrayList<>();
 		usernameListeners = new ArrayList<>();
 	}
+	
+	public static ListenerManager getInstance() {
+		if (listenerManager == null) listenerManager = new ListenerManager();
+		return listenerManager;
+	}
+	
 	
 	public void addChatListener(ChatListener chatListener) {
 		chatListeners.add(chatListener);
@@ -35,11 +47,11 @@ public class ListenerManager {
 		usernameListeners.add(usernameListener);
 	}
 	
-	public void fireOnChatRequestSent(User user) {
+	public void fireOnChatRequest(User user) {
 		chatListeners.forEach(chatListener -> chatListener.onChatRequest(user));
 	}
 	
-	public void fireOnChatClose(User user1, User user2) {
+	public void fireOnChatClosure(User user1, User user2) {
 		chatListeners.forEach(chatListener -> chatListener.onChatClosure(user1, user2));
 	}
 	
@@ -51,24 +63,16 @@ public class ListenerManager {
 		chatListeners.forEach(chatListener -> chatListener.onMessageToReceive(user, message));
 	}
 	
-	public void fireOnLogin() {
-		loginListeners.forEach(LoginListener::onLogin);
+	public void fireOnLogin(User user) {
+		loginListeners.forEach(loginListener -> loginListener.onLogin(user));
 	}
 	
-	public void fireOnLogout() {
-		loginListeners.forEach(LoginListener::onLogout);
+	public void fireOnLogout(User user) {
+		loginListeners.forEach(loginListener -> loginListener.onLogout(user));
 	}
 	
-	public void fireOnUsernameModification(User user) {
-		usernameListeners.forEach(usernameListener -> usernameListener.onUsernameModification(user));
+	public void fireOnUsernameModification(User user, String newUsername) {
+		usernameListeners.forEach(usernameListener -> usernameListener.onUsernameModification(user, newUsername));
 	}
-
-	public static ListenerManager getListenermanager() {
-		return listenerManager;
-	}
-	
-	
-	
-	
 
 }

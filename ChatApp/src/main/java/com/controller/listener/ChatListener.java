@@ -4,8 +4,6 @@ import main.java.com.model.Message;
 import main.java.com.model.User;
 
 public interface ChatListener {
-	
-	// Parameters to be determined tomorrow, I'm just brainstorming
 
 	// What happens if a user requests to chat with another online user?
 	//public void onChatRequestReceived(User user, int port);

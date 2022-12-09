@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import main.java.com.controller.AccountManager;
+import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.ThreadManager;
 
 public class TCPServer implements Runnable {
@@ -37,9 +37,9 @@ public class TCPServer implements Runnable {
 				
 				// socket is now on the new server
 				socket = newServer.accept();
-				User otherUser = AccountManager.getInstance().getUserFromIP(socket.getInetAddress());
-				User thisUser = AccountManager.getInstance().getUserFromIP(newServer.getInetAddress());
-				ThreadManager.getInstance().addConversation(otherUser, new ConversationThread(socket, thisUser));
+				User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(socket.getInetAddress());
+				User thisUser = OnlineUsersManager.getInstance().getUserFromIP(newServer.getInetAddress());
+				ThreadManager.getInstance().addConversation(remoteUser, new ConversationThread(socket, thisUser));
 				System.out.println("TCP: Socket connected on new server");
 				newServer.close();
 			} catch (IOException e) {

@@ -7,7 +7,7 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
-import main.java.com.controller.AccountManager;
+import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.ThreadManager;
 
 public class UDPServer implements Runnable {
@@ -43,9 +43,9 @@ public class UDPServer implements Runnable {
 				int newTcpPort = in.readInt();
 				socket.close();
 				socket = new Socket(received.getAddress(), newTcpPort);
-				User otherUser = AccountManager.getInstance().getUserFromIP(socket.getInetAddress());
-				User thisUser = AccountManager.getInstance().getUserFromIP(serverDatagram.getInetAddress());
-				ThreadManager.getInstance().addConversation(otherUser, new ConversationThread(socket, thisUser));
+				User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(socket.getInetAddress());
+				User thisUser = OnlineUsersManager.getInstance().getUserFromIP(serverDatagram.getInetAddress());
+				ThreadManager.getInstance().addConversation(remoteUser, new ConversationThread(socket, thisUser));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

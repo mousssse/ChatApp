@@ -8,13 +8,13 @@ import java.net.Socket;
 public class ConversationThread implements Runnable {
 	
 	private Socket conversationSocket;
-	private User withUser;
+	private User remoteUser;
 	private DataInputStream in;
 	private DataOutputStream out;
 	
-	public ConversationThread(Socket conversationSocket, User withUser) {
+	public ConversationThread(Socket conversationSocket, User remoteUser) {
 		this.conversationSocket = conversationSocket;
-		this.withUser = withUser;
+		this.remoteUser = remoteUser;
 		try {
 			this.in = new DataInputStream(this.conversationSocket.getInputStream());
 			this.out = new DataOutputStream(this.conversationSocket.getOutputStream());
@@ -24,8 +24,8 @@ public class ConversationThread implements Runnable {
 		}
 	}
 	
-	public User getWithUser() {
-		return this.withUser;
+	public User getRemoteUser() {
+		return this.remoteUser;
 	}
 	
 	public void close() {

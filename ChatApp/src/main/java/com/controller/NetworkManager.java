@@ -7,7 +7,14 @@ import java.util.List;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.model.TCPServer;
 import main.java.com.model.UDPServer;
+import main.java.com.model.User;
 
+/**
+ * TODO For now this class is absolutely useless but I can't find the courage to delete it quite yet.
+ * @author Sandro
+ * @author sarah
+ *
+ */
 public class NetworkManager implements LoginListener {
 	
 	private UDPServer UDPserver;
@@ -15,7 +22,7 @@ public class NetworkManager implements LoginListener {
 	
 	private List<Socket> distantSockets;
 	
-	private static final NetworkManager networkManager = new NetworkManager();
+	private static NetworkManager networkManager;
 	
 	private NetworkManager() {
 		this.distantSockets = new ArrayList<>();
@@ -26,6 +33,7 @@ public class NetworkManager implements LoginListener {
 	}
 	
 	public static NetworkManager getInstance() {
+		if (networkManager == null) networkManager = new NetworkManager();
 		return networkManager;
 	}
 	
@@ -40,13 +48,13 @@ public class NetworkManager implements LoginListener {
 	}
 
 	@Override
-	public void onLogin() {
+	public void onLogin(User user) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onLogout() {
+	public void onLogout(User user) {
 		// TODO Auto-generated method stub
 	}
 	

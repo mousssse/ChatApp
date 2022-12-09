@@ -44,7 +44,6 @@ public class User {
 	 */
 	public boolean connect(String id, String password) {
 		// If connection successful, add the user to the ThreadManager's map.
-		ThreadManager.getInstance().addUser(this);
 		return false;
 	}
 	
@@ -52,7 +51,6 @@ public class User {
 	 * Log-off method
 	 */
 	private void disconnect() {
-		ThreadManager.getInstance().removeUser(this);
 	}
 	
 	/** TODO how to start a conversation with someone whose ID we don't know? Obviously, same for sendMessage, endConvo etc.
