@@ -3,11 +3,14 @@ package main.java.com.model;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import main.java.com.controller.ThreadManager;
 
-
+/**
+ * TODO remove all methods, everything will be done by listeners
+ * @author Sandro
+ * @author sarah
+ *
+ */
 public class User {
-    private String username;
     private String id;
     private InetAddress userIP;
 
@@ -28,21 +31,13 @@ public class User {
 		return this.userIP;
 	}
 
-	public String getUsername() {
-		return this.username;
-	}
-	
-	public void setUsername(String username) {
-		
-	}
-
 	/**
 	 * Log-in method
-	 * @param id is the ID entered by the user in the ID text field of the login frame
+	 * @param username is the username entered by the user in the ID text field of the login frame
 	 * @param password is the password entered by the user in the password field of the login frame
 	 * @return
 	 */
-	public boolean connect(String id, String password) {
+	public boolean connect(String username, String password) {
 		// If connection successful, add the user to the ThreadManager's map.
 		return false;
 	}
@@ -63,8 +58,9 @@ public class User {
 		
 	}
 	
-	private void sendMessage(String username, String content) {
-		Message message = new Message(content);
+	private void sendMessage(String toId, String content) {
+		//TODO: why not give id as parameter all the time instead of username?
+		Message message = new Message(this.id, toId, content);
 	}
 	
 	private void endConversation(String username) {
