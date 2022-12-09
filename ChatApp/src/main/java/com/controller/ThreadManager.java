@@ -29,7 +29,7 @@ public class ThreadManager implements ChatListener, LoginListener {
 	// The ThreadManager is a singleton
 	private static ThreadManager threadManager = null;
 	// Mapping of online users and their running conversations
-	private static Map<User, ArrayList<ConversationThread>> conversationsMap;
+	private Map<User, ArrayList<ConversationThread>> conversationsMap;
 	
 	private ThreadManager() {
 		conversationsMap = new HashMap<User, ArrayList<ConversationThread>>();
