@@ -9,12 +9,13 @@ public class DBManager {
 	private static final DBManager manager = new DBManager();
 
 	// TODO : concatenate with path of app: "jdbc:sqlite:" + path + "/sqlite/db/chatApp.db"
-	public static String url = "jdbc:sqlite:chatApp.db";
+	private String url;
 	
 	private Connection conn;
 
 	private DBManager() {
 		super();
+		this.url = "jdbc:sqlite:chatApp.db";
 		this.initTables();
 	}
 	
@@ -25,7 +26,7 @@ public class DBManager {
 	private void connect() {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			this.conn =  DriverManager.getConnection(url);			
+			this.conn =  DriverManager.getConnection(this.url);			
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -42,7 +43,8 @@ public class DBManager {
                 + " messageId INT PRIMARY KEY, \n"
                 + " content TEXT NOT NULL, \n"
                 + " time TEXT NOT NULL, \n"
-                + " type TEXT NOT NULL \n"
+                + " from_id TEXT NOT NULL, \n"
+                + " to_id TEXT NOT NULL \n"
                 + ");";
         try {
         	this.connect(); 
@@ -66,22 +68,9 @@ public class DBManager {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        
-        sql = "CREATE TABLE IF NOT EXISTS conversations (\n"
-                + "toUserId TEXT PRIMARY KEY, \n"
-                + "isActive BOOLEAN DEFAULT FALSE \n"
-                + ");";
-        try {
-        	this.connect();
-            Statement stmt = conn.createStatement();
-            // create a new table
-            stmt.execute(sql);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
     }
 	
-	public static void main(String[] args) throws ClassNotFoundException {
+	public static void main(String[] args) {
 		DBManager.getInstance();
 		System.out.println("fin");
 	}
