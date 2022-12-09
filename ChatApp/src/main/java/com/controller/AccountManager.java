@@ -19,7 +19,7 @@ public class AccountManager {
 	// Mapping of IPs and their associated users
 	private static Map<InetAddress, User> accountsMap;
 	
-	public AccountManager() {
+	private AccountManager() {
 		accountsMap = new HashMap<InetAddress, User>();
 	}
 	
@@ -35,7 +35,7 @@ public class AccountManager {
 	 * 
 	 * @param user is the User object to add to the accounts map.
 	 */
-	public static void addUser(User user) {
+	public void addUser(User user) {
 		accountsMap.put(user.getUserIP(), user);
 	}
 	
@@ -44,7 +44,7 @@ public class AccountManager {
 	 * @param IP is the IP address associated to the user in question.
 	 * @return the user connected to the ChatApp from IP.
 	 */
-	public static User getUserFromIP(InetAddress IP) {
+	public User getUserFromIP(InetAddress IP) {
 		return accountsMap.get(IP);	
 	}
 }

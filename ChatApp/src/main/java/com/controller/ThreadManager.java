@@ -4,23 +4,19 @@
 
 package main.java.com.controller;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import main.java.com.controller.listener.ChatListener;
-import main.java.com.model.ClientThread;
-import main.java.com.model.ServerThread;
+import main.java.com.model.ConversationThread;
+import main.java.com.model.Message;
+import main.java.com.model.TCPServer;
+import main.java.com.model.UDPServer;
 import main.java.com.model.User;
-import main.java.com.model.UserThread;
 
 /**
  * 
@@ -29,20 +25,19 @@ import main.java.com.model.UserThread;
  *
  */
 public class ThreadManager implements ChatListener {
-	// Original TCP acceptance port
-	public final static int TCP_ACCEPT_PORT = 1026;
-	// Original TCP acceptance port
-	public final static int UDP_ACCEPT_PORT = 1025;
 	// The ThreadManager is a singleton
 	private static final ThreadManager threadManager = new ThreadManager();
 	// Mapping of online users and their running conversations
-	private Map<User, ArrayList<UserThread>> threadsMap;
-	// Next available port of the server socket (works by increments of 1)
-	private int nextAvailablePort = 1027;
+	private static Map<User, ArrayList<ConversationThread>> conversationsMap;
 	
 	private ThreadManager() {
-		this.threadsMap = new HashMap<User, ArrayList<UserThread>>();
+		conversationsMap = new HashMap<User, ArrayList<ConversationThread>>();
 	}
+	
+	public void addConversation(User user, ConversationThread conversation) {
+		conversationsMap.get(user).add(conversation);
+	}
+	
 	
 	/**
 	 * 
@@ -57,7 +52,7 @@ public class ThreadManager implements ChatListener {
 	 * @param user is the user object
 	 */
 	public void addUser(User user) {
-		this.threadsMap.put(user, new ArrayList<UserThread>());
+		conversationsMap.put(user, new ArrayList<ConversationThread>());
 	}
 	
 	/**
@@ -65,75 +60,48 @@ public class ThreadManager implements ChatListener {
 	 * @param user is the user object
 	 */
 	public void removeUser(User user) {
-		this.threadsMap.remove(user);
+		conversationsMap.remove(user);
 	}
 
-	/**
-	 * TODO This is not okay yet
-	 */
-	public void onChatRequestReceived(User user, int port) {
+	@Override
+	public void onChatRequest(User user) {
 		try {
-			DatagramSocket UDPServer = new DatagramSocket(UDP_ACCEPT_PORT);
-			ServerSocket TCPServer = new ServerSocket(TCP_ACCEPT_PORT);
+			//envoi demande connexion
+			DatagramSocket UDPserver = new DatagramSocket();
+			DatagramPacket packetInit = new DatagramPacket(Integer.toString(TCPServer.getTCPserverPort()).getBytes(), 4, user.getUserIP(), UDPServer.getUDPserverPort());
+			UDPserver.send(packetInit);
+			UDPserver.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-			byte[] content = new byte[5];
-			DatagramPacket received = new DatagramPacket(content, 5);
-			UDPServer.receive(received);
-
-			DatagramPacket packet = new DatagramPacket("1025".getBytes(), 4, user.getUserIP(), received.getPort());
-			UDPServer.send(packet);
-			
-			while(true) {
-				Socket TCPSocket = TCPServer.accept(); 
-				
-				// Redirecting the communication to a new port
-				DataOutputStream out = new DataOutputStream(TCPSocket.getOutputStream());
-				out.writeInt(nextAvailablePort++);
-
-				// Creating the ServerThread
-				ServerSocket serverSocket = new ServerSocket(port);
-				Socket socket = serverSocket.accept();
-				UserThread thread = new ServerThread(serverSocket, socket);
-				threadsMap.get(user).add(thread);
+	@Override
+	public void onChatClosure(User user1, User user2) {
+		for (ConversationThread conversation: conversationsMap.get(user1)) {
+			if (conversation.getWithUser() == user2) {
+				conversation.close();
+				conversationsMap.get(user2).remove(conversation);
+				break;
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		}
+		for (ConversationThread conversation: conversationsMap.get(user2)) {
+			if (conversation.getWithUser() == user1) {
+				conversation.close();
+				conversationsMap.get(user1).remove(conversation);
+				break;
+			}
 		}
 	}
 
 	@Override
-	public void onChatRequestSent(User user, int port) {
-		// TODO Auto-generated method stub
-		try {
-			Socket socket = new Socket(user.getUserIP(), port);
-			DataInputStream in = new DataInputStream(socket.getInputStream());
-			
-			// Waits for the new port from the server, closes the socket and creates a new one on the new port
-			int redirection = in.readInt();
-			socket.close();
-			socket = new Socket(user.getUserIP(), redirection);
-			UserThread thread = new ClientThread(socket);
-			threadsMap.get(user).add(thread);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	@Override
-	public void onChatClosureRequested(User user, UserThread thread) {
-		// TODO Auto-generated method stub
-		threadsMap.get(user).remove(thread);
-	}
-
-	@Override
-	public void onMessageToSend() {
+	public void onMessageToSend(User user, Message message) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onMessageToReceive() {
+	public void onMessageToReceive(User user, Message message) {
 		// TODO Auto-generated method stub
 		
 	}

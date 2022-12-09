@@ -7,17 +7,21 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
+import main.java.com.controller.AccountManager;
+import main.java.com.controller.ThreadManager;
+
 public class UDPServer implements Runnable {
-	private static final int serverPort = 1025;
+	private static final int UDPserverPort = 1025;
 	private DatagramSocket serverDatagram;
 	
-	public UDPServer() {
+	public static int getUDPserverPort() {
+		return UDPserverPort;
 	}
 	
 	@Override
 	public void run() {
 		try {
-			this.serverDatagram = new DatagramSocket(serverPort);
+			this.serverDatagram = new DatagramSocket(UDPserverPort);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
@@ -39,13 +43,12 @@ public class UDPServer implements Runnable {
 				int newTcpPort = in.readInt();
 				socket.close();
 				socket = new Socket(received.getAddress(), newTcpPort);
+				User otherUser = AccountManager.getInstance().getUserFromIP(socket.getInetAddress());
+				User thisUser = AccountManager.getInstance().getUserFromIP(serverDatagram.getInetAddress());
+				ThreadManager.getInstance().addConversation(otherUser, new ConversationThread(socket, thisUser));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	public static void main(String[] args) throws SocketException {
-		DatagramSocket ds = new DatagramSocket(1024);
 	}
 }

@@ -6,8 +6,8 @@ import java.util.List;
 import main.java.com.controller.listener.ChatListener;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.UsernameListener;
+import main.java.com.model.Message;
 import main.java.com.model.User;
-import main.java.com.model.UserThread;
 
 public class ListenerManager {
 	
@@ -35,16 +35,20 @@ public class ListenerManager {
 		usernameListeners.add(usernameListener);
 	}
 	
-	public void fireOnChatRequestReceived(User user, int port) {
-		chatListeners.forEach(chatListener -> chatListener.onChatRequestReceived(user, port));
+	public void fireOnChatRequestSent(User user) {
+		chatListeners.forEach(chatListener -> chatListener.onChatRequest(user));
 	}
 	
-	public void fireOnChatRequestSent(User user, int clientPort) {
-		chatListeners.forEach(chatListener -> chatListener.onChatRequestSent(user, clientPort));
+	public void fireOnChatClose(User user1, User user2) {
+		chatListeners.forEach(chatListener -> chatListener.onChatClosure(user1, user2));
 	}
 	
-	public void fireOnChatClose(User user, UserThread userThread) {
-		chatListeners.forEach(chatListener -> chatListener.onChatClosureRequested(user, userThread));
+	public void fireOnMessageToSend(User user, Message message) {
+		chatListeners.forEach(chatListener -> chatListener.onMessageToSend(user, message));
+	}
+	
+	public void fireOnMessageToReceive(User user, Message message) {
+		chatListeners.forEach(chatListener -> chatListener.onMessageToReceive(user, message));
 	}
 	
 	public void fireOnLogin() {

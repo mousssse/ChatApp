@@ -41,7 +41,7 @@ public class DBManager {
 		}
         String sql = "CREATE TABLE IF NOT EXISTS messages (\n"
                 + " messageId INT PRIMARY KEY, \n"
-                + " content TEXT NOT NULL, \n"
+                + " content BLOB NOT NULL, \n"
                 + " time TEXT NOT NULL, \n"
                 + " from_id TEXT NOT NULL, \n"
                 + " to_id TEXT NOT NULL \n"
