@@ -55,7 +55,7 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	 */
 	@Override
 	public void onLogin(User remoteUser) {
-		accountsMap.put(remoteUser.getIP(), remoteUser);
+		this.accountsMap.put(remoteUser.getIP(), remoteUser);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	 */
 	@Override
 	public void onLogout(User remoteUser) {
-		accountsMap.remove(remoteUser.getIP());
+		this.accountsMap.remove(remoteUser.getIP());
 	}
 
 	/**

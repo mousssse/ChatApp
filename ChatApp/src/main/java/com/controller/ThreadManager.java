@@ -30,7 +30,7 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	private Map<User, Conversation> conversationsMap;
 	
 	private ThreadManager() {
-		conversationsMap = new HashMap<User, Conversation>();
+		this.conversationsMap = new HashMap<User, Conversation>();
 	}
 	
 	/**
@@ -56,7 +56,7 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	 * @param conversation is the conversation with the remote user
 	 */
 	public void addConversation(User remoteUser, Conversation conversation) {
-		conversationsMap.put(remoteUser, conversation);
+		this.conversationsMap.put(remoteUser, conversation);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 
 	@Override
 	public void onChatClosure(User user) {
-		conversationsMap.remove(user).close();
+		this.conversationsMap.remove(user).close();
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 
 	@Override
 	public void onLogout(User remoteUser) {
-		conversationsMap.remove(remoteUser).close();
+		this.conversationsMap.remove(remoteUser).close();
 	}
 
 	@Override
