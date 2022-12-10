@@ -3,6 +3,7 @@ package main.java.com.controller;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.model.User;
@@ -13,10 +14,11 @@ import main.java.com.model.User;
  * @author sarah
  *
  */
-public class OnlineUsersManager implements LoginListener{
+public class OnlineUsersManager implements LoginListener {
 	
 	// The AccountManager is a singleton
 	private static OnlineUsersManager onlineUsersManager = null;
+	private User localUser;
 	// Active users mapping
 	private Map<InetAddress, User> accountsMap;
 	
@@ -24,9 +26,17 @@ public class OnlineUsersManager implements LoginListener{
 		accountsMap = new HashMap<InetAddress, User>();
 	}
 	
+	public void setLocalUser(User localUser) {
+		this.localUser = localUser;
+	}
+	
+	public User getLocalUser() {
+		return this.localUser;
+	}
+	
 	/**
 	 * 
-	 * @return the AccountManager singleton
+	 * @return The AccountManager singleton
 	 */
 	public static OnlineUsersManager getInstance() {
 		if (onlineUsersManager == null) onlineUsersManager = new OnlineUsersManager();
@@ -46,18 +56,16 @@ public class OnlineUsersManager implements LoginListener{
 	 * Adds user to the active users mapping
 	 */
 	@Override
-	public void onLogin(User user) {
-		accountsMap.put(user.getUserIP(), user);
-		
+	public void onLogin(User remoteUser) {
+		accountsMap.put(remoteUser.getIP(), remoteUser);
 	}
 
 	/**
 	 * Removes user from the active users mapping
 	 */
 	@Override
-	public void onLogout(User user) {
-		accountsMap.remove(user.getUserIP());
-		
+	public void onLogout(InetAddress inetAddress) {
+		this.accountsMap.remove(inetAddress);
 	}
 	
 	

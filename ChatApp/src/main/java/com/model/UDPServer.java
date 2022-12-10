@@ -1,15 +1,15 @@
 package main.java.com.model;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Socket;
 import java.net.SocketException;
 
+import main.java.com.controller.DBManager;
+import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
-import main.java.com.controller.ThreadManager;
 
+// TODO: change how this works: will only be used for login/logout, need to store ppl's TCP server port
 public class UDPServer implements Runnable {
 	private static final int UDPserverPort = 1025;
 	private DatagramSocket serverDatagram;
@@ -27,25 +27,33 @@ public class UDPServer implements Runnable {
 		}
 		while (true) {			
 			try {
-				// waiting for new connection
-				System.out.println("UDP: Waiting for someone to connect");
-				byte[] content = new byte[4];
-				DatagramPacket received = new DatagramPacket(content, 4);
+				// waiting for new message
+				System.out.println("UDP: Waiting for someone to say something");
+				byte[] content = new byte[100];
+				DatagramPacket received = new DatagramPacket(content, content.length);
 				this.serverDatagram.receive(received);
 				
-				// connecting to the TCP server
-				int TCPServerPort = Integer.parseInt(new String(content));
-				System.out.println("UDP: going to connect to the TCP server on port " + TCPServerPort);
-				Socket socket = new Socket(received.getAddress(), TCPServerPort);
-				
-				// connecting to the new TCP server
-				DataInputStream in = new DataInputStream(socket.getInputStream());
-				int newTcpPort = in.readInt();
-				socket.close();
-				socket = new Socket(received.getAddress(), newTcpPort);
-				User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(socket.getInetAddress());
-				User thisUser = OnlineUsersManager.getInstance().getUserFromIP(serverDatagram.getInetAddress());
-				ThreadManager.getInstance().addConversation(remoteUser, new ConversationThread(socket, thisUser));
+				// The string received will have the format: 
+				// "username: xxxxxxxx; port: xxxx. UUID: xxxxx!" for a login
+				// or "logout" for a logout
+				String contentReceived = new String(content);
+				if (received.getAddress() == OnlineUsersManager.getInstance().getLocalUser().getIP()) {
+					// This packet comes from us, we shouldn't process it
+					System.out.println("Packet from us, ignored.");
+					continue;
+				}
+				if (contentReceived.contains("logout")) {
+					// TODO This packet is a broadcast to notify a logout
+					ListenerManager.getInstance().fireOnLogout(received.getAddress());
+				}
+				else {
+					// This packet is a broadcast to notify a login
+					String remoteId = contentReceived.substring(contentReceived.indexOf("UUID:") + 6, contentReceived.indexOf("!"));
+					String username = contentReceived.substring(contentReceived.indexOf("username:") + 10, contentReceived.indexOf(";"));
+					int remoteTCPServerPort = Integer.parseInt(contentReceived.substring(contentReceived.indexOf("port:") + 6, contentReceived.indexOf(".")));
+					User remoteUser = new User(remoteId, username, received.getAddress(), remoteTCPServerPort);
+					ListenerManager.getInstance().fireOnLogin(remoteUser);
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

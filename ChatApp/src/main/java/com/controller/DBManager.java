@@ -1,5 +1,6 @@
 package main.java.com.controller;
 
+import java.net.InetAddress;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,6 +8,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.UUID;
+
+import javax.sql.rowset.serial.SerialBlob;
+
+import main.java.com.controller.listener.ChatListener;
+import main.java.com.controller.listener.LoginListener;
+import main.java.com.controller.listener.SelfLoginListener;
+import main.java.com.model.Message;
+import main.java.com.model.User;
 
 /**
  * 
@@ -14,7 +24,7 @@ import java.sql.Statement;
  * @author sarah
  *
  */
-public class DBManager {
+public class DBManager implements SelfLoginListener, LoginListener, ChatListener {
 	private static final DBManager DBmanager = new DBManager();
 	private String url = "jdbc:sqlite:chatApp.db";
 	private Connection conn;
@@ -80,7 +90,7 @@ public class DBManager {
      * @param id The id of the user we are adding
      * @param username The username of the user we are adding
      */
-    public void insertUser(String id, String username) {
+    public void insertUser(String username, String id) {
         String sql = "INSERT INTO users(id, username, password) VALUES(?, ?, ?)";
 
         try {
@@ -98,23 +108,22 @@ public class DBManager {
     }
     
     /**
-     * @param id The id of the local user
+     * This will only run when the user creates its account
+     * 
      * @param username The username of the local user
      * @param hashedPassword A hash of the local user's password
      */
-    public void insertThisUser(String id, String username, String hashedPassword) {
-        String sql = "INSERT INTO users(id, username, password) VALUES(?, ?, ?)";
+    public void insertThisUser(String username, String hashedPassword) {
+        String sql = "INSERT OR IGNORE INTO users(id, username, password) VALUES(?, ?, ?)";
+        UUID id = UUID.randomUUID();
 
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, id);
+            pstmt.setString(1, id.toString());
             pstmt.setString(2, username);
             pstmt.setString(3, hashedPassword);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-        	if (e.getMessage().contains("SQLITE_CONSTRAINT_PRIMARYKEY")) {
-        		// TODO: user is already in db!
-        	}
             System.out.println(e.getMessage());
         }
     }
@@ -184,6 +193,26 @@ public class DBManager {
     }
     
     /**
+     * Finds the id corresponding to the given username
+     * 
+     * @param username The username of the user
+     * @return The id associated to the username
+     */
+    public String getIdFromUsername(String username) {
+    	String sql = "SELECT id FROM users WHERE username = ?;";
+    	
+    	try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.getString("username");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    	return "";
+    }
+    
+    /**
      * Returns the hashed password of the local user
      * 
      * @param id The id of the local user
@@ -197,11 +226,61 @@ public class DBManager {
         ResultSet rs = pstmt.executeQuery();
         return rs.getString("password");
     }
+
+	@Override
+	public void onSelfLogin(String username) {
+		// TODO
+		this.insertThisUser(username, "");
+	}
+
+	@Override
+	public void onSelfLogout() {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onLogin(User remoteUser) {
+		this.insertUser(remoteUser.getUsername(), remoteUser.getId());
+		
+	}
+
+	@Override
+	public void onLogout(InetAddress inetAddress) {
+		// nothing to do
+	}
+
+	@Override
+	public void onChatRequest(User remoteUser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onChatClosure(User remoteUser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMessageToSend(User localUser, User remoteUser, String messageContent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMessageToReceive(Message message) {
+		try {
+			this.insertMessage(new SerialBlob(message.getContent().getBytes()), message.getDate().format(null), message.getFromUserId(), message.getToUserId());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
     // Used for tests
 	public static void main(String[] args) {
-		DBManager.getInstance().insertUser("id", "sarah");
-		System.out.println(DBManager.getInstance().getUsernameFromId("id"));
+		DBManager.getInstance().insertUser("sarah", "0");
+		System.out.println(DBManager.getInstance().getUsernameFromId("1"));
 		System.out.println("fin");
 	}
 }

@@ -9,9 +9,9 @@ import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.ThreadManager;
 
 public class TCPServer implements Runnable {
-	private static final int TCPserverPort = 1026;
-	private int availablePort = 1027;
-	private ServerSocket TCPserver;
+	private static int TCPserverPort = 1026;
+	private int availablePort;
+	private ServerSocket TCPserver = null;
 	
 	public static int getTCPserverPort() {
 		return TCPserverPort;
@@ -19,10 +19,13 @@ public class TCPServer implements Runnable {
 	
 	@Override
 	public void run() {
-		try {
-			this.TCPserver = new ServerSocket(TCPserverPort);
-		} catch (IOException e) {
-			e.printStackTrace();
+		while (this.TCPserver == null) {
+			try {
+				this.TCPserver = new ServerSocket(TCPserverPort);
+				this.availablePort = TCPserverPort + 1;
+			} catch (IOException e) {
+				TCPserverPort++;
+			}
 		}
 		while (true) {
 			try {
@@ -37,10 +40,15 @@ public class TCPServer implements Runnable {
 				
 				// socket is now on the new server
 				socket = newServer.accept();
-				User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(socket.getInetAddress());
-				User thisUser = OnlineUsersManager.getInstance().getUserFromIP(newServer.getInetAddress());
-				ThreadManager.getInstance().addConversation(remoteUser, new ConversationThread(socket, thisUser));
 				System.out.println("TCP: Socket connected on new server");
+
+				// launch listening TCP server for this connection
+				User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(socket.getInetAddress());
+				Conversation conversation = new Conversation(socket);
+				// TODO onChatRequested listener missing
+				ThreadManager.getInstance().addConversation(remoteUser, conversation);
+				new Thread(new ConversationServer(conversation, remoteUser), "Conversation with " + remoteUser.getUsername()).start();;
+				
 				newServer.close();
 			} catch (IOException e) {
 				e.printStackTrace();

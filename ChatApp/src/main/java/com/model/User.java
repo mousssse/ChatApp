@@ -1,7 +1,6 @@
 package main.java.com.model;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 
 /**
@@ -12,26 +11,39 @@ import java.net.UnknownHostException;
  */
 public class User {
     private String id;
+    private String username;
     private InetAddress userIP;
+    private int TCPserverPort;
 
-	public User() throws UnknownHostException {
+	public User(String id, String username, InetAddress userIP, int TCPServerPort) {
 		super();
-		this.userIP = InetAddress.getLocalHost();
+		this.id = id;
+		this.username = username;
+		this.userIP = userIP;
+		this.TCPserverPort = TCPServerPort;
 	}
 
 	public String getId() {
 		return this.id;
 	}
-
-	public void setId(String id) {
-		this.id = id;
+	
+	public String getUsername() {
+		return this.username;
 	}
 	
-	public InetAddress getUserIP() {
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	public InetAddress getIP() {
 		return this.userIP;
 	}
+	
+	public int getTCPserverPort() {
+		return this.TCPserverPort;
+	}
 
-	/** TODO All of the following will be removed but keep it for now.
+	/** TODO The following will be removed but keep it for now.
 	 * Log-in method
 	 * @param username is the username entered by the user in the ID text field of the login frame
 	 * @param password is the password entered by the user in the password field of the login frame
@@ -40,31 +52,6 @@ public class User {
 	public boolean connect(String username, String password) {
 		// If connection successful, add the user to the ThreadManager's map.
 		return false;
-	}
-	
-	/**
-	 * Log-off method
-	 */
-	private void disconnect() {
-	}
-	
-	/** TODO how to start a conversation with someone whose ID we don't know? Obviously, same for sendMessage, endConvo etc.
-	 * Do we need a mapping of usernames to IDs? If so, which manager should deal with that?
-	 * More realistically, I think we don't even care about these methods, I think the frames will be directly linked to the
-	 * specific threads somehow.
-	 * @param username
-	 */
-	private void startConversation(String username) {
-		
-	}
-	
-	private void sendMessage(String toId, String content) {
-		//TODO: why not give id as parameter all the time instead of username?
-		Message message = new Message(this.id, toId, content);
-	}
-	
-	private void endConversation(String username) {
-		
 	}
     
 }

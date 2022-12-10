@@ -4,7 +4,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import main.java.com.controller.listener.LoginListener;
+import main.java.com.controller.listener.SelfLoginListener;
 import main.java.com.model.TCPServer;
 import main.java.com.model.UDPServer;
 import main.java.com.model.User;
@@ -15,7 +15,7 @@ import main.java.com.model.User;
  * @author sarah
  *
  */
-public class NetworkManager implements LoginListener {
+public class NetworkManager implements SelfLoginListener {
 	
 	private UDPServer UDPserver;
 	private TCPServer TCPserver;
@@ -28,8 +28,8 @@ public class NetworkManager implements LoginListener {
 		this.distantSockets = new ArrayList<>();
 		this.UDPserver = new UDPServer();
 		this.TCPserver = new TCPServer();
-		(new Thread(this.UDPserver)).start();
-		(new Thread(this.TCPserver)).start();
+		(new Thread(this.UDPserver, "UDP Server")).start();
+		(new Thread(this.TCPserver, "TCP Server")).start();
 	}
 	
 	public static NetworkManager getInstance() {
@@ -41,21 +41,25 @@ public class NetworkManager implements LoginListener {
 		this.distantSockets.add(socket);
 	}
 	
-	public static void main(String[] args) {
-		//UDPServer UDPServer = new UDPServer();
-		//(new Thread(UDPServer)).start();
-		NetworkManager.getInstance();
-	}
-
 	@Override
-	public void onLogin(User user) {
-		// TODO Auto-generated method stub
-		
+	public void onSelfLogin(String username) {
+		// TODO broadcast UDP with following message
+		// TODO problem: wow getting the local user that hasnt been created yet
+		// Login message format: "username: xxxxxxxx; port: xxxx. UUID: xxxxx!"
+		User localUser = OnlineUsersManager.getInstance().getLocalUser();
+		String loginMessage = "username: " + localUser.getUsername() + "; ";
+		loginMessage += "port: " + localUser.getTCPserverPort() + ". ";
+		loginMessage += "UUID: " + localUser.getId() + "!";
 	}
-
+	
 	@Override
-	public void onLogout(User user) {
-		// TODO Auto-generated method stub
+	public void onSelfLogout() {
+		// TODO broadcast udp to tell ppl we've logged out
+		// Logout message format: "UUID: xxxxxxx! logout"
+		User localUser = OnlineUsersManager.getInstance().getLocalUser();
+		String logoutMessage = "UUID: " + localUser.getId() + "! logout";
+		// TODO: should this be done directly in onSelfLogout in the ThreadManager?
+		ThreadManager.getInstance().clearConversationsMap();
 	}
 	
 }

@@ -1,5 +1,6 @@
 package main.java.com.controller;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,28 +48,28 @@ public class ListenerManager {
 		usernameListeners.add(usernameListener);
 	}
 	
-	public void fireOnChatRequest(User user) {
-		chatListeners.forEach(chatListener -> chatListener.onChatRequest(user));
+	public void fireOnChatRequest(User remoteUser) {
+		chatListeners.forEach(chatListener -> chatListener.onChatRequest(remoteUser));
 	}
 	
-	public void fireOnChatClosure(User user) {
-		chatListeners.forEach(chatListener -> chatListener.onChatClosure(user));
+	public void fireOnChatClosure(User remoteUser) {
+		chatListeners.forEach(chatListener -> chatListener.onChatClosure(remoteUser));
 	}
 	
-	public void fireOnMessageToSend(User user, Message message) {
-		chatListeners.forEach(chatListener -> chatListener.onMessageToSend(user, message));
+	public void fireOnMessageToSend(User localUser, User remoteUser, String messageContent) {
+		chatListeners.forEach(chatListener -> chatListener.onMessageToSend(localUser, remoteUser, messageContent));
 	}
 	
-	public void fireOnMessageToReceive(User user, Message message) {
-		chatListeners.forEach(chatListener -> chatListener.onMessageToReceive(user, message));
+	public void fireOnMessageToReceive(Message message) {
+		chatListeners.forEach(chatListener -> chatListener.onMessageToReceive(message));
 	}
 	
-	public void fireOnLogin(User user) {
-		loginListeners.forEach(loginListener -> loginListener.onLogin(user));
+	public void fireOnLogin(User remoteUser) {
+		loginListeners.forEach(loginListener -> loginListener.onLogin(remoteUser));
 	}
 	
-	public void fireOnLogout(User user) {
-		loginListeners.forEach(loginListener -> loginListener.onLogout(user));
+	public void fireOnLogout(InetAddress inetAddress) {
+		loginListeners.forEach(loginListener -> loginListener.onLogout(inetAddress));
 	}
 	
 	public void fireOnUsernameModification(User user, String newUsername) {

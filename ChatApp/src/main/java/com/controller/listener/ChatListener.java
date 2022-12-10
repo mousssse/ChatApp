@@ -9,12 +9,12 @@ public interface ChatListener {
 	//public void onChatRequestReceived(User user, int port);
 	
 	// What happens when you want to start a conversation
-	public void onChatRequest(User user);
+	public void onChatRequest(User remoteUser);
 	// What happens when one of both parties decides to end the chat?
-	public void onChatClosure(User user);
+	public void onChatClosure(User remoteUser);
 	// What happens when a user wants to send a message?
-	public void onMessageToSend(User user, Message message);
+	public void onMessageToSend(User localUser, User remoteUser, String messageContent);
 	// What happens when a user has to receive a message?
-	public void onMessageToReceive(User user, Message message);
+	public void onMessageToReceive(Message message);
 
 }
