@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import javax.sql.rowset.serial.SerialBlob;
@@ -90,7 +92,7 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
      * @param username The username of the user we are adding
      */
     public void insertUser(String username, String id) {
-        String sql = "INSERT INTO users(id, username, password) VALUES(?, ?, ?)";
+        String sql = "INSERT OR IGNORE INTO users(id, username, password) VALUES(?, ?, ?)";
 
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -114,7 +116,7 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
      */
     public void insertThisUser(String username, String hashedPassword) {
         String sql = "INSERT OR IGNORE INTO users(id, username, password) VALUES(?, ?, ?)";
-        UUID id = UUID.randomUUID();
+        String id = UUID.randomUUID().toString();
 
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -227,8 +229,7 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
     }
 
 	@Override
-	public void onSelfLogin(String id, String username) {
-		// TODO be careful, sarah, I added id to the selfLogin
+	public void onSelfLogin(String username) {
 		this.insertThisUser(username, "");
 	}
 
@@ -261,15 +262,19 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
 	}
 
 	@Override
-	public void onMessageToSend(Message message) {
-		// TODO Auto-generated method stub
-		
+	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
+		try {
+			this.insertMessage(new SerialBlob(messageContent.getBytes()), date.toString(), localUser.getId(), remoteUser.getId());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void onMessageToReceive(Message message) {
 		try {
-			this.insertMessage(new SerialBlob(message.getContent().getBytes()), message.getDate().format(null), message.getFromUser().getId(), message.getToUser().getId());
+			this.insertMessage(new SerialBlob(message.getContent().getBytes()), message.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), message.getFromUser().getId(), message.getToUser().getId());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -278,7 +283,7 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
 	
     // Used for tests
 	public static void main(String[] args) {
-		DBManager.getInstance().insertUser("sarah", "0");
+		DBManager.getInstance().insertUser("sarah", "");
 		System.out.println(DBManager.getInstance().getUsernameFromId("1"));
 		System.out.println("fin");
 	}

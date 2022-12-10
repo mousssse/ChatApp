@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.SelfLoginListener;
@@ -70,9 +69,9 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	 * Creates the local user
 	 */
 	@Override
-	public void onSelfLogin(String id, String username) {
+	public void onSelfLogin(String username) {
 		try {
-			this.localUser = new User(id, username, InetAddress.getLocalHost());
+			this.localUser = new User(DBManager.getInstance().getIdFromUsername(username), username, InetAddress.getLocalHost());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

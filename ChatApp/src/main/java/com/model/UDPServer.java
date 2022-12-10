@@ -5,7 +5,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
 
@@ -39,8 +38,8 @@ public class UDPServer implements Runnable {
 				this.serverDatagram.receive(received);
 				
 				// The string received will have the format: 
-				// "username: xxxxxxxx; port: xxxx. UUID: xxxxx!" for a login
-				// or "logout" for a logout
+				// "flag username port UUID" with flag being "login"/"ack"
+				// or just "flag" with flag being "logout"
 				String contentReceived = new String(content);
 				if (received.getAddress() == OnlineUsersManager.getInstance().getLocalUser().getIP()) {
 					// This packet comes from the local user, it should be ignored.
@@ -52,12 +51,21 @@ public class UDPServer implements Runnable {
 					ListenerManager.getInstance().fireOnLogout(OnlineUsersManager.getInstance().getUserFromIP(received.getAddress()));
 				}
 				else {
-					// This packet is a broadcast to notify a login
-					String remoteId = contentReceived.substring(contentReceived.indexOf("UUID:") + 6, contentReceived.indexOf("!"));
-					String username = contentReceived.substring(contentReceived.indexOf("username:") + 10, contentReceived.indexOf(";"));
-					int remoteTCPServerPort = Integer.parseInt(contentReceived.substring(contentReceived.indexOf("port:") + 6, contentReceived.indexOf(".")));
-					User remoteUser = new User(remoteId, username, received.getAddress(), remoteTCPServerPort);
+					// This packet is a broadcast to notify a login or the answer to a login
+					String[] parts = contentReceived.split(" ");
+					String flag = parts[0]; // 004
+					String remoteUsername = parts[1]; // 034556
+					int remoteTCPServerPort = Integer.parseInt(parts[2]);
+					String remoteId = parts[3];
+					User remoteUser = new User(remoteId, remoteUsername, received.getAddress(), remoteTCPServerPort);
 					ListenerManager.getInstance().fireOnLogin(remoteUser);
+					
+					if (flag.equals("login")) {
+						// We should send an ack back to say who we are
+						User localUser = OnlineUsersManager.getInstance().getLocalUser();
+						String ackMessage = "ack " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " " + localUser.getId();
+						this.serverDatagram.send(new DatagramPacket(ackMessage.getBytes(), ackMessage.length(), received.getAddress(), UDPserverPort));
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

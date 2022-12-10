@@ -1,5 +1,6 @@
 package main.java.com.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,11 +90,13 @@ public class ListenerManager {
 	}
 	
 	/**
-	 * 
-	 * @param message is the message to send
+	 * @param localUser The local user sending a message
+	 * @param remoteUser The receiver of the message
+	 * @param messageContent The content of the message
+	 * @param date The time at which the message was sent
 	 */
-	public void fireOnMessageToSend(Message message) {
-		chatListeners.forEach(chatListener -> chatListener.onMessageToSend(message));
+	public void fireOnMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
+		chatListeners.forEach(chatListener -> chatListener.onMessageToSend(localUser, remoteUser, messageContent, date));
 	}
 	
 	/**
@@ -125,8 +128,8 @@ public class ListenerManager {
 	 * @param id is the local user's id
 	 * @param username is the local user's username
 	 */
-	public void fireOnSelfLogin(String id, String username) {
-		selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLogin(id, username));
+	public void fireOnSelfLogin(String username) {
+		selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLogin(username));
 	}
 	
 	public void fireOnSelfLogout() {

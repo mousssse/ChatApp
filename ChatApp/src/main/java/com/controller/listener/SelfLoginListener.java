@@ -8,6 +8,6 @@ package main.java.com.controller.listener;
  */
 public interface SelfLoginListener {
 	
-	public void onSelfLogin(String id, String username);
+	public void onSelfLogin(String username);
 	public void onSelfLogout();
 }

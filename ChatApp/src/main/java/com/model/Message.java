@@ -14,12 +14,12 @@ public class Message {
     private LocalDateTime date;
     private MessageType type;
     
-	public Message(User fromUser, User toUser, String content, MessageType type) {
+	public Message(User fromUser, User toUser, String content, LocalDateTime date, MessageType type) {
 		super();
 		this.fromUser = fromUser;
 		this.toUser = toUser;
 		this.content = content;
-		this.date = LocalDateTime.now();
+		this.date = date;
 		this.type = type;
 	}
 	

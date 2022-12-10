@@ -2,13 +2,11 @@ package main.java.com.controller;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.sql.rowset.serial.SerialBlob;
 
 import main.java.com.controller.listener.ChatListener;
 import main.java.com.controller.listener.LoginListener;
@@ -84,9 +82,9 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	}
 
 	@Override
-	public void onMessageToSend(Message message) {
+	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
 		try {
-			this.conversationsMap.get(message.getToUser()).write(message.getFromUser(), message.getToUser(), message.getContent());
+			this.conversationsMap.get(remoteUser).write(localUser, remoteUser, messageContent, date);
 		} catch (IOException | SQLException e) {
 			// Message was not received
 			e.printStackTrace();
@@ -110,7 +108,7 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	}
 
 	@Override
-	public void onSelfLogin(String id, String username) {
+	public void onSelfLogin(String username) {
 		// TODO Auto-generated method stub
 		
 	}

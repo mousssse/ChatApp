@@ -49,22 +49,19 @@ public class NetworkManager implements SelfLoginListener {
 	}
 	
 	@Override
-	public void onSelfLogin(String id, String username) {
+	public void onSelfLogin(String username) {
 		// TODO pay attention, id was added to selfLogin. Might be useless here but just notice that you can't just remove it.
 		// TODO broadcast UDP with following message
-		// Login message format: "username: xxxxxxxx; port: xxxx. UUID: xxxxx!"
+		// Login message format: "login username port UUID"
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();
-		String loginMessage = "username: " + localUser.getUsername() + "; ";
-		loginMessage += "port: " + localUser.getTCPserverPort() + ". ";
-		loginMessage += "UUID: " + localUser.getId() + "!";
+		String loginMessage = "login " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " " + localUser.getId();
 	}
 	
 	@Override
 	public void onSelfLogout() {
 		// TODO broadcast udp to tell ppl we've logged out
-		// Logout message format: "UUID: xxxxxxx! logout"
-		User localUser = OnlineUsersManager.getInstance().getLocalUser();
-		String logoutMessage = "UUID: " + localUser.getId() + "! logout";
+		// Logout message format: "logout"
+		String logoutMessage = "logout";
 	}
 	
 }
