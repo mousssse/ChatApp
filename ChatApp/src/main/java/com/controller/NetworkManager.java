@@ -10,19 +10,18 @@ import main.java.com.model.UDPServer;
 import main.java.com.model.User;
 
 /**
- * TODO For now this class is absolutely useless but I can't find the courage to delete it quite yet.
+ * The NetworkManager manages a user's UDP and TCP servers.
  * @author Sandro
  * @author sarah
  *
  */
 public class NetworkManager implements SelfLoginListener {
 	
+	private List<Socket> distantSockets;
 	private UDPServer UDPserver;
 	private TCPServer TCPserver;
 	
-	private List<Socket> distantSockets;
-	
-	private static NetworkManager networkManager;
+	private static NetworkManager networkManager = null;
 	
 	private NetworkManager() {
 		this.distantSockets = new ArrayList<>();
@@ -32,19 +31,27 @@ public class NetworkManager implements SelfLoginListener {
 		(new Thread(this.TCPserver, "TCP Server")).start();
 	}
 	
+	/**
+	 * 
+	 * @return the NetworkManager singleton
+	 */
 	public static NetworkManager getInstance() {
 		if (networkManager == null) networkManager = new NetworkManager();
 		return networkManager;
 	}
 	
+	/**
+	 * 
+	 * @param socket is the socket to be added
+	 */
 	public void addDistantSocket(Socket socket) {
 		this.distantSockets.add(socket);
 	}
 	
 	@Override
-	public void onSelfLogin(String username) {
+	public void onSelfLogin(String id, String username) {
+		// TODO pay attention, id was added to selfLogin. Might be useless here but just notice that you can't just remove it.
 		// TODO broadcast UDP with following message
-		// TODO problem: wow getting the local user that hasnt been created yet
 		// Login message format: "username: xxxxxxxx; port: xxxx. UUID: xxxxx!"
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();
 		String loginMessage = "username: " + localUser.getUsername() + "; ";
@@ -58,8 +65,6 @@ public class NetworkManager implements SelfLoginListener {
 		// Logout message format: "UUID: xxxxxxx! logout"
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();
 		String logoutMessage = "UUID: " + localUser.getId() + "! logout";
-		// TODO: should this be done directly in onSelfLogout in the ThreadManager?
-		ThreadManager.getInstance().clearConversationsMap();
 	}
 	
 }

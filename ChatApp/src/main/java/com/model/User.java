@@ -4,9 +4,9 @@ import java.net.InetAddress;
 
 
 /**
- * TODO remove all methods, everything will be done by listeners
- * @author Sandro
+ * 
  * @author sarah
+ * @author Sandro
  *
  */
 public class User {
@@ -15,12 +15,33 @@ public class User {
     private InetAddress userIP;
     private int TCPserverPort;
 
-	public User(String id, String username, InetAddress userIP, int TCPServerPort) {
+    /**
+     * This constructor is used for the local user.
+     * @param id is the local user's id.
+     * @param username is the local user's username.
+     * @param userIP is the local user's IP address
+     */
+	public User(String id, String username, InetAddress userIP) {
 		super();
 		this.id = id;
 		this.username = username;
 		this.userIP = userIP;
-		this.TCPserverPort = TCPServerPort;
+		this.TCPserverPort = TCPServer.getTCPserverPort();
+	}
+	
+	/**
+	 * This constructor is used for remote users.
+	 * @param id is the remote user's id.
+	 * @param username is the remote user's username.
+	 * @param userIP is the remote user's IP address.
+	 * @param port is the remote user's TCP server port.
+	 */
+	public User(String id, String username, InetAddress userIP, int port) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.userIP = userIP;
+		this.TCPserverPort = port;
 	}
 
 	public String getId() {
@@ -41,17 +62,6 @@ public class User {
 	
 	public int getTCPserverPort() {
 		return this.TCPserverPort;
-	}
-
-	/** TODO The following will be removed but keep it for now.
-	 * Log-in method
-	 * @param username is the username entered by the user in the ID text field of the login frame
-	 * @param password is the password entered by the user in the password field of the login frame
-	 * @return
-	 */
-	public boolean connect(String username, String password) {
-		// If connection successful, add the user to the ThreadManager's map.
-		return false;
 	}
     
 }

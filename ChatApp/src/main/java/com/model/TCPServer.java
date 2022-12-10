@@ -8,6 +8,12 @@ import java.net.Socket;
 import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.ThreadManager;
 
+/**
+ * 
+ * @author sarah
+ * @author Sandro
+ *
+ */
 public class TCPServer implements Runnable {
 	private static int TCPserverPort = 1026;
 	private int availablePort;
@@ -29,25 +35,26 @@ public class TCPServer implements Runnable {
 		}
 		while (true) {
 			try {
+				// Step 1: listening on TCPserverPort
 				System.out.println("TCP: Waiting for someone to connect");
 				Socket socket = this.TCPserver.accept();
 				DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
-				// giving redirection port
+				// Step 2: sending the redirection port
 				ServerSocket newServer = new ServerSocket(this.availablePort);
 				out.writeInt(this.availablePort++);
 				socket.close();
 				
-				// socket is now on the new server
+				// Step 3: socket is now on the new port
 				socket = newServer.accept();
 				System.out.println("TCP: Socket connected on new server");
 
-				// launch listening TCP server for this connection
 				User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(socket.getInetAddress());
 				Conversation conversation = new Conversation(socket);
+				
 				// TODO onChatRequested listener missing
 				ThreadManager.getInstance().addConversation(remoteUser, conversation);
-				new Thread(new ConversationServer(conversation, remoteUser), "Conversation with " + remoteUser.getUsername()).start();;
+				new Thread(new ConversationThread(conversation, remoteUser), "Conversation with " + remoteUser.getUsername()).start();;
 				
 				newServer.close();
 			} catch (IOException e) {

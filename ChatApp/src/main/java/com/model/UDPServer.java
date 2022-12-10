@@ -9,7 +9,12 @@ import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
 
-// TODO: change how this works: will only be used for login/logout, need to store ppl's TCP server port
+/**
+ * 
+ * @author sarah
+ * @author Sandro
+ *
+ */
 public class UDPServer implements Runnable {
 	private static final int UDPserverPort = 1025;
 	private DatagramSocket serverDatagram;
@@ -38,13 +43,13 @@ public class UDPServer implements Runnable {
 				// or "logout" for a logout
 				String contentReceived = new String(content);
 				if (received.getAddress() == OnlineUsersManager.getInstance().getLocalUser().getIP()) {
-					// This packet comes from us, we shouldn't process it
-					System.out.println("Packet from us, ignored.");
+					// This packet comes from the local user, it should be ignored.
+					System.out.println("Packet from self, ignored.");
 					continue;
 				}
 				if (contentReceived.contains("logout")) {
 					// TODO This packet is a broadcast to notify a logout
-					ListenerManager.getInstance().fireOnLogout(received.getAddress());
+					ListenerManager.getInstance().fireOnLogout(OnlineUsersManager.getInstance().getUserFromIP(received.getAddress()));
 				}
 				else {
 					// This packet is a broadcast to notify a login

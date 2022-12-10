@@ -1,17 +1,23 @@
 package main.java.com.model;
 import java.time.LocalDateTime;
 
+/**
+ * 
+ * @author sarah
+ * @author Sandro
+ *
+ */
 public class Message {
-	private String fromUserId;
-	private String toUserId;
+	private User fromUser;
+	private User toUser;
     private String content;
     private LocalDateTime date;
     private MessageType type;
     
-	public Message(String fromUserId, String toUserId, String content, MessageType type) {
+	public Message(User fromUser, User toUser, String content, MessageType type) {
 		super();
-		this.fromUserId = fromUserId;
-		this.toUserId = toUserId;
+		this.fromUser = fromUser;
+		this.toUser = toUser;
 		this.content = content;
 		this.date = LocalDateTime.now();
 		this.type = type;
@@ -25,15 +31,14 @@ public class Message {
 		return this.date;
 	}
 	
-	public String getFromUserId() {
-		return this.fromUserId;
+	public User getFromUser() {
+		return this.fromUser;
 	}
-	
-	
-	public String getToUserId() {
-		return this.toUserId;
+
+	public User getToUser() {
+		return this.toUser;
 	}
-	
+
 	public MessageType getType() {
 		return this.type;
 	}

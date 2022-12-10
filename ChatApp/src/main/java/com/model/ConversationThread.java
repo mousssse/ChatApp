@@ -4,12 +4,22 @@ import java.io.IOException;
 
 import main.java.com.controller.ListenerManager;
 
-//TODO rename class
-public class ConversationServer implements Runnable {
+/**
+ * 
+ * @author sarah
+ * @author Sandro
+ *
+ */
+public class ConversationThread implements Runnable {
 	private Conversation conversation;
 	private User remoteUser;
 	
-	public ConversationServer(Conversation conversation, User remoteUser) {
+	/**
+	 * 
+	 * @param conversation is the conversation instance
+	 * @param remoteUser is the remote user with which this conversation is occurring
+	 */
+	public ConversationThread(Conversation conversation, User remoteUser) {
 		this.conversation = conversation;
 		this.remoteUser = remoteUser;
 	}
@@ -25,7 +35,9 @@ public class ConversationServer implements Runnable {
 						break;
 					case CLOSING_CONVERSATION:
 						ListenerManager.getInstance().fireOnChatClosure(this.remoteUser);
-					default: break;
+						break;
+					default:
+						break;
 				}
 			} catch (ClassNotFoundException | IOException e) {
 				// TODO Auto-generated catch block

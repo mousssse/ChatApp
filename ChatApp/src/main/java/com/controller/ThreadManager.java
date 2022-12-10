@@ -1,7 +1,3 @@
-/**
- * The ThreadManager manages all active conversations for all online users.
- */
-
 package main.java.com.controller;
 
 import java.io.DataInputStream;
@@ -16,17 +12,18 @@ import javax.sql.rowset.serial.SerialBlob;
 
 import main.java.com.controller.listener.ChatListener;
 import main.java.com.controller.listener.LoginListener;
+import main.java.com.controller.listener.SelfLoginListener;
 import main.java.com.model.Conversation;
 import main.java.com.model.Message;
 import main.java.com.model.User;
 
 /**
- * 
+ * The ThreadManager manages all active conversations for all online users.
  * @author Sandro
  * @author sarah
  *
  */
-public class ThreadManager implements ChatListener, LoginListener {
+public class ThreadManager implements ChatListener, LoginListener, SelfLoginListener {
 	// The ThreadManager is a singleton
 	private static ThreadManager threadManager = null;
 	// Mapping of user's running conversations
@@ -45,11 +42,19 @@ public class ThreadManager implements ChatListener, LoginListener {
 		return threadManager;
 	}
 	
-	public void clearConversationsMap() {
+	/**
+	 * Called on self logout.
+	 */
+	private void clearConversationsMap() {
 		this.conversationsMap.values().forEach(conversation -> conversation.close());
 		this.conversationsMap.clear();
 	}
 	
+	/**
+	 * 
+	 * @param remoteUser is the remote user
+	 * @param conversation is the conversation with the remote user
+	 */
 	public void addConversation(User remoteUser, Conversation conversation) {
 		conversationsMap.put(remoteUser, conversation);
 	}
@@ -61,7 +66,7 @@ public class ThreadManager implements ChatListener, LoginListener {
 			System.out.println("Going to connect to the TCP listening server on port");
 			Socket socket = new Socket(user.getIP(), user.getTCPserverPort());
 			
-			// Connecting to the new TCP server
+			// Step 2: Connecting to the redirected TCP server
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			int newTcpPort = in.readInt();
 			socket.close();
@@ -75,22 +80,23 @@ public class ThreadManager implements ChatListener, LoginListener {
 
 	@Override
 	public void onChatClosure(User user) {
-		conversationsMap.remove(user).close();;
+		conversationsMap.remove(user).close();
 	}
 
 	@Override
-	public void onMessageToSend(User localUser, User remoteUser, String messageContent) {
+	public void onMessageToSend(Message message) {
 		try {
-			this.conversationsMap.get(remoteUser).write(localUser.getId(), remoteUser.getId(), messageContent);
+			this.conversationsMap.get(message.getToUser()).write(message.getFromUser(), message.getToUser(), message.getContent());
 		} catch (IOException | SQLException e) {
-			// message was not received
+			// Message was not received
+			e.printStackTrace();
 		}
 		
 	}
 
 	@Override
 	public void onMessageToReceive(Message message) {
-		// Nothing to do i think
+		// Nothing to do
 	}
 
 	@Override
@@ -99,8 +105,20 @@ public class ThreadManager implements ChatListener, LoginListener {
 	}
 
 	@Override
-	public void onLogout(InetAddress inetAddress) {
-		this.conversationsMap.remove(OnlineUsersManager.getInstance().getUserFromIP(inetAddress));
+	public void onLogout(User remoteUser) {
+		conversationsMap.remove(remoteUser).close();
+	}
+
+	@Override
+	public void onSelfLogin(String id, String username) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSelfLogout() {
+		// TODO if that's everything that needs to be done, let's just put the clearConvo's code here. Not used anywhere else
+		clearConversationsMap();
 	}
 	
 }

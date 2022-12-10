@@ -1,6 +1,5 @@
 package main.java.com.controller;
 
-import java.net.InetAddress;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,9 +18,9 @@ import main.java.com.model.Message;
 import main.java.com.model.User;
 
 /**
- * 
- * @author Sandro
+ * The DBManager manages the local user's database.
  * @author sarah
+ * @author Sandro
  *
  */
 public class DBManager implements SelfLoginListener, LoginListener, ChatListener {
@@ -228,8 +227,8 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
     }
 
 	@Override
-	public void onSelfLogin(String username) {
-		// TODO
+	public void onSelfLogin(String id, String username) {
+		// TODO be careful, sarah, I added id to the selfLogin
 		this.insertThisUser(username, "");
 	}
 
@@ -245,10 +244,10 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
 	}
 
 	@Override
-	public void onLogout(InetAddress inetAddress) {
-		// nothing to do
+	public void onLogout(User remoteUser) {
+		// TODO Auto-generated method stub
+		
 	}
-
 	@Override
 	public void onChatRequest(User remoteUser) {
 		// TODO Auto-generated method stub
@@ -262,7 +261,7 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
 	}
 
 	@Override
-	public void onMessageToSend(User localUser, User remoteUser, String messageContent) {
+	public void onMessageToSend(Message message) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -270,7 +269,7 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
 	@Override
 	public void onMessageToReceive(Message message) {
 		try {
-			this.insertMessage(new SerialBlob(message.getContent().getBytes()), message.getDate().format(null), message.getFromUserId(), message.getToUserId());
+			this.insertMessage(new SerialBlob(message.getContent().getBytes()), message.getDate().format(null), message.getFromUser().getId(), message.getToUser().getId());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

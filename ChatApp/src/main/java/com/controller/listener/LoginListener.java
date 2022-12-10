@@ -1,12 +1,16 @@
 package main.java.com.controller.listener;
 
-import java.net.InetAddress;
-
 import main.java.com.model.User;
 
+/**
+ * LoginListener is the listener associated to remote users' log-in and log-off events.
+ * @author Sandro
+ * @author sarah
+ *
+ */
 public interface LoginListener {
 	
-	void onLogin(User remoteUser);
-	void onLogout(InetAddress inetAddress);
+	public void onLogin(User remoteUser);
+	public void onLogout(User remoteUser);
 
 }
