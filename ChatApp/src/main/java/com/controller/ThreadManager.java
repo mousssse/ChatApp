@@ -108,7 +108,7 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	}
 
 	@Override
-	public void onSelfLogin(String username) {
+	public void onSelfLogin(String username, String password) {
 		// TODO Auto-generated method stub
 		
 	}

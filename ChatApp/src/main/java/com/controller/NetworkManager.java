@@ -49,8 +49,7 @@ public class NetworkManager implements SelfLoginListener {
 	}
 	
 	@Override
-	public void onSelfLogin(String username) {
-		// TODO pay attention, id was added to selfLogin. Might be useless here but just notice that you can't just remove it.
+	public void onSelfLogin(String username, String password) {
 		// TODO broadcast UDP with following message
 		// Login message format: "login username port UUID"
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();

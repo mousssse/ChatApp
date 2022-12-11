@@ -128,8 +128,8 @@ public class ListenerManager {
 	 * @param id is the local user's id
 	 * @param username is the local user's username
 	 */
-	public void fireOnSelfLogin(String username) {
-		selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLogin(username));
+	public void fireOnSelfLogin(String username, String password) {
+		selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLogin(username, password));
 	}
 	
 	public void fireOnSelfLogout() {
