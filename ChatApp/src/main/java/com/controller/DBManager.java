@@ -1,6 +1,5 @@
 package main.java.com.controller;
 
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,8 +9,6 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-
-import javax.sql.rowset.serial.SerialBlob;
 
 import main.java.com.controller.listener.ChatListener;
 import main.java.com.controller.listener.LoginListener;
@@ -57,7 +54,7 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
 	 */
 	private void initTables () {
         String sql = "CREATE TABLE IF NOT EXISTS messages (\n"
-                + " content BLOB NOT NULL, \n"
+                + " content TEXT NOT NULL, \n"
                 + " time TEXT NOT NULL, \n"
                 + " fromId TEXT NOT NULL, \n"
                 + " toId TEXT NOT NULL, \n"
@@ -109,18 +106,32 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
     }
     
     /**
-     * This will only run when the user creates its account
+     * The database will only be updated when the user first logs in
      * 
      * @param username The username of the local user
      * @param hashedPassword A hash of the local user's password
      */
     public void insertThisUser(String username, String hashedPassword) {
+    	String sqlCheckExisting = "SELECT * FROM users WHERE password IS NOT NULL;";
+    	
+    	try {
+    		Statement stmt = conn.createStatement();
+    		ResultSet rs = stmt.executeQuery(sqlCheckExisting);
+            if (rs.isBeforeFirst()) {
+    			// local user already exists in the database, no need to insert them
+            	return;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    	
+    	// This is the first time the user logs in
         String sql = "INSERT OR IGNORE INTO users(id, username, password) VALUES(?, ?, ?)";
         String id = UUID.randomUUID().toString();
 
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, id.toString());
+            pstmt.setString(1, id);
             pstmt.setString(2, username);
             pstmt.setString(3, hashedPassword);
             pstmt.executeUpdate();
@@ -158,12 +169,12 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
      * @param fromId The user id of the sender
      * @param toId The user id of the receiver
      */
-    public void insertMessage(Blob content, String time, String fromId, String toId) {
-    	String sql = "INSERT INTO messages(content, time, fromId, toId) VALUES(?, ?, ?, ?)";
-
+    public void insertMessage(String content, String time, String fromId, String toId) {
+    	String sql = "INSERT INTO messages(content, time, fromId, toId) VALUES(?, ?, ?, ?);";
+    	
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setBlob(1, content);
+            pstmt.setString(1, content);
             pstmt.setString(2, time);
             pstmt.setString(3, fromId);
             pstmt.setString(4, toId);
@@ -171,6 +182,22 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+    
+    /**
+     * Gets the messages of a conversation with a remote user
+     * 
+     * @param remoteUserId The user id with whom we want to check our messages
+     * @return A ResultSet of the messages database rows that correspond
+     * @throws SQLException
+     */
+    public ResultSet getConversationHistory(String remoteUserId) throws SQLException {
+    	String sql = "SELECT * FROM messages WHERE toId = ? OR fromId = ? ORDER BY time ASC;";
+    	
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+	    pstmt.setString(1, remoteUserId);
+	    pstmt.setString(2, remoteUserId);
+	    return pstmt.executeQuery();
     }
     
     /**
@@ -186,7 +213,11 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
-            return rs.getString("username");
+            String username = rs.getString("username");
+            if (rs.next()) {
+            	// throw exception: two people have the same id!!! impossible bc primary key
+            }
+            return username;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -206,7 +237,11 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
-            return rs.getString("username");
+            String id = rs.getString("id");
+            if (rs.next()) {
+            	// throw exception: two people have the same username!! impossible bc username UNIQUE
+            }
+            return id;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -229,8 +264,8 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
     }
 
 	@Override
-	public void onSelfLogin(String username) {
-		this.insertThisUser(username, "");
+	public void onSelfLogin(String username, String password) {
+		this.insertThisUser(username, password);
 	}
 
 	@Override
@@ -263,28 +298,35 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
 
 	@Override
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
-		try {
-			this.insertMessage(new SerialBlob(messageContent.getBytes()), date.toString(), localUser.getId(), remoteUser.getId());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.insertMessage(messageContent, date.toString(), localUser.getId(), remoteUser.getId());
 	}
 
 	@Override
 	public void onMessageToReceive(Message message) {
-		try {
-			this.insertMessage(new SerialBlob(message.getContent().getBytes()), message.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), message.getFromUser().getId(), message.getToUser().getId());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.insertMessage(message.getContent(), message.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), message.getFromUser().getId(), message.getToUser().getId());
 	}
 	
     // Used for tests
 	public static void main(String[] args) {
-		DBManager.getInstance().insertUser("sarah", "");
-		System.out.println(DBManager.getInstance().getUsernameFromId("1"));
-		System.out.println("fin");
+		DBManager manager = DBManager.getInstance();
+		System.out.println(manager.getIdFromUsername("sarah"));
+		manager.insertThisUser("sarah", "password");
+		manager.insertUser("sandro", "thisisanid");
+		System.out.println(manager.getUsernameFromId("thisisanid"));
+		System.out.println(manager.getIdFromUsername("sandro"));
+		//String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		//manager.insertMessage("hello sandro", now, manager.getIdFromUsername("sarah"), manager.getIdFromUsername("sandro"));
+		//manager.insertMessage("how are you?", now, manager.getIdFromUsername("sarah"), manager.getIdFromUsername("sandro"));
+		//manager.insertMessage("hi! fine, and you?", now, manager.getIdFromUsername("sandro"), manager.getIdFromUsername("sarah"));
+		try {
+			ResultSet history = manager.getConversationHistory("thisisanid");
+			while(history.next()) {
+				String fromUsername = manager.getUsernameFromId(history.getString("fromId"));
+				System.out.println("from " + fromUsername + ": " + history.getString("content"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
