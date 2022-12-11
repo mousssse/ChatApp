@@ -53,8 +53,8 @@ public class UDPServer implements Runnable {
 				else {
 					// This packet is a broadcast to notify a login or the answer to a login
 					String[] parts = contentReceived.split(" ");
-					String flag = parts[0]; // 004
-					String remoteUsername = parts[1]; // 034556
+					String flag = parts[0];
+					String remoteUsername = parts[1];
 					int remoteTCPServerPort = Integer.parseInt(parts[2]);
 					String remoteId = parts[3];
 					User remoteUser = new User(remoteId, remoteUsername, received.getAddress(), remoteTCPServerPort);
