@@ -44,7 +44,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
 	private void connect() {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			this.conn =  DriverManager.getConnection(this.url);			
+			this.conn = DriverManager.getConnection(this.url);			
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -214,11 +214,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
-            String username = rs.getString("username");
-            if (rs.next()) {
-            	// throw exception: two people have the same id!!! impossible bc primary key
-            }
-            return username;
+            return rs.getString("username");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -238,11 +234,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
-            String id = rs.getString("id");
-            if (rs.next()) {
-            	// throw exception: two people have the same username!! impossible bc username UNIQUE
-            }
-            return id;
+            return rs.getString("id");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

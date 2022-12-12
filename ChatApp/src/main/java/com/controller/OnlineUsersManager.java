@@ -54,6 +54,7 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	 */
 	@Override
 	public void onLogin(User remoteUser) {
+		System.out.println("adding : " + remoteUser.getUsername());
 		this.accountsMap.put(remoteUser.getIP(), remoteUser);
 	}
 
