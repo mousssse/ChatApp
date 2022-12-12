@@ -1,8 +1,16 @@
 package main.java.com.controller;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 
 import main.java.com.controller.listener.SelfLoginListener;
 import main.java.com.model.TCPServer;
@@ -18,13 +26,20 @@ import main.java.com.model.User;
 public class NetworkManager implements SelfLoginListener {
 	
 	private List<Socket> distantSockets;
+	private List<InetAddress> distantIPs;
 	private UDPServer UDPserver;
 	private TCPServer TCPserver;
+	
 	
 	private static NetworkManager networkManager = null;
 	
 	private NetworkManager() {
 		this.distantSockets = new ArrayList<>();
+		try {
+			this.distantIPs = this.listAllBroadcastAddresses();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
 		this.UDPserver = new UDPServer();
 		this.TCPserver = new TCPServer();
 		(new Thread(this.UDPserver, "UDP Server")).start();
@@ -41,6 +56,46 @@ public class NetworkManager implements SelfLoginListener {
 	}
 	
 	/**
+	 * @return the distant IPs
+	 * @throws SocketException
+	 */
+	private List<InetAddress> listAllBroadcastAddresses() throws SocketException {
+	    List<InetAddress> broadcastList = new ArrayList<>();
+	    Enumeration<NetworkInterface> interfaces 
+	      = NetworkInterface.getNetworkInterfaces();
+	    while (interfaces.hasMoreElements()) {
+	        NetworkInterface networkInterface = interfaces.nextElement();
+
+	        if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+	            continue;
+	        }
+
+	        networkInterface.getInterfaceAddresses().stream() 
+	          .map(a -> a.getBroadcast())
+	          .filter(Objects::nonNull)
+	          .forEach(broadcastList::add);
+	    }
+	    return broadcastList;
+	}
+	
+	/**
+	 * 
+	 * @param broadcastMessage is the message to broadcast
+	 * @param address is the IP address that will receive the broadcast
+	 * @throws IOException
+	 */
+    public void broadcast(String broadcastMessage, InetAddress address) throws IOException {
+        DatagramSocket socket = new DatagramSocket();
+        socket.setBroadcast(true);
+
+        byte[] buffer = broadcastMessage.getBytes();
+
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, UDPServer.getUDPserverPort());
+        socket.send(packet);
+        socket.close();
+    }
+	
+	/**
 	 * 
 	 * @param socket is the socket to be added
 	 */
@@ -50,17 +105,31 @@ public class NetworkManager implements SelfLoginListener {
 	
 	@Override
 	public void onSelfLoginNetwork() {
-		// TODO broadcast UDP with following message
 		// Login message format: "login username port UUID"
+		// Broadcasting online status
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();
 		String loginMessage = "login " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " " + localUser.getId();
+		for (InetAddress address : distantIPs) {
+			try {
+				broadcast(loginMessage, address);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override
 	public void onSelfLogout() {
-		// TODO broadcast udp to tell ppl we've logged out
 		// Logout message format: "logout"
+		// Broadcasting offline status
 		String logoutMessage = "logout";
+		for (InetAddress address : distantIPs) {
+			try {
+				broadcast(logoutMessage, address);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override

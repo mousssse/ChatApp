@@ -23,7 +23,7 @@ import main.java.com.model.User;
  *
  */
 public class DBManager implements DBListener, LoginListener, ChatListener {
-	private static final DBManager DBmanager = new DBManager();
+	private static DBManager dbManager = null;
 	private String url = "jdbc:sqlite:chatApp.db";
 	private Connection conn;
 
@@ -34,7 +34,8 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
 	}
 	
 	public static DBManager getInstance() {
-		return DBmanager;
+		if (dbManager == null) dbManager = new DBManager();
+		return dbManager;
 	}
 	
 	/**
