@@ -31,6 +31,7 @@ public class ListenerManager {
 	private ListenerManager() {
 		this.chatListeners = new ArrayList<>();
 		this.loginListeners = new ArrayList<>();
+		this.selfLoginListeners = new ArrayList<>();
 		this.usernameListeners = new ArrayList<>();
 		this.dbListeners = new ArrayList<>();
 	}
