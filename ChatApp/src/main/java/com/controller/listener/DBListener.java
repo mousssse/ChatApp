@@ -1,7 +1,7 @@
 package main.java.com.controller.listener;
 
 /**
- * SelfLoginListener is the listener associated to the local user's log-in and log-off events.
+ * DBListener is the listener associated to the local user's database-related events.
  * @author Sandro
  * @author sarah
  *

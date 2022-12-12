@@ -22,9 +22,8 @@ import main.java.com.model.User;
  *
  */
 public class ThreadManager implements ChatListener, LoginListener, SelfLoginListener {
-	// The ThreadManager is a singleton
+
 	private static ThreadManager threadManager = null;
-	// Mapping of user's running conversations
 	private Map<User, Conversation> conversationsMap;
 	
 	private ThreadManager() {

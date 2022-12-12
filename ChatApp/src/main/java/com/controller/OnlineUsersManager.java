@@ -17,14 +17,12 @@ import main.java.com.model.User;
  */
 public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	
-	// The OnlineUsersManager is a singleton
 	private static OnlineUsersManager onlineUsersManager = null;
 	private User localUser;
-	// Active users mapping
 	private Map<InetAddress, User> accountsMap;
 	
 	private OnlineUsersManager() {
-		accountsMap = new HashMap<InetAddress, User>();
+		this.accountsMap = new HashMap<InetAddress, User>();
 	}
 	
 	/**

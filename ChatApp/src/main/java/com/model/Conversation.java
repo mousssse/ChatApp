@@ -23,10 +23,25 @@ public class Conversation {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return the read Message from the socket's ObjectInputStream
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public Message read() throws ClassNotFoundException, IOException {
 		return (Message) in.readObject();
 	}
 	
+	/**
+	 * 
+	 * @param localUser is the local user
+	 * @param remoteUser is the remote user
+	 * @param messageContent is the message content
+	 * @param date is the message date
+	 * @throws IOException
+	 * @throws SQLException
+	 */
 	public void write(User localUser, User remoteUser, String messageContent, LocalDateTime date) throws IOException, SQLException {
 		Message message = new Message(localUser, remoteUser, messageContent, date, MessageType.MESSAGE);
 		out.writeObject(message);

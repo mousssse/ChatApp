@@ -56,13 +56,13 @@ public class NetworkManager implements SelfLoginListener {
 	}
 	
 	/**
+	 * Method used to obtain all IPs on the local network prior to broadcasting
 	 * @return the distant IPs
 	 * @throws SocketException
 	 */
 	private List<InetAddress> listAllBroadcastAddresses() throws SocketException {
 	    List<InetAddress> broadcastList = new ArrayList<>();
-	    Enumeration<NetworkInterface> interfaces 
-	      = NetworkInterface.getNetworkInterfaces();
+	    Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
 	    while (interfaces.hasMoreElements()) {
 	        NetworkInterface networkInterface = interfaces.nextElement();
 
@@ -79,7 +79,7 @@ public class NetworkManager implements SelfLoginListener {
 	}
 	
 	/**
-	 * 
+	 * Method used to broadcast
 	 * @param broadcastMessage is the message to broadcast
 	 * @param address is the IP address that will receive the broadcast
 	 * @throws IOException
@@ -87,9 +87,7 @@ public class NetworkManager implements SelfLoginListener {
     public void broadcast(String broadcastMessage, InetAddress address) throws IOException {
         DatagramSocket socket = new DatagramSocket();
         socket.setBroadcast(true);
-
         byte[] buffer = broadcastMessage.getBytes();
-
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, UDPServer.getUDPserverPort());
         socket.send(packet);
         socket.close();
