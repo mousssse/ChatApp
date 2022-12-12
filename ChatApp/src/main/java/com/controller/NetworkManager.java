@@ -49,7 +49,7 @@ public class NetworkManager implements SelfLoginListener {
 	}
 	
 	@Override
-	public void onSelfLogin(String username, String password) {
+	public void onSelfLoginNetwork() {
 		// TODO broadcast UDP with following message
 		// Login message format: "login username port UUID"
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();
@@ -61,6 +61,10 @@ public class NetworkManager implements SelfLoginListener {
 		// TODO broadcast udp to tell ppl we've logged out
 		// Logout message format: "logout"
 		String logoutMessage = "logout";
+	}
+	
+	@Override
+	public void onSelfLoginOnlineUsers(String username) {
 	}
 	
 }

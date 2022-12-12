@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import main.java.com.controller.listener.ChatListener;
+import main.java.com.controller.listener.DBListener;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.SelfLoginListener;
 import main.java.com.controller.listener.UsernameListener;
@@ -24,12 +25,14 @@ public class ListenerManager {
 	private List<ChatListener> chatListeners;
 	private List<LoginListener> loginListeners;
 	private List<SelfLoginListener> selfLoginListeners;
+	private List<DBListener> dbListeners;
 	private List<UsernameListener> usernameListeners;
 	
 	private ListenerManager() {
-		chatListeners = new ArrayList<>();
-		loginListeners = new ArrayList<>();
-		usernameListeners = new ArrayList<>();
+		this.chatListeners = new ArrayList<>();
+		this.loginListeners = new ArrayList<>();
+		this.usernameListeners = new ArrayList<>();
+		this.dbListeners = new ArrayList<>();
 	}
 	
 	/**
@@ -129,7 +132,12 @@ public class ListenerManager {
 	 * @param username is the local user's username
 	 */
 	public void fireOnSelfLogin(String username, String password) {
-		selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLogin(username, password));
+		dbListeners.forEach(dbListener -> dbListener.onSelfLogin(username, password));
+	}
+	
+	public void fireOnSelfLoginNext(String username) {
+		selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLoginOnlineUsers(username));
+		selfLoginListeners.forEach(SelfLoginListener::onSelfLoginNetwork);
 	}
 	
 	public void fireOnSelfLogout() {

@@ -11,8 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import main.java.com.controller.listener.ChatListener;
+import main.java.com.controller.listener.DBListener;
 import main.java.com.controller.listener.LoginListener;
-import main.java.com.controller.listener.SelfLoginListener;
 import main.java.com.model.Message;
 import main.java.com.model.User;
 
@@ -22,7 +22,7 @@ import main.java.com.model.User;
  * @author Sandro
  *
  */
-public class DBManager implements SelfLoginListener, LoginListener, ChatListener {
+public class DBManager implements DBListener, LoginListener, ChatListener {
 	private static final DBManager DBmanager = new DBManager();
 	private String url = "jdbc:sqlite:chatApp.db";
 	private Connection conn;
@@ -266,11 +266,7 @@ public class DBManager implements SelfLoginListener, LoginListener, ChatListener
 	@Override
 	public void onSelfLogin(String username, String password) {
 		this.insertThisUser(username, password);
-	}
-
-	@Override
-	public void onSelfLogout() {
-		// TODO Auto-generated method stub
+		ListenerManager.getInstance().fireOnSelfLoginNext(username);
 	}
 
 	@Override

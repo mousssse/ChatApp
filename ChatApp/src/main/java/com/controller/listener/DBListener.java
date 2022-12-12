@@ -6,9 +6,7 @@ package main.java.com.controller.listener;
  * @author sarah
  *
  */
-public interface SelfLoginListener {
+public interface DBListener {
 	
-	public void onSelfLoginOnlineUsers(String username);
-	public void onSelfLoginNetwork();
-	public void onSelfLogout();
+	public void onSelfLogin(String username, String password);
 }

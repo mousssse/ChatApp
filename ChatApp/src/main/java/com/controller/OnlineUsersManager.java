@@ -69,18 +69,21 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	 * Creates the local user
 	 */
 	@Override
-	public void onSelfLogin(String username, String password) {
+	public void onSelfLoginOnlineUsers(String username) {
 		try {
 			this.localUser = new User(DBManager.getInstance().getIdFromUsername(username), username, InetAddress.getLocalHost());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public void onSelfLoginNetwork() {
+	}
 
 	@Override
 	public void onSelfLogout() {
-		// TODO Auto-generated method stub
-		
+		this.accountsMap.clear();
 	}
 	
 }
