@@ -15,7 +15,7 @@ import main.java.com.controller.OnlineUsersManager;
  *
  */
 public class UDPServer implements Runnable {
-	private static final int UDPserverPort = 1025;
+	private static final int UDPserverPort = 1045;
 	private DatagramSocket serverDatagram;
 	
 	public static int getUDPserverPort() {
@@ -41,7 +41,8 @@ public class UDPServer implements Runnable {
 				// "flag username port UUID" with flag being "login"/"ack"
 				// or just "flag" with flag being "logout"
 				String contentReceived = new String(content);
-				if (received.getAddress() == OnlineUsersManager.getInstance().getLocalUser().getIP()) {
+				System.out.println(contentReceived);
+				if (received.getAddress().getHostAddress().equals(OnlineUsersManager.getInstance().getLocalUser().getIP().getHostAddress())) {
 					// This packet comes from the local user, it should be ignored.
 					System.out.println("Packet from self, ignored.");
 					continue;
