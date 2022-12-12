@@ -40,7 +40,7 @@ public class UDPServer implements Runnable {
 				// The string received will have the format: 
 				// "flag username port UUID" with flag being "login"/"ack"
 				// or just "flag" with flag being "logout"
-				String contentReceived = new String(content);
+				String contentReceived = new String(content).trim();
 				System.out.println(contentReceived);
 				if (received.getAddress().getHostAddress().equals(OnlineUsersManager.getInstance().getLocalUser().getIP().getHostAddress())) {
 					// This packet comes from the local user, it should be ignored.
