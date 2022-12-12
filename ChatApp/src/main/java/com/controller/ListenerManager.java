@@ -49,7 +49,7 @@ public class ListenerManager {
 	 * @param chatListener is the chatListener instance
 	 */
 	public void addChatListener(ChatListener chatListener) {
-		chatListeners.add(chatListener);
+		this.chatListeners.add(chatListener);
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public class ListenerManager {
 	 * @param loginListener is the loginListener instance
 	 */
 	public void addLoginListener(LoginListener loginListener) {
-		loginListeners.add(loginListener);
+		this.loginListeners.add(loginListener);
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class ListenerManager {
 	 * @param usernameListener is the usernameListener listener
 	 */
 	public void addUsernameListener(UsernameListener usernameListener) {
-		usernameListeners.add(usernameListener);
+		this.usernameListeners.add(usernameListener);
 	}
 	
 	/**
@@ -73,7 +73,15 @@ public class ListenerManager {
 	 * @param selfLoginListener is the selfLoginListener listener
 	 */
 	public void addSelfLoginListener(SelfLoginListener selfLoginListener) {
-		selfLoginListeners.add(selfLoginListener);
+		this.selfLoginListeners.add(selfLoginListener);
+	}
+	
+	/**
+	 * 
+	 * @param dbListener is the DBListener listener
+	 */
+	public void addDBListener(DBListener dbListener) {
+		this.dbListeners.add(dbListener);
 	}
 	
 	/**
@@ -81,7 +89,7 @@ public class ListenerManager {
 	 * @param remoteUser is the remote user
 	 */
 	public void fireOnChatRequest(User remoteUser) {
-		chatListeners.forEach(chatListener -> chatListener.onChatRequest(remoteUser));
+		this.chatListeners.forEach(chatListener -> chatListener.onChatRequest(remoteUser));
 	}
 	
 	/**
@@ -89,7 +97,7 @@ public class ListenerManager {
 	 * @param remoteUser is the remote user
 	 */
 	public void fireOnChatClosure(User remoteUser) {
-		chatListeners.forEach(chatListener -> chatListener.onChatClosure(remoteUser));
+		this.chatListeners.forEach(chatListener -> chatListener.onChatClosure(remoteUser));
 	}
 	
 	/**
@@ -99,7 +107,7 @@ public class ListenerManager {
 	 * @param date The time at which the message was sent
 	 */
 	public void fireOnMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
-		chatListeners.forEach(chatListener -> chatListener.onMessageToSend(localUser, remoteUser, messageContent, date));
+		this.chatListeners.forEach(chatListener -> chatListener.onMessageToSend(localUser, remoteUser, messageContent, date));
 	}
 	
 	/**
@@ -107,7 +115,7 @@ public class ListenerManager {
 	 * @param message is the message to receive
 	 */
 	public void fireOnMessageToReceive(Message message) {
-		chatListeners.forEach(chatListener -> chatListener.onMessageToReceive(message));
+		this.chatListeners.forEach(chatListener -> chatListener.onMessageToReceive(message));
 	}
 	
 	/**
@@ -115,7 +123,7 @@ public class ListenerManager {
 	 * @param remoteUser is the remote user
 	 */
 	public void fireOnLogin(User remoteUser) {
-		loginListeners.forEach(loginListener -> loginListener.onLogin(remoteUser));
+		this.loginListeners.forEach(loginListener -> loginListener.onLogin(remoteUser));
 	}
 	
 	/**
@@ -123,7 +131,7 @@ public class ListenerManager {
 	 * @param remoteUser is the remote user
 	 */
 	public void fireOnLogout(User remoteUser) {
-		loginListeners.forEach(loginListener -> loginListener.onLogout(remoteUser));
+		this.loginListeners.forEach(loginListener -> loginListener.onLogout(remoteUser));
 	}
 	
 	/**
@@ -132,16 +140,16 @@ public class ListenerManager {
 	 * @param username is the local user's username
 	 */
 	public void fireOnSelfLogin(String username, String password) {
-		dbListeners.forEach(dbListener -> dbListener.onSelfLogin(username, password));
+		this.dbListeners.forEach(dbListener -> dbListener.onSelfLogin(username, password));
 	}
 	
 	public void fireOnSelfLoginNext(String username) {
-		selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLoginOnlineUsers(username));
-		selfLoginListeners.forEach(SelfLoginListener::onSelfLoginNetwork);
+		this.selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLoginOnlineUsers(username));
+		this.selfLoginListeners.forEach(SelfLoginListener::onSelfLoginNetwork);
 	}
 	
 	public void fireOnSelfLogout() {
-		selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLogout());
+		this.selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLogout());
 	}
 	
 	/**
@@ -150,7 +158,7 @@ public class ListenerManager {
 	 * @param newUsername is remote user's new username
 	 */
 	public void fireOnUsernameModification(User user, String newUsername) {
-		usernameListeners.forEach(usernameListener -> usernameListener.onUsernameModification(user, newUsername));
+		this.usernameListeners.forEach(usernameListener -> usernameListener.onUsernameModification(user, newUsername));
 	}
 	
 	/**
@@ -158,7 +166,7 @@ public class ListenerManager {
 	 * @param newUsername is the local user's new username
 	 */
 	public void fireOnSelfUsernameModification(String newUsername) {
-		usernameListeners.forEach(usernameListener -> usernameListener.onSelfUsernameModification(newUsername));
+		this.usernameListeners.forEach(usernameListener -> usernameListener.onSelfUsernameModification(newUsername));
 	}
 
 }
