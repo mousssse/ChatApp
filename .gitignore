@@ -17,6 +17,9 @@ tomcat
 # Maven 
 target/
 
+# SQLLite database
+chatApp.db
+
 # IntelliJ project files 
 *.iml
 *.iws
