@@ -1,5 +1,6 @@
 package main.java.com.model;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 
 
@@ -9,8 +10,10 @@ import java.net.InetAddress;
  * @author Sandro
  *
  */
-public class User {
-    private String id;
+public class User implements Serializable {
+	
+	private static final long serialVersionUID = 3935125359654183855L;
+	private String id;
     private String username;
     private InetAddress userIP;
     private int TCPserverPort;

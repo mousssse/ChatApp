@@ -12,6 +12,7 @@ import main.java.com.controller.listener.ChatListener;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.SelfLoginListener;
 import main.java.com.model.Conversation;
+import main.java.com.model.ConversationThread;
 import main.java.com.model.Message;
 import main.java.com.model.User;
 
@@ -69,7 +70,9 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 			socket.close();
 			socket = new Socket(user.getIP(), newTcpPort);
 			User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(socket.getInetAddress());
-			this.addConversation(remoteUser, new Conversation(socket));
+			Conversation conversation = new Conversation(socket);
+			this.addConversation(remoteUser, conversation);
+			new Thread(new ConversationThread(conversation, remoteUser), "Conversation with " + remoteUser.getUsername()).start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

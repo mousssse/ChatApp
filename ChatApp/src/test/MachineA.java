@@ -1,10 +1,15 @@
 package test;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+
 import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.NetworkManager;
 import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.ThreadManager;
+import main.java.com.model.User;
 
 public class MachineA {
 	
@@ -28,6 +33,15 @@ public class MachineA {
 		listenerManager.addLoginListener(threadManager);
 		listenerManager.addChatListener(threadManager);
 		
-		ListenerManager.getInstance().fireOnSelfLogin("mousse", "pwd");
+		listenerManager.fireOnSelfLogin("mousse", "pwd");
+		try {
+			Thread.sleep(1000);
+			User sandro = onlineUsersManager.getUserFromIP(InetAddress.getByName("10.32.46.16"));
+			listenerManager.fireOnChatRequest(sandro);
+			listenerManager.fireOnMessageToSend(onlineUsersManager.getLocalUser(), sandro, "heyo", LocalDateTime.now());
+		} catch (UnknownHostException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

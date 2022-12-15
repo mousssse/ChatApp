@@ -1,4 +1,5 @@
 package main.java.com.model;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -7,7 +8,9 @@ import java.time.LocalDateTime;
  * @author Sandro
  *
  */
-public class Message {
+public class Message implements Serializable {
+	
+	private static final long serialVersionUID = -2950854009692914838L;
 	private User fromUser;
 	private User toUser;
     private String content;

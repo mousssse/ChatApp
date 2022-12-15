@@ -10,17 +10,9 @@ import java.time.LocalDateTime;
 public class Conversation {
 	
 	private Socket conversationSocket;
-	private ObjectInputStream in;
-	private ObjectOutputStream out;
 	
 	public Conversation(Socket conversationSocket) {
 		this.conversationSocket = conversationSocket;
-		try {
-			this.in = new ObjectInputStream(this.conversationSocket.getInputStream());
-			this.out = new ObjectOutputStream(this.conversationSocket.getOutputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/**
@@ -30,7 +22,10 @@ public class Conversation {
 	 * @throws IOException
 	 */
 	public Message read() throws ClassNotFoundException, IOException {
-		return (Message) in.readObject();
+		ObjectInputStream in = new ObjectInputStream(this.conversationSocket.getInputStream());
+		Message message = (Message) in.readObject();
+		in.close();
+		return message;
 	}
 	
 	/**
@@ -44,13 +39,13 @@ public class Conversation {
 	 */
 	public void write(User localUser, User remoteUser, String messageContent, LocalDateTime date) throws IOException, SQLException {
 		Message message = new Message(localUser, remoteUser, messageContent, date, MessageType.MESSAGE);
+		ObjectOutputStream out = new ObjectOutputStream(this.conversationSocket.getOutputStream());
 		out.writeObject(message);
+		out.close();
 	}
 	
 	public void close() {
 		try {
-			this.in.close();
-			this.out.close();
 			this.conversationSocket.close();
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -54,7 +54,7 @@ public class TCPServer implements Runnable {
 				
 				// TODO onChatRequested listener missing
 				ThreadManager.getInstance().addConversation(remoteUser, conversation);
-				new Thread(new ConversationThread(conversation, remoteUser), "Conversation with " + remoteUser.getUsername()).start();;
+				new Thread(new ConversationThread(conversation, remoteUser), "Conversation with " + remoteUser.getUsername()).start();
 				
 				newServer.close();
 			} catch (IOException e) {
