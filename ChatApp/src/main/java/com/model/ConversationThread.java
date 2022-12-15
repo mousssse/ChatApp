@@ -39,9 +39,10 @@ public class ConversationThread implements Runnable {
 					default:
 						break;
 				}
-			} catch (ClassNotFoundException | IOException e) {
-				// TODO Auto-generated catch block
-				// user has disconnected?
+			} catch (IOException e) {
+				// chat closed
+				return;
+			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
