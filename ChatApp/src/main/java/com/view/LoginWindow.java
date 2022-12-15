@@ -25,7 +25,6 @@ public class LoginWindow extends JFrame {
 	 * TODO Remember to ask yourself: the hell is serialization ?
 	 */
 	private static final long serialVersionUID = 6781528607158272898L;
-	private final User user = null;
 	JLabel loginLabel = new JLabel("ID: ");
 	JTextField loginField = new JTextField();
 	JLabel passwordLabel = new JLabel("Password: ");
@@ -34,7 +33,6 @@ public class LoginWindow extends JFrame {
 
 	public LoginWindow() throws UnknownHostException {
 		super("Login");
-		//this.user = new User();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel panel = new JPanel();
