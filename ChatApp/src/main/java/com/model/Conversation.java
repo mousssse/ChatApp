@@ -24,7 +24,6 @@ public class Conversation {
 	public Message read() throws ClassNotFoundException, IOException {
 		ObjectInputStream in = new ObjectInputStream(this.conversationSocket.getInputStream());
 		Message message = (Message) in.readObject();
-		in.close();
 		return message;
 	}
 	
@@ -41,7 +40,6 @@ public class Conversation {
 		Message message = new Message(localUser, remoteUser, messageContent, date, MessageType.MESSAGE);
 		ObjectOutputStream out = new ObjectOutputStream(this.conversationSocket.getOutputStream());
 		out.writeObject(message);
-		out.close();
 	}
 	
 	public void close() {
