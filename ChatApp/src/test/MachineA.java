@@ -38,7 +38,8 @@ public class MachineA {
 			Thread.sleep(1000);
 			User sandro = onlineUsersManager.getUserFromIP(InetAddress.getByName("10.32.46.16"));
 			listenerManager.fireOnChatRequest(sandro);
-			listenerManager.fireOnMessageToSend(onlineUsersManager.getLocalUser(), sandro, "heyo", LocalDateTime.now());
+			//listenerManager.fireOnMessageToSend(onlineUsersManager.getLocalUser(), sandro, "heyo", LocalDateTime.now());
+			listenerManager.fireOnChatClosure(sandro);
 		} catch (UnknownHostException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

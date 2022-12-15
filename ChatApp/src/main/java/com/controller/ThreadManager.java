@@ -41,14 +41,6 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	}
 	
 	/**
-	 * Called on self logout.
-	 */
-	private void clearConversationsMap() {
-		this.conversationsMap.values().forEach(conversation -> conversation.close());
-		this.conversationsMap.clear();
-	}
-	
-	/**
 	 * 
 	 * @param remoteUser is the remote user
 	 * @param conversation is the conversation with the remote user
@@ -121,8 +113,8 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 
 	@Override
 	public void onSelfLogout() {
-		// TODO if that's everything that needs to be done, let's just put the clearConvo's code here. Not used anywhere else
-		clearConversationsMap();
+		this.conversationsMap.values().forEach(conversation -> conversation.close());
+		this.conversationsMap.clear();
 	}
 	
 }

@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import main.java.com.controller.listener.ChatListener;
@@ -254,6 +256,21 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
         pstmt.setString(1, id);
         ResultSet rs = pstmt.executeQuery();
         return rs.getString("password");
+    }
+    
+    public List<String> getAllUsernames() {
+    	String sql = "SELECT username FROM users WHERE password IS NULL;";
+    	List<String> usernamesList = new ArrayList<String>();
+    	try {
+    		Statement stmt = conn.createStatement();
+    		ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+    			usernamesList.add(rs.getString("username"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    	return usernamesList;
     }
 
 	@Override
