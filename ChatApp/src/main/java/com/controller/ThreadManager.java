@@ -105,14 +105,17 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 
 	@Override
 	public void onSelfLoginOnlineUsers(String username) {
+		// Nothing to do
 	}
 	
 	@Override
 	public void onSelfLoginNetwork() {
+		// Nothing to do
 	}
 
 	@Override
 	public void onSelfLogout() {
+		// Close all conversations
 		this.conversationsMap.values().forEach(conversation -> conversation.close());
 		this.conversationsMap.clear();
 	}

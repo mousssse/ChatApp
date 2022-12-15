@@ -11,7 +11,7 @@ import java.net.InetAddress;
  *
  */
 public class User implements Serializable {
-	
+
 	private static final long serialVersionUID = 3935125359654183855L;
 	private String id;
     private String username;
@@ -45,6 +45,14 @@ public class User implements Serializable {
 		this.username = username;
 		this.userIP = userIP;
 		this.TCPserverPort = port;
+	}
+	
+	/**
+	 * User as displayed in the chat frame
+	 */
+	@Override
+	public String toString() {
+		return this.username;
 	}
 
 	public String getId() {

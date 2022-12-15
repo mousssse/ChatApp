@@ -26,6 +26,14 @@ public class Message implements Serializable {
 		this.type = type;
 	}
 	
+	/**
+	 * Message as displayed in the chat frame
+	 */
+	@Override
+	public String toString() {
+		return "[" + this.date.toString() + "]" + " " +  this.fromUser.getUsername() + ": " + this.content;
+	}
+
 	public String getContent() {
 		return this.content;
 	}
