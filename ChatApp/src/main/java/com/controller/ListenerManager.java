@@ -112,6 +112,16 @@ public class ListenerManager {
 	}
 	
 	/**
+	 * @param localUser The local user sending a message
+	 * @param remoteUser The receiver of the message
+	 * @param messageContent The content of the message
+	 * @param date The time at which the message was sent
+	 */
+	public void fireOnMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
+		this.dbListeners.forEach(dbListener -> dbListener.onMessageSuccessfullySent(localUser, remoteUser, messageContent, date));
+	}
+	
+	/**
 	 * 
 	 * @param message is the message to receive
 	 */

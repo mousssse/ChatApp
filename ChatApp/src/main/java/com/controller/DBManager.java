@@ -287,6 +287,10 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
 
 	@Override
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
+	}
+	
+	@Override
+	public void onMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
 		this.insertMessage(messageContent, date.toString(), localUser.getId(), remoteUser.getId());
 	}
 
