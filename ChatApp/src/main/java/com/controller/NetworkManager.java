@@ -88,7 +88,7 @@ public class NetworkManager implements SelfLoginListener {
         DatagramSocket socket = new DatagramSocket();
         socket.setBroadcast(true);
         byte[] buffer = broadcastMessage.getBytes();
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, UDPServer.getUDPserverPort());
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, UDPServer.UDPserverPort);
         socket.send(packet);
         socket.close();
     }
@@ -107,9 +107,9 @@ public class NetworkManager implements SelfLoginListener {
 		// Broadcasting online status
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();
 		String loginMessage = "login " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " " + localUser.getId();
-		for (InetAddress address : distantIPs) {
+		for (InetAddress address : this.distantIPs) {
 			try {
-				broadcast(loginMessage, address);
+				this.broadcast(loginMessage, address);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -121,9 +121,9 @@ public class NetworkManager implements SelfLoginListener {
 		// Logout message format: "logout"
 		// Broadcasting offline status
 		String logoutMessage = "logout";
-		for (InetAddress address : distantIPs) {
+		for (InetAddress address : this.distantIPs) {
 			try {
-				broadcast(logoutMessage, address);
+				this.broadcast(logoutMessage, address);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
