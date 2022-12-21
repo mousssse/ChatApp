@@ -287,56 +287,32 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
 
 	@Override
 	public void onLogout(User remoteUser) {
-		// TODO Auto-generated method stub
+		// Nothing to do
 		
 	}
 	@Override
 	public void onChatRequest(User remoteUser) {
-		// TODO Auto-generated method stub
+		// Nothing to do
 		
 	}
 
 	@Override
 	public void onChatClosure(User remoteUser) {
-		// TODO Auto-generated method stub
-		
+		// Nothing to do
 	}
 
 	@Override
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
+		// Nothing to do
 	}
 	
 	@Override
 	public void onMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
-		this.insertMessage(messageContent, date.toString(), localUser.getId(), remoteUser.getId());
+		this.insertMessage(messageContent, date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), localUser.getId(), remoteUser.getId());
 	}
 
 	@Override
 	public void onMessageToReceive(Message message) {
 		this.insertMessage(message.getContent(), message.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), message.getFromUser().getId(), message.getToUser().getId());
-	}
-	
-    // Used for tests
-	public static void main(String[] args) {
-		DBManager manager = DBManager.getInstance();
-		System.out.println(manager.getIdFromUsername("sarah"));
-		manager.insertThisUser("sarah", "password");
-		manager.insertUser("sandro", "thisisanid");
-		System.out.println(manager.getUsernameFromId("thisisanid"));
-		System.out.println(manager.getIdFromUsername("sandro"));
-		//String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		//manager.insertMessage("hello sandro", now, manager.getIdFromUsername("sarah"), manager.getIdFromUsername("sandro"));
-		//manager.insertMessage("how are you?", now, manager.getIdFromUsername("sarah"), manager.getIdFromUsername("sandro"));
-		//manager.insertMessage("hi! fine, and you?", now, manager.getIdFromUsername("sandro"), manager.getIdFromUsername("sarah"));
-		try {
-			ResultSet history = manager.getConversationHistory("thisisanid");
-			while(history.next()) {
-				String fromUsername = manager.getUsernameFromId(history.getString("fromId"));
-				System.out.println("from " + fromUsername + ": " + history.getString("content"));
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }

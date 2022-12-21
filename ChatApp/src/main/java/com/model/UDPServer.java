@@ -3,6 +3,7 @@ package main.java.com.model;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 
 import main.java.com.controller.ListenerManager;
@@ -15,12 +16,8 @@ import main.java.com.controller.OnlineUsersManager;
  *
  */
 public class UDPServer implements Runnable {
-	private static final int UDPserverPort = 1025;
+	public static final int UDPserverPort = 1025;
 	private DatagramSocket serverDatagram;
-	
-	public static int getUDPserverPort() {
-		return UDPserverPort;
-	}
 	
 	@Override
 	public void run() {
