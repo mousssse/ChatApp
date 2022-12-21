@@ -8,6 +8,7 @@ import java.util.Map;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.SelfLoginListener;
 import main.java.com.model.User;
+import main.java.com.view.OnlineUsersFrame;
 
 /**
  * The OnlineUsersManager locally manages the active users as well as the local user.
@@ -54,6 +55,8 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	public void onLogin(User remoteUser) {
 		System.out.println("adding : " + remoteUser.getUsername());
 		this.accountsMap.put(remoteUser.getIP(), remoteUser);
+		// Update the view
+		OnlineUsersFrame.getInstance().getUserListVector().addElement(remoteUser);
 	}
 
 	/**
@@ -62,6 +65,7 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	@Override
 	public void onLogout(User remoteUser) {
 		this.accountsMap.remove(remoteUser.getIP());
+		OnlineUsersFrame.getInstance().getUserListVector().removeElement(remoteUser);
 	}
 
 	/**

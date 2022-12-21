@@ -72,7 +72,10 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 
 	@Override
 	public void onChatClosure(User user) {
-		this.conversationsMap.remove(user).close();
+		// Close the conversation socket
+		this.conversationsMap.get(user).close();
+		// Remove the conversation from the map
+		this.conversationsMap.remove(user);
 	}
 
 	@Override

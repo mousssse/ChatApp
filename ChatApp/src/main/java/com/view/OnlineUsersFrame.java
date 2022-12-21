@@ -20,6 +20,7 @@ public class OnlineUsersFrame extends JPanel implements LoginListener {
 	private static final long serialVersionUID = 1496366638423922933L;
 	private JList<User> users;
     private DefaultListModel<User> userListVector;
+    private static OnlineUsersFrame onlineUsersFrame = null;
 
     public OnlineUsersFrame() {
     	userListVector = new DefaultListModel<>();
@@ -45,7 +46,17 @@ public class OnlineUsersFrame extends JPanel implements LoginListener {
         });
     }
 
-    public static void main(String[] args) {
+    public static OnlineUsersFrame getInstance() {
+    	if (onlineUsersFrame == null) onlineUsersFrame = new OnlineUsersFrame();
+		return onlineUsersFrame;
+	}
+
+
+	public DefaultListModel<User> getUserListVector() {
+		return userListVector;
+	}
+
+	public static void main(String[] args) {
         OnlineUsersFrame onlineUsersFrame = new OnlineUsersFrame();
         JFrame frame = new JFrame("Online users");
         // TODO When the user closes the OnlineUsersFrame, the user is choosing to log out.
