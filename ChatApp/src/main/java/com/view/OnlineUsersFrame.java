@@ -2,7 +2,6 @@ package main.java.com.view;
 
 import javax.swing.*;
 
-import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.model.User;
 
