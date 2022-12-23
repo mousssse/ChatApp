@@ -3,7 +3,6 @@ package main.java.com.view;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
 
 import javax.swing.DefaultListModel;
@@ -12,8 +11,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import main.java.com.controller.ListenerManager;
+import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.listener.ChatListener;
 import main.java.com.model.Message;
+import main.java.com.model.MessageType;
 import main.java.com.model.User;
 
 public class ChatFrame extends JPanel implements ChatListener {
@@ -30,6 +32,18 @@ public class ChatFrame extends JPanel implements ChatListener {
 		setLayout(new BorderLayout());
 		add(new JScrollPane(messageList), BorderLayout.CENTER);
 		add(inputField, BorderLayout.SOUTH);
+		
+        inputField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String messageContent = inputField.getText();
+                Message message = new Message(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, messageContent, LocalDateTime.now(), MessageType.MESSAGE);
+				ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, messageContent, LocalDateTime.now());
+				// Reset the text field
+				vector.addElement(message);	
+				inputField.setText("");
+            }
+        });
 	}
 	
 	@Override
@@ -47,7 +61,6 @@ public class ChatFrame extends JPanel implements ChatListener {
 
 	@Override
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
-		// TODO Auto-generated method stub
 	}
 
 	/**
