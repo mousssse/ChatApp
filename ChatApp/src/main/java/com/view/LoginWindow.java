@@ -7,8 +7,6 @@ package main.java.com.view;
 
 import javax.swing.*;
 
-import main.java.com.model.User;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
