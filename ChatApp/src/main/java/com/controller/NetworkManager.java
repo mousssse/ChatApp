@@ -58,7 +58,7 @@ public class NetworkManager implements SelfLoginListener {
 	/**
 	 * Method used to obtain all IPs on the local network prior to broadcasting
 	 * @return the distant IPs
-	 * @throws SocketException
+	 * @throws SocketException - SocketException
 	 */
 	private List<InetAddress> listAllBroadcastAddresses() throws SocketException {
 	    List<InetAddress> broadcastList = new ArrayList<>();
@@ -82,7 +82,7 @@ public class NetworkManager implements SelfLoginListener {
 	 * Method used to broadcast
 	 * @param broadcastMessage is the message to broadcast
 	 * @param address is the IP address that will receive the broadcast
-	 * @throws IOException
+	 * @throws IOException - IOException
 	 */
     public void broadcast(String broadcastMessage, InetAddress address) throws IOException {
         DatagramSocket socket = new DatagramSocket();
@@ -101,10 +101,12 @@ public class NetworkManager implements SelfLoginListener {
 		this.distantSockets.add(socket);
 	}
 	
+	/**
+	 * Broadcasting online status
+	 */
 	@Override
 	public void onSelfLoginNetwork() {
 		// Login message format: "login username port UUID"
-		// Broadcasting online status
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();
 		String loginMessage = "login " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " " + localUser.getId();
 		for (InetAddress address : this.distantIPs) {
@@ -116,10 +118,12 @@ public class NetworkManager implements SelfLoginListener {
 		}
 	}
 	
+	/**
+	 * Broadcasting offline status
+	 */
 	@Override
 	public void onSelfLogout() {
 		// Logout message format: "logout"
-		// Broadcasting offline status
 		String logoutMessage = "logout";
 		for (InetAddress address : this.distantIPs) {
 			try {
@@ -132,6 +136,7 @@ public class NetworkManager implements SelfLoginListener {
 	
 	@Override
 	public void onSelfLoginOnlineUsers(String username) {
+		// Nothing to do
 	}
 	
 }

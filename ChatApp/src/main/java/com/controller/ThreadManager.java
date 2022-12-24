@@ -65,6 +65,7 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 			Conversation conversation = new Conversation(socket);
 			this.addConversation(remoteUser, conversation);
 			new Thread(new ConversationThread(conversation, remoteUser), "Conversation with " + remoteUser.getUsername()).start();
+			System.out.println("Conversation with " + remoteUser.getUsername() + " launched.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -72,10 +73,9 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 
 	@Override
 	public void onChatClosure(User user) {
-		// Close the conversation socket
-		this.conversationsMap.get(user).close();
-		// Remove the conversation from the map
-		this.conversationsMap.remove(user);
+		// Close the conversation socket and remove the conversation from the map
+		this.conversationsMap.remove(user).close();
+		System.out.println("Conversation with " + user.getUsername() + " closed.");
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 
 	@Override
 	public void onMessageToReceive(Message message) {
-		// Nothing to do
+		System.out.println(message.getContent());
 	}
 
 	@Override

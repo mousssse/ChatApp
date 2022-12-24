@@ -102,20 +102,20 @@ public class ListenerManager {
 	}
 	
 	/**
-	 * @param localUser The local user sending a message
-	 * @param remoteUser The receiver of the message
-	 * @param messageContent The content of the message
-	 * @param date The time at which the message was sent
+	 * @param localUser is the user sending a message
+	 * @param remoteUser is the receiver of the message
+	 * @param messageContent is the content of the message
+	 * @param date is the date and time at which the message was sent
 	 */
 	public void fireOnMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
 		this.chatListeners.forEach(chatListener -> chatListener.onMessageToSend(localUser, remoteUser, messageContent, date));
 	}
 	
 	/**
-	 * @param localUser The local user sending a message
-	 * @param remoteUser The receiver of the message
-	 * @param messageContent The content of the message
-	 * @param date The time at which the message was sent
+	 * @param localUser is the user sending a message
+	 * @param remoteUser is the receiver of the message
+	 * @param messageContent is the content of the message
+	 * @param date is the date and time at which the message was sent
 	 */
 	public void fireOnMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
 		this.dbListeners.forEach(dbListener -> dbListener.onMessageSuccessfullySent(localUser, remoteUser, messageContent, date));

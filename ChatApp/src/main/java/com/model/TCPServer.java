@@ -19,6 +19,10 @@ public class TCPServer implements Runnable {
 	private int availablePort;
 	private ServerSocket TCPserver = null;
 	
+	/**
+	 * 
+	 * @return the TCP server port.
+	 */
 	public static int getTCPserverPort() {
 		return TCPserverPort;
 	}

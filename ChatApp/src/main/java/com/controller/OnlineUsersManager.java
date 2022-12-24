@@ -78,6 +78,7 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	
 	@Override
 	public void onSelfLoginNetwork() {
+		// Nothing to do
 	}
 
 	@Override

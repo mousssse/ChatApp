@@ -34,22 +34,42 @@ public class Message implements Serializable {
 		return "[" + this.date.toString() + "]" + " " +  this.fromUser.getUsername() + ": " + this.content;
 	}
 
+	/**
+	 * 
+	 * @return the message content
+	 */
 	public String getContent() {
 		return this.content;
 	}
 	
+	/**
+	 * 
+	 * @return the message's date and time.
+	 */
 	public LocalDateTime getDate() {
 		return this.date;
 	}
 	
+	/**
+	 * 
+	 * @return the sending user.
+	 */
 	public User getFromUser() {
 		return this.fromUser;
 	}
 
+	/**
+	 * 
+	 * @return the receiving user.
+	 */
 	public User getToUser() {
 		return this.toUser;
 	}
 
+	/**
+	 * 
+	 * @return the type of the message.
+	 */
 	public MessageType getType() {
 		return this.type;
 	}

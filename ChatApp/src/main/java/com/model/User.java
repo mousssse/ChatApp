@@ -55,22 +55,42 @@ public class User implements Serializable {
 		return this.username;
 	}
 
+	/**
+	 * 
+	 * @return the user's ID
+	 */
 	public String getId() {
 		return this.id;
 	}
 	
+	/**
+	 * 
+	 * @return the user's username
+	 */
 	public String getUsername() {
 		return this.username;
 	}
 	
+	/**
+	 * 
+	 * @param username is the chosen username
+	 */
 	public void setUsername(String username) {
 		this.username = username;
 	}
 	
+	/**
+	 * 
+	 * @return is the user's IP address
+	 */
 	public InetAddress getIP() {
 		return this.userIP;
 	}
 	
+	/**
+	 * 
+	 * @return is the user's TCP server port.
+	 */
 	public int getTCPserverPort() {
 		return this.TCPserverPort;
 	}

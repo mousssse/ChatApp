@@ -19,9 +19,7 @@ import java.net.UnknownHostException;
  *
  */
 public class LoginWindow extends JFrame {
-	/**
-	 * TODO Remember to ask yourself: the hell is serialization ?
-	 */
+	
 	private static final long serialVersionUID = 6781528607158272898L;
 	JLabel loginLabel = new JLabel("ID: ");
 	JTextField loginField = new JTextField();
@@ -44,7 +42,7 @@ public class LoginWindow extends JFrame {
 		loginButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//onSuccessfulLogin();
+				// TODO Work on onSuccessfulLogin();
 			}
 		});
 
@@ -62,6 +60,7 @@ public class LoginWindow extends JFrame {
 //			setVisible(false);
 //			OnlineUsersFrame onlineUsersFrame = new OnlineUsersFrame();
 //			JFrame frame = new JFrame("Online users");
+//			// TODO setDefaultCloseOperation inside a WindowListerner that will call onSelfLogout!!!!!
 //			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //			frame.setSize(300, 500);
 //			frame.getContentPane().add(onlineUsersFrame, BorderLayout.CENTER);

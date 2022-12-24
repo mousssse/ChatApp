@@ -35,6 +35,10 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
 		this.initTables();
 	}
 	
+	/**
+	 * 
+	 * @return the DBManager singleton.
+	 */
 	public static DBManager getInstance() {
 		if (dbManager == null) dbManager = new DBManager();
 		return dbManager;
@@ -88,8 +92,8 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     /**
      * Inserts a given user in the local database
      * 
-     * @param id The id of the user we are adding
-     * @param username The username of the user we are adding
+     * @param id is the id of the user we are adding
+     * @param username is the username of the user we are adding
      */
     public void insertUser(String username, String id) {
         String sql = "INSERT OR IGNORE INTO users(id, username, password) VALUES(?, ?, ?)";
@@ -111,8 +115,8 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     /**
      * The database will only be updated when the user first logs in
      * 
-     * @param username The username of the local user
-     * @param hashedPassword A hash of the local user's password
+     * @param username is the username of the local user
+     * @param hashedPassword is a hash of the local user's password
      */
     public void insertThisUser(String username, String hashedPassword) {
     	String sqlCheckExisting = "SELECT * FROM users WHERE password IS NOT NULL;";
@@ -128,7 +132,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
             System.out.println(e.getMessage());
         }
     	
-    	// This is the first time the user logs in
+    	// On first login
         String sql = "INSERT OR IGNORE INTO users(id, username, password) VALUES(?, ?, ?)";
         String id = UUID.randomUUID().toString();
 
@@ -144,8 +148,8 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     }
     
     /**
-     * @param id The id of the user we want to update
-     * @param newUsername The new username of the user
+     * @param id is the id of the user we want to update
+     * @param newUsername is the new username of the user
      */
     public void updateUsername(String id, String newUsername) {
         String sql = "UPDATE users SET username = ? WHERE id = ?;";
@@ -192,7 +196,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
      * 
      * @param remoteUserId The user id with whom we want to check our messages
      * @return A ResultSet of the messages database rows that correspond
-     * @throws SQLException
+     * @throws SQLException - SQLException
      */
     public ResultSet getConversationHistory(String remoteUserId) throws SQLException {
     	String sql = "SELECT * FROM messages WHERE toId = ? OR fromId = ? ORDER BY time ASC;";
@@ -206,8 +210,8 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     /**
      * Finds the username corresponding to the given id
      * 
-     * @param id The id of the user
-     * @return The username associated to the user id
+     * @param id is the id of the user
+     * @return the username associated with the user id
      */
     public String getUsernameFromId(String id) {
     	String sql = "SELECT username FROM users WHERE id = ?;";
@@ -226,8 +230,8 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     /**
      * Finds the id corresponding to the given username
      * 
-     * @param username The username of the user
-     * @return The id associated to the username
+     * @param username is the username of the user
+     * @return the id associated with the username
      */
     public String getIdFromUsername(String username) {
     	String sql = "SELECT id FROM users WHERE username = ?;";
@@ -246,9 +250,9 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     /**
      * Returns the hashed password of the local user
      * 
-     * @param id The id of the local user
-     * @return The hashed password stored in the local database
-     * @throws SQLException
+     * @param id is the id of the local user
+     * @return the hashed password stored in the local database
+     * @throws SQLException - SQLException
      */
     public String getHashedPassword(String id) throws SQLException {
     	String sql = "SELECT password FROM users WHERE id = ?;";
@@ -258,6 +262,10 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
         return rs.getString("password");
     }
     
+    /**
+     * 
+     * @return all usernames in the database
+     */
     public List<String> getAllUsernames() {
     	String sql = "SELECT username FROM users WHERE password IS NULL;";
     	List<String> usernamesList = new ArrayList<String>();

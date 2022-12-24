@@ -3,7 +3,6 @@ package main.java.com.model;
 import java.io.IOException;
 
 import main.java.com.controller.ListenerManager;
-import main.java.com.controller.ThreadManager;
 
 /**
  * 
@@ -41,8 +40,8 @@ public class ConversationThread implements Runnable {
 						break;
 				}
 			} catch (IOException e) {
-				// chat closed
-				ThreadManager.getInstance().onChatClosure(remoteUser);
+				// Chat was already closed
+				ListenerManager.getInstance().fireOnChatClosure(remoteUser);
 				return;
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
