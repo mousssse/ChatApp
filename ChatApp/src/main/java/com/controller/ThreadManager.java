@@ -105,7 +105,7 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 
 	@Override
 	public void onLogout(User remoteUser) {
-		this.conversationsMap.remove(remoteUser).close();
+		if (this.conversationsMap.get(remoteUser) != null) this.conversationsMap.remove(remoteUser).close();
 	}
 
 	@Override
