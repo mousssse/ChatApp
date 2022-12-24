@@ -1,6 +1,8 @@
 package test;
 
 import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
@@ -41,8 +43,13 @@ public class MachineA {
 		listenerManager.addLoginListener(onlineUsersFrame);
 		
         JFrame frame = new JFrame("Online users");
+        frame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+            	ListenerManager.getInstance().fireOnSelfLogout();
+            	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            }
+        });
         // TODO When the user closes the OnlineUsersFrame, the user is choosing to log out. To be managed in LoginWindow!
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 600);
         frame.getContentPane().add(onlineUsersFrame, BorderLayout.CENTER);
         frame.setVisible(true);
