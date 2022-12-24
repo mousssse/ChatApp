@@ -7,10 +7,16 @@ package main.java.com.view;
 
 import javax.swing.*;
 
+import main.java.com.controller.ListenerManager;
+import main.java.com.controller.OnlineUsersManager;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
 
 /**
  * 
@@ -42,34 +48,39 @@ public class LoginWindow extends JFrame {
 		loginButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Work on onSuccessfulLogin();
+				onSuccessfulLogin();
 			}
 		});
 
-		getContentPane().add(panel, BorderLayout.CENTER);
-		pack();
-		setVisible(true);
+		this.getContentPane().add(panel, BorderLayout.CENTER);
+		this.pack();
+		this.setVisible(true);
 	}
 
-//	private void onSuccessfulLogin() {
-//		String login = loginField.getText();
-//		String password = passwordField.getText();
-//
-//		if (user.connect(login, password)) {
-//			// As soon as the user is logged in, the online users frame is created, and the login frame disappears.
-//			setVisible(false);
-//			OnlineUsersFrame onlineUsersFrame = new OnlineUsersFrame();
-//			JFrame frame = new JFrame("Online users");
-//			// TODO setDefaultCloseOperation inside a WindowListerner that will call onSelfLogout!!!!!
-//			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//			frame.setSize(300, 500);
-//			frame.getContentPane().add(onlineUsersFrame, BorderLayout.CENTER);
-//			frame.setVisible(true);
-//		} else {
-//			// Display an error message if the user enters an invalid ID or password.
-//			JOptionPane.showMessageDialog(this, "Invalid ID/password.");
-//		}
-//	}
+	// TODO
+	private void onSuccessfulLogin() {
+		String login = loginField.getText();
+		String password = passwordField.getText();
+
+		//if (user.connect(login, password)) {
+			// As soon as the user is logged in, the online users frame is created, and the login frame disappears.
+			this.setVisible(false);
+			OnlineUsersFrame onlineUsersFrame = new OnlineUsersFrame();
+			JFrame frame = new JFrame("Online users");
+            frame.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                	ListenerManager.getInstance().fireOnSelfLogout();
+                	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                }
+            });
+			frame.setSize(300, 500);
+			frame.getContentPane().add(onlineUsersFrame, BorderLayout.CENTER);
+			frame.setVisible(true);
+		//} else {
+			// Display an error message if the user enters an invalid ID or password.
+			// JOptionPane.showMessageDialog(this, "Invalid ID/password.");
+		//}
+	}
 	
     public static void main(String[] args) throws UnknownHostException {
         LoginWindow loginWin = new LoginWindow();
