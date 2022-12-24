@@ -2,12 +2,17 @@ package main.java.com.view;
 
 import javax.swing.*;
 
+import main.java.com.controller.ListenerManager;
+import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.model.User;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.time.LocalDateTime;
 
 /**
  * 
@@ -34,9 +39,20 @@ public class OnlineUsersFrame extends JPanel implements LoginListener {
                 if (count.getClickCount() > 1) {
                     User remoteUser = users.getSelectedValue();
                     ChatFrame chatFrame = new ChatFrame(remoteUser);
+                    ListenerManager.getInstance().addChatListener(chatFrame);
+                    // TODO Think more about this: the request will be sent from both PCs since both will double-click.
+                    // TODO solution: auto-pop the frame for the receiving user? 
+                    ListenerManager.getInstance().fireOnChatRequest(remoteUser);
 
                     JFrame f = new JFrame("Message: " + remoteUser);
-                    f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    
+                    // Chat frame behavior when the X button is clicked
+                    f.addWindowListener(new WindowAdapter() {
+                        public void windowClosing(WindowEvent e) {
+                        	ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, "", LocalDateTime.now());
+                        	f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                        }
+                    });
                     f.setSize(500, 500);
                     f.getContentPane().add(chatFrame, BorderLayout.CENTER);
                     f.setVisible(true);
@@ -45,12 +61,20 @@ public class OnlineUsersFrame extends JPanel implements LoginListener {
         });
     }
 
+    /**
+     * 
+     * @return the online users frame instance.
+     */
     public static OnlineUsersFrame getInstance() {
     	if (onlineUsersFrame == null) onlineUsersFrame = new OnlineUsersFrame();
 		return onlineUsersFrame;
 	}
 
 
+    /**
+     * 
+     * @return the DefaultListModel.
+     */
 	public DefaultListModel<User> getUserListVector() {
 		return userListVector;
 	}

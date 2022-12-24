@@ -41,22 +41,22 @@ public class MachineA {
 		listenerManager.addLoginListener(onlineUsersFrame);
 		
         JFrame frame = new JFrame("Online users");
-        // TODO When the user closes the OnlineUsersFrame, the user is choosing to log out.
+        // TODO When the user closes the OnlineUsersFrame, the user is choosing to log out. To be managed in LoginWindow!
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 600);
         frame.getContentPane().add(onlineUsersFrame, BorderLayout.CENTER);
         frame.setVisible(true);
 		
 		listenerManager.fireOnSelfLogin("mousse", "pwd");
-		try {
-			Thread.sleep(1000);
-			User sandro = onlineUsersManager.getUserFromIP(InetAddress.getByName("192.168.1.104"));
-			//listenerManager.fireOnChatRequest(sandro);
-			//listenerManager.fireOnMessageToSend(onlineUsersManager.getLocalUser(), sandro, "heyo", LocalDateTime.now());
-			//listenerManager.fireOnChatClosure(sandro);
-		} catch (UnknownHostException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(1000);
+//			User sandro = onlineUsersManager.getUserFromIP(InetAddress.getByName("192.168.1.106"));
+//			//listenerManager.fireOnChatRequest(sandro);
+//			//listenerManager.fireOnMessageToSend(onlineUsersManager.getLocalUser(), sandro, "heyo", LocalDateTime.now());
+//			//listenerManager.fireOnChatClosure(sandro);
+//		} catch (UnknownHostException | InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 }
