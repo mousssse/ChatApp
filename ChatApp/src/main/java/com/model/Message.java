@@ -1,6 +1,7 @@
 package main.java.com.model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 
@@ -31,7 +32,8 @@ public class Message implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return "[" + this.date.toString() + "]" + " " +  this.fromUser.getUsername() + ": " + this.content;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		return "[" + this.date.format(formatter) + "]" + " " +  this.fromUser.getUsername() + ": " + this.content;
 	}
 
 	/**
