@@ -43,6 +43,19 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 		return accountsMap.get(IP);	
 	}
 	
+	/**
+	 * @param userId is the ID associated to the user in question
+	 * @return the user connected to the ChatApp from IP, or null if not found
+	 */
+	public User getUserFromID(String userId) {
+		for (User user : this.accountsMap.values()) {
+			if (user.getId().equals(userId)) {
+				return user;
+			}
+		}
+		return null;
+	}
+	
 	public User getLocalUser() {
 		return this.localUser;
 	}

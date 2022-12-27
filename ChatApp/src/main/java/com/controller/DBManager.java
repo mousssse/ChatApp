@@ -16,6 +16,7 @@ import main.java.com.controller.listener.ChatListener;
 import main.java.com.controller.listener.DBListener;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.model.Message;
+import main.java.com.model.MessageType;
 import main.java.com.model.User;
 
 /**
@@ -198,13 +199,34 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
      * @return A ResultSet of the messages database rows that correspond
      * @throws SQLException - SQLException
      */
-    public ResultSet getConversationHistory(String remoteUserId) throws SQLException {
+    public List<Message> getConversationHistory(String remoteUserId) throws SQLException {
     	String sql = "SELECT * FROM messages WHERE toId = ? OR fromId = ? ORDER BY time ASC;";
     	
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 	    pstmt.setString(1, remoteUserId);
 	    pstmt.setString(2, remoteUserId);
-	    return pstmt.executeQuery();
+	    ResultSet res = pstmt.executeQuery();
+	    
+	    List<Message> history = new ArrayList<Message>();
+	    while (res.next()) {
+	    	String content = res.getString("content");
+	    	String timeString = res.getString("time");
+	    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	    	LocalDateTime dateTime = LocalDateTime.parse(timeString, formatter);
+	    	String fromId = res.getString("fromId");
+	    	User fromUser = null, toUser = null;
+	    	if (fromId.equals(remoteUserId)) {
+	    		fromUser = OnlineUsersManager.getInstance().getUserFromID(remoteUserId);
+	    		toUser = OnlineUsersManager.getInstance().getLocalUser();
+	    	}
+	    	else {
+	    		fromUser = OnlineUsersManager.getInstance().getLocalUser();
+	    		toUser = OnlineUsersManager.getInstance().getUserFromID(remoteUserId);
+	    	}
+	    	Message message = new Message(fromUser, toUser, content, dateTime, MessageType.MESSAGE);
+	    	history.add(message);
+	    }
+	    return history;
     }
     
     /**

@@ -3,6 +3,7 @@ package main.java.com.view;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 import javax.swing.DefaultListModel;
@@ -12,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.listener.ChatListener;
@@ -37,6 +39,13 @@ public class ChatFrame extends JPanel implements ChatListener {
 		setLayout(new BorderLayout());
 		add(new JScrollPane(messageList), BorderLayout.CENTER);
 		add(inputField, BorderLayout.SOUTH);
+		try {
+			vector.addAll(DBManager.getInstance().getConversationHistory(remoteUser.getId()));
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			// Couldnt retrieve history -> TODO: show error message?
+			e1.printStackTrace();
+		}
 		
         inputField.addActionListener(new ActionListener() {
             @Override
