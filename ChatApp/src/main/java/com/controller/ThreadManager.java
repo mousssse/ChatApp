@@ -14,6 +14,7 @@ import main.java.com.controller.listener.SelfLoginListener;
 import main.java.com.model.Conversation;
 import main.java.com.model.ConversationThread;
 import main.java.com.model.Message;
+import main.java.com.model.MessageType;
 import main.java.com.model.User;
 
 /**
@@ -81,10 +82,10 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	}
 
 	@Override
-	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
+	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
 		try {
-			this.conversationsMap.get(remoteUser).write(localUser, remoteUser, messageContent, date);
-			ListenerManager.getInstance().fireOnMessageSuccessfullySent(localUser, remoteUser, messageContent, date);
+			this.conversationsMap.get(remoteUser).write(localUser, remoteUser, messageContent, date, type);
+			ListenerManager.getInstance().fireOnMessageSuccessfullySent(localUser, remoteUser, messageContent, date, MessageType.MESSAGE);
 		} catch (IOException | SQLException e) {
 			// Message was not received because chat has been closed
 			System.out.println("Chat was already closed.");

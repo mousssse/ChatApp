@@ -42,14 +42,8 @@ public class Conversation {
 	 * @throws IOException - IOException
 	 * @throws SQLException - SQLException
 	 */
-	public void write(User localUser, User remoteUser, String messageContent, LocalDateTime date) throws IOException, SQLException {
-		Message message = null;
-		// The empty string isn't an allowed message. It's only used to detect the X button click of the ChatFrame.
-		if (messageContent.equals("")) {
-			message = new Message(localUser, remoteUser, messageContent, date, MessageType.CLOSING_CONVERSATION);
-		} else {
-			message = new Message(localUser, remoteUser, messageContent, date, MessageType.MESSAGE);
-		}
+	public void write(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) throws IOException, SQLException {
+		Message message = new Message(localUser, remoteUser, messageContent, date, type);
 		ObjectOutputStream out = new ObjectOutputStream(this.conversationSocket.getOutputStream());
 		out.writeObject(message);
 	}

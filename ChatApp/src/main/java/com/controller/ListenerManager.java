@@ -10,6 +10,7 @@ import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.SelfLoginListener;
 import main.java.com.controller.listener.UsernameListener;
 import main.java.com.model.Message;
+import main.java.com.model.MessageType;
 import main.java.com.model.User;
 
 /**
@@ -107,8 +108,8 @@ public class ListenerManager {
 	 * @param messageContent is the content of the message
 	 * @param date is the date and time at which the message was sent
 	 */
-	public void fireOnMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
-		this.chatListeners.forEach(chatListener -> chatListener.onMessageToSend(localUser, remoteUser, messageContent, date));
+	public void fireOnMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
+		this.chatListeners.forEach(chatListener -> chatListener.onMessageToSend(localUser, remoteUser, messageContent, date, type));
 	}
 	
 	/**
@@ -117,8 +118,8 @@ public class ListenerManager {
 	 * @param messageContent is the content of the message
 	 * @param date is the date and time at which the message was sent
 	 */
-	public void fireOnMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
-		this.dbListeners.forEach(dbListener -> dbListener.onMessageSuccessfullySent(localUser, remoteUser, messageContent, date));
+	public void fireOnMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
+		this.dbListeners.forEach(dbListener -> dbListener.onMessageSuccessfullySent(localUser, remoteUser, messageContent, date, type));
 	}
 	
 	/**

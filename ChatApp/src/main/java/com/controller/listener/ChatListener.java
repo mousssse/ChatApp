@@ -3,6 +3,7 @@ package main.java.com.controller.listener;
 import java.time.LocalDateTime;
 
 import main.java.com.model.Message;
+import main.java.com.model.MessageType;
 import main.java.com.model.User;
 
 /**
@@ -22,7 +23,7 @@ public interface ChatListener {
 	// What happens when one of both parties decides to end the chat?
 	public void onChatClosure(User remoteUser);
 	// What happens when a user wants to send a message?
-	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date);
+	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type);
 	// What happens when a user has to receive a message?
 	public void onMessageToReceive(Message message);
 

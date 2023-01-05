@@ -61,7 +61,7 @@ public class ChatFrame extends JPanel implements ChatListener, UsernameListener 
                 // The empty string is not allowed.
                 if (!messageContent.equals("")) {
                     Message message = new Message(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, messageContent, LocalDateTime.now(), MessageType.MESSAGE);
-    				ListenerManager.getInstance().fireOnMessageToSend(message.getFromUser(), message.getToUser(), message.getContent(), message.getDate());
+    				ListenerManager.getInstance().fireOnMessageToSend(message.getFromUser(), message.getToUser(), message.getContent(), message.getDate(), message.getType());
     				// Adding the message to the view.
     				vector.addElement(message);
     				// Resetting the text field.
@@ -87,7 +87,7 @@ public class ChatFrame extends JPanel implements ChatListener, UsernameListener 
 	}
 
 	@Override
-	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
+	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
 		// Nothing to do
 	}
 
