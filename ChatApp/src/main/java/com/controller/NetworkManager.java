@@ -40,10 +40,6 @@ public class NetworkManager implements SelfLoginListener {
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
-		this.UDPserver = new UDPServer();
-		this.TCPserver = new TCPServer();
-		(new Thread(this.UDPserver, "UDP Server")).start();
-		(new Thread(this.TCPserver, "TCP Server")).start();
 	}
 	
 	/**
@@ -106,6 +102,10 @@ public class NetworkManager implements SelfLoginListener {
 	 */
 	@Override
 	public void onSelfLoginNetwork() {
+		this.UDPserver = new UDPServer();
+		this.TCPserver = new TCPServer();
+		(new Thread(this.UDPserver, "UDP Server")).start();
+		(new Thread(this.TCPserver, "TCP Server")).start();
 		// Login message format: "login username port UUID"
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();
 		String loginMessage = "login " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " " + localUser.getId();
