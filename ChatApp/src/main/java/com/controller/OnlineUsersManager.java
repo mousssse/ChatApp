@@ -7,6 +7,7 @@ import java.util.Map;
 
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.SelfLoginListener;
+import main.java.com.controller.listener.UsernameListener;
 import main.java.com.model.User;
 
 /**
@@ -15,7 +16,7 @@ import main.java.com.model.User;
  * @author sarah
  *
  */
-public class OnlineUsersManager implements LoginListener, SelfLoginListener {
+public class OnlineUsersManager implements LoginListener, SelfLoginListener, UsernameListener {
 	
 	private static OnlineUsersManager onlineUsersManager = null;
 	private User localUser;
@@ -40,7 +41,7 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	 * @return the user connected to the ChatApp from IP.
 	 */
 	public User getUserFromIP(InetAddress IP) {
-		return accountsMap.get(IP);	
+		return this.accountsMap.get(IP);	
 	}
 	
 	/**
@@ -97,6 +98,17 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener {
 	@Override
 	public void onSelfLogout() {
 		this.accountsMap.clear();
+	}
+
+	@Override
+	public void onUsernameModification(User user, String newUsername) {
+		this.accountsMap.remove(user.getIP());
+		this.accountsMap.put(user.getIP(), user);
+	}
+
+	@Override
+	public void onSelfUsernameModification(String newUsername) {
+		this.localUser.setUsername(newUsername);
 	}
 	
 }

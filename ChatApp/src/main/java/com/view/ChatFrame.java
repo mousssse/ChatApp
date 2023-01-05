@@ -17,11 +17,18 @@ import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.listener.ChatListener;
+import main.java.com.controller.listener.UsernameListener;
 import main.java.com.model.Message;
 import main.java.com.model.MessageType;
 import main.java.com.model.User;
 
-public class ChatFrame extends JPanel implements ChatListener {
+/**
+ * 
+ * @author Sandro
+ * @author sarah
+ *
+ */
+public class ChatFrame extends JPanel implements ChatListener, UsernameListener {
 	// TODO for now, our program only works for textual messages
 	private static final long serialVersionUID = -4715687549491428225L;
 	private User remoteUser;
@@ -98,6 +105,16 @@ public class ChatFrame extends JPanel implements ChatListener {
 	public void dispose() {
 	    JFrame parent = (JFrame) this.getTopLevelAncestor();
 	    parent.dispose();
+	}
+
+	@Override
+	public void onUsernameModification(User user, String newUsername) {
+		this.remoteUser = user;
+	}
+
+	@Override
+	public void onSelfUsernameModification(String newUsername) {
+		// Nothing to do
 	}
 
 }

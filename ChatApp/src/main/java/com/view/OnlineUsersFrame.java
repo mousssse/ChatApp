@@ -5,6 +5,7 @@ import javax.swing.*;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.listener.LoginListener;
+import main.java.com.controller.listener.UsernameListener;
 import main.java.com.model.User;
 
 import java.awt.*;
@@ -17,13 +18,15 @@ import java.time.LocalDateTime;
 /**
  * 
  * @author Sandro
+ * @author sarah
  *
  */
-public class OnlineUsersFrame extends JPanel implements LoginListener {
+public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameListener {
 
 	private static final long serialVersionUID = 1496366638423922933L;
 	private JList<User> users;
-    private DefaultListModel<User> userListVector;
+	// TODO make private
+    public DefaultListModel<User> userListVector;
     private static OnlineUsersFrame onlineUsersFrame = null;
 
     public OnlineUsersFrame() {
@@ -104,6 +107,19 @@ public class OnlineUsersFrame extends JPanel implements LoginListener {
 	public void onLogout(User remoteUser) {
 		userListVector.removeElement(remoteUser);	
 	}
+
+	@Override
+	public void onUsernameModification(User user, String newUsername) {
+		userListVector.removeElement(user);
+		userListVector.addElement(user);
+	}
+
+	@Override
+	public void onSelfUsernameModification(String newUsername) {
+		// Nothing to do
+	}
+	
+	
 }
 
 
