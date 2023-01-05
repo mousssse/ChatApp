@@ -178,6 +178,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
      * @param toId The user id of the receiver
      */
     public void insertMessage(String content, String time, String fromId, String toId) {
+    	if (content.equals("")) return;
     	String sql = "INSERT INTO messages(content, time, fromId, toId) VALUES(?, ?, ?, ?);";
     	
         try {
