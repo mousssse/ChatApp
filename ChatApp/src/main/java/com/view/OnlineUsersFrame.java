@@ -25,8 +25,7 @@ public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameL
 
 	private static final long serialVersionUID = 1496366638423922933L;
 	private JList<User> users;
-	// TODO make private
-    public DefaultListModel<User> userListVector;
+	private DefaultListModel<User> userListVector;
     private static OnlineUsersFrame onlineUsersFrame = null;
 
     public OnlineUsersFrame() {

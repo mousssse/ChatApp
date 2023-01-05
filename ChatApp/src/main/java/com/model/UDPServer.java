@@ -15,7 +15,7 @@ import main.java.com.controller.OnlineUsersManager;
  *
  */
 public class UDPServer implements Runnable {
-	public static final int UDPserverPort = 1025;
+	public static final int UDPserverPort = 8025;
 	private DatagramSocket serverDatagram;
 	
 	@Override
