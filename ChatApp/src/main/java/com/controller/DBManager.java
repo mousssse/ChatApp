@@ -319,9 +319,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
 
 	@Override
 	public void onSelfLogin(String username, String password) {
-		System.out.println(username + " " + password);
 		this.insertThisUser(username, password);
-		ListenerManager.getInstance().fireOnSelfLoginNext(username);
 	}
 
 	@Override

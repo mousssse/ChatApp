@@ -25,9 +25,6 @@ import javax.swing.JTextField;
 
 import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
-import main.java.com.controller.OnlineUsersManager;
-import main.java.com.model.User;
-
 /**
  * 
  * @author Sandro
@@ -75,7 +72,7 @@ public class LoginWindow extends JFrame {
 	// TODO
 	private void onSuccessfulLogin() throws HeadlessException, SQLException {
 		String login = loginField.getText();
-		String password = passwordField.getText();
+		String password = new String(passwordField.getPassword());
 		
 		boolean connected = false;
 		String localUsername = DBManager.getInstance().getLocalUsername();
@@ -89,7 +86,7 @@ public class LoginWindow extends JFrame {
 		}
 		
 		if (connected) {
-			ListenerManager.getInstance().fireOnSelfLogin(login, password);
+			ListenerManager.getInstance().fireOnSelfLoginNext(login);
 			// As soon as the user is logged in, the online users frame is created, and the login frame disappears.
 			this.setVisible(false);
 			OnlineUsersFrame onlineUsersFrame = new OnlineUsersFrame();
