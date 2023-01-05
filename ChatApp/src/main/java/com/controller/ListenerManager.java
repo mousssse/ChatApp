@@ -127,6 +127,7 @@ public class ListenerManager {
 	 */
 	public void fireOnMessageToReceive(Message message) {
 		this.chatListeners.forEach(chatListener -> chatListener.onMessageToReceive(message));
+		this.dbListeners.forEach(dbListener -> dbListener.onMessageToReceiveDB(message));
 	}
 	
 	/**

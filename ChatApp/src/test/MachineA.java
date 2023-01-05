@@ -21,7 +21,6 @@ public class MachineA {
 		
 		listenerManager.addDBListener(dbManager);
 		listenerManager.addLoginListener(dbManager);
-		listenerManager.addChatListener(dbManager);
 		
 		listenerManager.addSelfLoginListener(networkManager);
 		
@@ -39,17 +38,5 @@ public class MachineA {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-
-//		try {
-//			Thread.sleep(1000);
-//			User sandro = onlineUsersManager.getUserFromIP(InetAddress.getByName("192.168.1.106"));
-//			//listenerManager.fireOnChatRequest(sandro);
-//			//listenerManager.fireOnMessageToSend(onlineUsersManager.getLocalUser(), sandro, "heyo", LocalDateTime.now());
-//			//listenerManager.fireOnChatClosure(sandro);
-//		} catch (UnknownHostException | InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 }

@@ -14,7 +14,6 @@ import java.util.UUID;
 
 import org.sqlite.SQLiteException;
 
-import main.java.com.controller.listener.ChatListener;
 import main.java.com.controller.listener.DBListener;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.model.Message;
@@ -27,7 +26,7 @@ import main.java.com.model.User;
  * @author Sandro
  *
  */
-public class DBManager implements DBListener, LoginListener, ChatListener {
+public class DBManager implements DBListener, LoginListener {
 	private static DBManager dbManager = null;
 	private String url = "jdbc:sqlite:chatApp.db";
 	private Connection conn;
@@ -333,21 +332,6 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
 		// Nothing to do
 		
 	}
-	@Override
-	public void onChatRequest(User remoteUser) {
-		// Nothing to do
-		
-	}
-
-	@Override
-	public void onChatClosure(User remoteUser) {
-		// Nothing to do
-	}
-
-	@Override
-	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
-		// Nothing to do
-	}
 	
 	@Override
 	public void onMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
@@ -355,7 +339,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
 	}
 
 	@Override
-	public void onMessageToReceive(Message message) {
+	public void onMessageToReceiveDB(Message message) {
 		this.insertMessage(message.getContent(), message.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), message.getFromUser().getId(), message.getToUser().getId());
 	}
 }
