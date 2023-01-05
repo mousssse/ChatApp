@@ -5,18 +5,28 @@
 
 package main.java.com.view;
 
-import javax.swing.*;
-
-import main.java.com.controller.ListenerManager;
-import main.java.com.controller.OnlineUsersManager;
-
 import java.awt.BorderLayout;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.UnknownHostException;
-import java.time.LocalDateTime;
+import java.sql.SQLException;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
+import main.java.com.controller.DBManager;
+import main.java.com.controller.ListenerManager;
+import main.java.com.controller.OnlineUsersManager;
+import main.java.com.model.User;
 
 /**
  * 
@@ -48,7 +58,12 @@ public class LoginWindow extends JFrame {
 		loginButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onSuccessfulLogin();
+				try {
+					onSuccessfulLogin();
+				} catch (HeadlessException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -58,14 +73,27 @@ public class LoginWindow extends JFrame {
 	}
 
 	// TODO
-	private void onSuccessfulLogin() {
+	private void onSuccessfulLogin() throws HeadlessException, SQLException {
 		String login = loginField.getText();
 		String password = passwordField.getText();
-
-		//if (user.connect(login, password)) {
+		
+		boolean connected = false;
+		String localUsername = DBManager.getInstance().getLocalUsername();
+		if (localUsername == null) {
+			ListenerManager.getInstance().fireOnSelfLogin(login, password);
+			connected = true;
+		}
+		else {
+			// TODO password should be hashed when checking w db
+			connected = login.equals(localUsername) && password.equals(DBManager.getInstance().getHashedPassword());
+		}
+		
+		if (connected) {
+			ListenerManager.getInstance().fireOnSelfLogin(login, password);
 			// As soon as the user is logged in, the online users frame is created, and the login frame disappears.
 			this.setVisible(false);
 			OnlineUsersFrame onlineUsersFrame = new OnlineUsersFrame();
+			ListenerManager.getInstance().addLoginListener(onlineUsersFrame);
 			JFrame frame = new JFrame("Online users");
             frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
@@ -76,10 +104,10 @@ public class LoginWindow extends JFrame {
 			frame.setSize(300, 500);
 			frame.getContentPane().add(onlineUsersFrame, BorderLayout.CENTER);
 			frame.setVisible(true);
-		//} else {
-			// Display an error message if the user enters an invalid ID or password.
-			// JOptionPane.showMessageDialog(this, "Invalid ID/password.");
-		//}
+		} else {
+			 //Display an error message if the user enters an invalid ID or password.
+			 JOptionPane.showMessageDialog(this, "Invalid ID/password.");
+		}
 	}
 	
     public static void main(String[] args) throws UnknownHostException {

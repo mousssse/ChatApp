@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.sqlite.SQLiteException;
+
 import main.java.com.controller.listener.ChatListener;
 import main.java.com.controller.listener.DBListener;
 import main.java.com.controller.listener.LoginListener;
@@ -69,7 +71,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
                 + " PRIMARY KEY (fromId, toId, time) \n"
                 + ");";
         try { 
-        	Statement stmt = conn.createStatement();
+        	Statement stmt = this.conn.createStatement();
             // create a new table
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -82,7 +84,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
                 + "password TEXT \n"
                 + ");";
         try {
-            Statement stmt = conn.createStatement();
+            Statement stmt = this.conn.createStatement();
             // create a new table
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -100,7 +102,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
         String sql = "INSERT OR IGNORE INTO users(id, username, password) VALUES(?, ?, ?)";
 
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt = this.conn.prepareStatement(sql);
             pstmt.setString(1, id);
             pstmt.setString(2, username);
             pstmt.setString(3, null);
@@ -123,7 +125,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     	String sqlCheckExisting = "SELECT * FROM users WHERE password IS NOT NULL;";
     	
     	try {
-    		Statement stmt = conn.createStatement();
+    		Statement stmt = this.conn.createStatement();
     		ResultSet rs = stmt.executeQuery(sqlCheckExisting);
             if (rs.isBeforeFirst()) {
     			// local user already exists in the database, no need to insert them
@@ -138,7 +140,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
         String id = UUID.randomUUID().toString();
 
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt = this.conn.prepareStatement(sql);
             pstmt.setString(1, id);
             pstmt.setString(2, username);
             pstmt.setString(3, hashedPassword);
@@ -156,7 +158,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
         String sql = "UPDATE users SET username = ? WHERE id = ?;";
 
         try {
-        	PreparedStatement pstmt = conn.prepareStatement(sql);
+        	PreparedStatement pstmt = this.conn.prepareStatement(sql);
             pstmt.setString(1, newUsername);
             pstmt.setString(2, id);
             pstmt.executeUpdate();
@@ -182,7 +184,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     	String sql = "INSERT INTO messages(content, time, fromId, toId) VALUES(?, ?, ?, ?);";
     	
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt = this.conn.prepareStatement(sql);
             pstmt.setString(1, content);
             pstmt.setString(2, time);
             pstmt.setString(3, fromId);
@@ -203,7 +205,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     public List<Message> getConversationHistory(String remoteUserId) throws SQLException {
     	String sql = "SELECT * FROM messages WHERE toId = ? OR fromId = ? ORDER BY time ASC;";
     	
-		PreparedStatement pstmt = conn.prepareStatement(sql);
+		PreparedStatement pstmt = this.conn.prepareStatement(sql);
 	    pstmt.setString(1, remoteUserId);
 	    pstmt.setString(2, remoteUserId);
 	    ResultSet res = pstmt.executeQuery();
@@ -240,7 +242,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     	String sql = "SELECT username FROM users WHERE id = ?;";
     	
     	try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt = this.conn.prepareStatement(sql);
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
             return rs.getString("username");
@@ -260,7 +262,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     	String sql = "SELECT id FROM users WHERE username = ?;";
     	
     	try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt = this.conn.prepareStatement(sql);
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
             return rs.getString("id");
@@ -273,16 +275,27 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     /**
      * Returns the hashed password of the local user
      * 
-     * @param id is the id of the local user
      * @return the hashed password stored in the local database
      * @throws SQLException - SQLException
      */
-    public String getHashedPassword(String id) throws SQLException {
-    	String sql = "SELECT password FROM users WHERE id = ?;";
-    	PreparedStatement pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, id);
-        ResultSet rs = pstmt.executeQuery();
+    public String getHashedPassword() throws SQLException {
+    	String sql = "SELECT password FROM users WHERE password IS NOT NULL;";
+    	Statement stmt = this.conn.createStatement();
+		ResultSet rs = stmt.executeQuery(sql);
         return rs.getString("password");
+    }
+    
+    public String getLocalUsername() throws SQLException {
+    	String sql = "SELECT username FROM users WHERE password IS NOT NULL;";
+    	Statement stmt = this.conn.createStatement();
+    	try {
+    		ResultSet rs = stmt.executeQuery(sql);
+    		return rs.getString("username");
+    	} catch (SQLiteException e) {
+    		// The db doesn't contain the local user yet,
+    		// this is the first time the user opens the app
+    		return null;
+    	}
     }
     
     /**
@@ -293,7 +306,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
     	String sql = "SELECT username FROM users WHERE password IS NULL;";
     	List<String> usernamesList = new ArrayList<String>();
     	try {
-    		Statement stmt = conn.createStatement();
+    		Statement stmt = this.conn.createStatement();
     		ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
     			usernamesList.add(rs.getString("username"));
@@ -306,6 +319,7 @@ public class DBManager implements DBListener, LoginListener, ChatListener {
 
 	@Override
 	public void onSelfLogin(String username, String password) {
+		System.out.println(username + " " + password);
 		this.insertThisUser(username, password);
 		ListenerManager.getInstance().fireOnSelfLoginNext(username);
 	}
