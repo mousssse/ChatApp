@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDateTime;
 
 /**
  * 
@@ -51,7 +52,7 @@ public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameL
                     // Chat frame behavior when the X button is clicked
                     f.addWindowListener(new WindowAdapter() {
                         public void windowClosing(WindowEvent e) {
-                        	ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, null, MessageType.MESSAGE);
+                        	ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CLOSING_CONVERSATION);
                         	f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         }
                     });
