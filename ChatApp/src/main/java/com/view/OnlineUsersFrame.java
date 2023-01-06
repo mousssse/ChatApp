@@ -10,10 +10,13 @@ import main.java.com.model.MessageType;
 import main.java.com.model.User;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 /**
@@ -28,12 +31,34 @@ public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameL
 	private JList<User> users;
 	private DefaultListModel<User> userListVector;
     private static OnlineUsersFrame onlineUsersFrame = null;
+    private JButton usernameButton;
 
     public OnlineUsersFrame() {
-    	userListVector = new DefaultListModel<>();
-        users = new JList<>(userListVector);
-        setLayout(new BorderLayout());
-        add(new JScrollPane(users), BorderLayout.CENTER);
+    	this.userListVector = new DefaultListModel<>();
+        this.users = new JList<>(this.userListVector);
+        this.usernameButton = new JButton("Change username");
+        this.setLayout(new BorderLayout());
+        this.add(new JScrollPane(users), BorderLayout.CENTER);
+        this.add(new JScrollPane(usernameButton), BorderLayout.SOUTH);
+        
+		usernameButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					UsernameModificationWindow usernameModificationWindow = new UsernameModificationWindow();
+					JFrame frame = new JFrame("Modify your username");
+		            frame.addWindowListener(new WindowAdapter() {
+		                public void windowClosing(WindowEvent e) {
+		                	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		                }
+		            });
+					frame.getContentPane().add(usernameModificationWindow, BorderLayout.CENTER);
+					frame.setVisible(true);
+				} catch (HeadlessException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 
         users.addMouseListener(new MouseAdapter() {
             @Override
@@ -79,7 +104,7 @@ public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameL
      * @return the DefaultListModel.
      */
 	public DefaultListModel<User> getUserListVector() {
-		return userListVector;
+		return this.userListVector;
 	}
 
 	public static void main(String[] args) {
@@ -97,7 +122,7 @@ public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameL
      */
 	@Override
 	public void onLogin(User remoteUser) {
-		userListVector.addElement(remoteUser);
+		this.userListVector.addElement(remoteUser);
 	}
 
     /**
@@ -105,13 +130,13 @@ public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameL
      */
 	@Override
 	public void onLogout(User remoteUser) {
-		userListVector.removeElement(remoteUser);	
+		this.userListVector.removeElement(remoteUser);	
 	}
 
 	@Override
 	public void onUsernameModification(User user, String newUsername) {
-		userListVector.removeElement(user);
-		userListVector.addElement(user);
+		this.userListVector.removeElement(user);
+		this.userListVector.addElement(user);
 	}
 
 	@Override

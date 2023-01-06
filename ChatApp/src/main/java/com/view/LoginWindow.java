@@ -34,16 +34,22 @@ import main.java.com.controller.ListenerManager;
 public class LoginWindow extends JFrame {
 	
 	private static final long serialVersionUID = 6781528607158272898L;
-	JLabel loginLabel = new JLabel("ID: ");
-	JTextField loginField = new JTextField();
-	JLabel passwordLabel = new JLabel("Password: ");
-	JPasswordField passwordField = new JPasswordField();
-	JButton loginButton = new JButton("Login");
+	private JLabel loginLabel;
+	private JTextField loginField;
+	private JLabel passwordLabel;
+	private JPasswordField passwordField;
+	private JButton loginButton;
 
 	public LoginWindow() throws UnknownHostException {
 		super("Login");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		this.loginLabel = new JLabel ("ID: ");
+		this.loginField = new JTextField();
+		this.passwordLabel = new JLabel("Password: ");
+		this.passwordField = new JPasswordField();
+		this.loginButton = new JButton("Login");
+		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.add(loginLabel);
@@ -51,7 +57,7 @@ public class LoginWindow extends JFrame {
 		panel.add(passwordLabel);
 		panel.add(passwordField);
 		panel.add(loginButton);
-
+		
 		loginButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -68,7 +74,7 @@ public class LoginWindow extends JFrame {
 		this.pack();
 		this.setVisible(true);
 	}
-
+	
 	// TODO
 	private void onSuccessfulLogin() throws HeadlessException, SQLException {
 		String login = loginField.getText();
