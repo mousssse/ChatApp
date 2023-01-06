@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 import main.java.com.controller.listener.SelfLoginListener;
+import main.java.com.controller.listener.UsernameListener;
 import main.java.com.model.TCPServer;
 import main.java.com.model.UDPServer;
 import main.java.com.model.User;
@@ -23,7 +24,7 @@ import main.java.com.model.User;
  * @author sarah
  *
  */
-public class NetworkManager implements SelfLoginListener {
+public class NetworkManager implements SelfLoginListener, UsernameListener {
 	
 	private List<Socket> distantSockets;
 	private List<InetAddress> distantIPs;
@@ -136,6 +137,23 @@ public class NetworkManager implements SelfLoginListener {
 	
 	@Override
 	public void onSelfLoginOnlineUsers(String username) {
+		// Nothing to do
+	}
+	
+	@Override
+	public void onSelfUsernameModification(String newUsername) {
+		String usernameUpdateMessage = "username " + newUsername;
+		for (InetAddress address : this.distantIPs) {
+			try {
+				this.broadcast(usernameUpdateMessage, address);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@Override
+	public void onUsernameModification(User user, String newUsername) {
 		// Nothing to do
 	}
 	
