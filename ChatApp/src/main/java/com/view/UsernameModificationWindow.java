@@ -1,9 +1,9 @@
 package main.java.com.view;
 
 import java.awt.BorderLayout;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.net.UnknownHostException;
 
 import javax.swing.BoxLayout;
@@ -12,6 +12,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import main.java.com.controller.DBManager;
+import main.java.com.controller.ListenerManager;
+import main.java.com.controller.OnlineUsersManager;
 
 /**
  * 
@@ -40,10 +44,16 @@ public class UsernameModificationWindow extends JFrame {
 		usernameButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					verifyUsernameUnicity();
-				} catch (HeadlessException e1) {
-					e1.printStackTrace();
+				String newUsername = usernameField.getText();
+				if (DBManager.getInstance().updateUsername(OnlineUsersManager.getInstance().getLocalUser().getId(), newUsername)) {
+					ListenerManager.getInstance().fireOnSelfUsernameModification(newUsername);
+					panel.setVisible(false);
+					JFrame parent = (JFrame) panel.getTopLevelAncestor();
+					parent.dispatchEvent(new WindowEvent(parent, WindowEvent.WINDOW_CLOSING));
+					// TODO get this to be cleaner
+				}
+				else {
+					// TODO window saying that the username is already taken :/
 				}
 			}
 		});
@@ -52,11 +62,6 @@ public class UsernameModificationWindow extends JFrame {
 		this.pack();
 		this.setVisible(true);
 		
-	}
-	
-	private void verifyUsernameUnicity() {
-		//TODO verify username unicity
-		System.out.println("I'm bored, code me");
 	}
 	
     public static void main(String[] args) throws UnknownHostException {

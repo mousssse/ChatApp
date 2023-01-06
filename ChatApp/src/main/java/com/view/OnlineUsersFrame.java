@@ -16,7 +16,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 /**
@@ -52,6 +51,7 @@ public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameL
 		                	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		                }
 		            });
+		            // TODO this is throwing an exception
 					frame.getContentPane().add(usernameModificationWindow, BorderLayout.CENTER);
 					frame.setVisible(true);
 				} catch (HeadlessException e1) {
