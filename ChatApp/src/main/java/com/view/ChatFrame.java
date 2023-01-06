@@ -29,7 +29,7 @@ import main.java.com.model.User;
  *
  */
 public class ChatFrame extends JPanel implements ChatListener, UsernameListener {
-	// TODO for now, our program only works for textual messages
+
 	private static final long serialVersionUID = -4715687549491428225L;
 	private User remoteUser;
 
@@ -49,7 +49,6 @@ public class ChatFrame extends JPanel implements ChatListener, UsernameListener 
 		try {
 			vector.addAll(DBManager.getInstance().getConversationHistory(remoteUser.getId()));
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			// Couldnt retrieve history -> TODO: show error message?
 			e1.printStackTrace();
 		}
@@ -77,9 +76,6 @@ public class ChatFrame extends JPanel implements ChatListener, UsernameListener 
 		//ChatFrame newFrame = new ChatFrame(remoteUser);
 	}
 
-	/**
-	 * TODO JPanel isn't closable, think more about the handshake.
-	 */
 	@Override
 	public void onChatClosure(User remoteUser) {
 		this.setVisible(false);

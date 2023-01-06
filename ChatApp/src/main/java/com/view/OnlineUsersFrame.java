@@ -69,7 +69,7 @@ public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameL
                     ChatFrame chatFrame = new ChatFrame(remoteUser);
                     ListenerManager.getInstance().addChatListener(chatFrame);
                     // TODO Think more about this: the request will be sent from both PCs since both will double-click.
-                    // TODO solution: auto-pop the frame for the receiving user? 
+                    // solution: auto-pop the frame for the receiving user? 
                     ListenerManager.getInstance().fireOnChatRequest(remoteUser);
 
                     JFrame f = new JFrame("Message: " + remoteUser);
@@ -110,7 +110,7 @@ public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameL
 	public static void main(String[] args) {
         OnlineUsersFrame onlineUsersFrame = new OnlineUsersFrame();
         JFrame frame = new JFrame("Online users");
-        // TODO When the user closes the OnlineUsersFrame, the user is choosing to log out.
+        // When the user closes the OnlineUsersFrame, the user is choosing to log out.
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 600);
         frame.getContentPane().add(onlineUsersFrame, BorderLayout.CENTER);

@@ -64,7 +64,6 @@ public class LoginWindow extends JFrame {
 				try {
 					onSuccessfulLogin();
 				} catch (HeadlessException | SQLException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -75,7 +74,6 @@ public class LoginWindow extends JFrame {
 		this.setVisible(true);
 	}
 	
-	// TODO
 	private void onSuccessfulLogin() throws HeadlessException, SQLException {
 		String login = loginField.getText();
 		String password = new String(passwordField.getPassword());

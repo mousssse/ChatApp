@@ -35,7 +35,6 @@ public class MachineA {
 		try {
 			loginWindow = new LoginWindow();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

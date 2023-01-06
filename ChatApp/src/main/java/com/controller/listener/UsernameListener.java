@@ -10,7 +10,6 @@ import main.java.com.model.User;
  */
 public interface UsernameListener {
 	
-	// TODO
 	// What happens when an online user modifies their username?
 	public void onUsernameModification(User user, String newUsername);
 	// What happens when the current user modifies their username?
