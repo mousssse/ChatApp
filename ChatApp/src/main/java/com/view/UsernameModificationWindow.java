@@ -10,6 +10,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -41,7 +42,7 @@ public class UsernameModificationWindow extends JFrame {
 		panel.add(usernameField);
 		panel.add(usernameButton);
 		
-		usernameButton.addActionListener(new ActionListener() {
+		this.usernameButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String newUsername = usernameField.getText();
@@ -50,10 +51,11 @@ public class UsernameModificationWindow extends JFrame {
 					panel.setVisible(false);
 					JFrame parent = (JFrame) panel.getTopLevelAncestor();
 					parent.dispatchEvent(new WindowEvent(parent, WindowEvent.WINDOW_CLOSING));
-					// TODO get this to be cleaner
 				}
 				else {
-					// TODO window saying that the username is already taken :/
+					//Display an error message if the username is already taken
+					 JOptionPane.showMessageDialog(panel, "This username is already taken");
+					 usernameField.setText(null);
 				}
 			}
 		});

@@ -23,9 +23,11 @@ public class MachineA {
 		listenerManager.addLoginListener(dbManager);
 		
 		listenerManager.addSelfLoginListener(networkManager);
+		listenerManager.addUsernameListener(networkManager);
 		
 		listenerManager.addLoginListener(onlineUsersManager);
 		listenerManager.addSelfLoginListener(onlineUsersManager);
+		listenerManager.addUsernameListener(onlineUsersManager);
 		
 		listenerManager.addSelfLoginListener(threadManager);
 		listenerManager.addLoginListener(threadManager);
