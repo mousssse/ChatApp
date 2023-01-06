@@ -44,8 +44,15 @@ public class UDPServer implements Runnable {
 					continue;
 				}
 				if (contentReceived.contains("logout")) {
-					// TODO This packet is a broadcast to notify a logout
+					// This packet is a broadcast to notify a logout
 					ListenerManager.getInstance().fireOnLogout(OnlineUsersManager.getInstance().getUserFromIP(received.getAddress()));
+				}
+				else if (contentReceived.contains("username")) {
+					// This packet is a broadcast to notify a username update
+					User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(received.getAddress());
+					String[] parts = contentReceived.split(" ");
+					String remoteUsername = parts[1];
+					ListenerManager.getInstance().fireOnUsernameModification(remoteUser, remoteUsername);
 				}
 				else {
 					// This packet is a broadcast to notify a login or the answer to a login
