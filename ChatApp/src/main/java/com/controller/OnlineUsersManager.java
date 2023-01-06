@@ -102,6 +102,7 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener, Use
 
 	@Override
 	public void onUsernameModification(User user, String newUsername) {
+		user.setUsername(newUsername);
 		this.accountsMap.remove(user.getIP());
 		this.accountsMap.put(user.getIP(), user);
 	}

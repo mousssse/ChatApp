@@ -135,6 +135,7 @@ public class OnlineUsersFrame extends JPanel implements LoginListener, UsernameL
 
 	@Override
 	public void onUsernameModification(User user, String newUsername) {
+		user.setUsername(newUsername);
 		this.userListVector.removeElement(user);
 		this.userListVector.addElement(user);
 	}

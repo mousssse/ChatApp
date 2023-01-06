@@ -52,6 +52,7 @@ public class UDPServer implements Runnable {
 					User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(received.getAddress());
 					String[] parts = contentReceived.split(" ");
 					String remoteUsername = parts[1];
+					System.out.println("firing username change from " + remoteUser.getUsername() + " to " + remoteUsername);
 					ListenerManager.getInstance().fireOnUsernameModification(remoteUser, remoteUsername);
 				}
 				else {
