@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.sqlite.SQLiteException;
-
 import main.java.com.controller.listener.DBListener;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.model.Message;
@@ -97,7 +95,7 @@ public class DBManager implements DBListener, LoginListener {
      * @param id is the id of the user we are adding
      * @param username is the username of the user we are adding
      */
-    public void insertUser(String username, String id) {
+    private void insertUser(String username, String id) {
         String sql = "INSERT OR IGNORE INTO users(id, username, password) VALUES(?, ?, ?)";
 
         try {
@@ -120,7 +118,7 @@ public class DBManager implements DBListener, LoginListener {
      * @param username is the username of the local user
      * @param hashedPassword is a hash of the local user's password
      */
-    public void insertThisUser(String username, String hashedPassword) {
+    private void insertThisUser(String username, String hashedPassword) {
     	String sqlCheckExisting = "SELECT * FROM users WHERE password IS NOT NULL;";
     	
     	try {
@@ -152,8 +150,11 @@ public class DBManager implements DBListener, LoginListener {
     /**
      * @param id is the id of the user we want to update
      * @param newUsername is the new username of the user
+     * 
+     * @return a boolean that's true if the username isn't already taken
+     * and has been updated in the database, false otherwise
      */
-    public void updateUsername(String id, String newUsername) {
+    public boolean updateUsername(String id, String newUsername) {
         String sql = "UPDATE users SET username = ? WHERE id = ?;";
 
         try {
@@ -161,24 +162,29 @@ public class DBManager implements DBListener, LoginListener {
             pstmt.setString(1, newUsername);
             pstmt.setString(2, id);
             pstmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
         	if (e.getMessage().contains("SQLITE_CONSTRAINT_UNIQUE")) {
         		// TODO: username is already taken!
         		// check that only when changing your own username?
+        		return false;
         	}
+        	// This shouldn't happen
             System.out.println(e.getMessage());
+            return false;
         }
     }
     
     /**
      * Inserts a message in the messages table
      * 
-     * @param content A <code>Blob</code> object that contains the content of the message
+     * @param content A string that contains the content of the message
      * @param time A string that represents the time of the message
      * @param fromId The user id of the sender
      * @param toId The user id of the receiver
+     * @param type The message type
      */
-    public void insertMessage(String content, String time, String fromId, String toId, MessageType type) {
+    private void insertMessage(String content, String time, String fromId, String toId, MessageType type) {
     	if (type != MessageType.MESSAGE) return;
     	String sql = "INSERT INTO messages(content, time, fromId, toId) VALUES(?, ?, ?, ?);";
     	
@@ -195,10 +201,31 @@ public class DBManager implements DBListener, LoginListener {
     }
     
     /**
+     * Removes a message from the messages table
+     * 
+     * @param time The time of the message we want to remove
+     * @param fromId The id of the sender
+     * @param toId The id of the receiver
+     */
+    private void removeMessage(String time, String fromId, String toId) {
+    	String sql = "DELETE FROM messages WHERE time = ? AND fromId = ? AND toId = ?;";
+    	
+    	try {
+            PreparedStatement pstmt = this.conn.prepareStatement(sql);
+            pstmt.setString(1, time);
+            pstmt.setString(2, fromId);
+            pstmt.setString(3, toId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    /**
      * Gets the messages of a conversation with a remote user
      * 
      * @param remoteUserId The user id with whom we want to check our messages
-     * @return A ResultSet of the messages database rows that correspond
+     * @return A ResultSet of the messages database rows that correspond to the conversation
      * @throws SQLException - SQLException
      */
     public List<Message> getConversationHistory(String remoteUserId) throws SQLException {
@@ -238,6 +265,8 @@ public class DBManager implements DBListener, LoginListener {
      * @return the username associated with the user id
      */
     public String getUsernameFromId(String id) {
+    	// TODO this function is never used, it would be useful only if
+    	// we make it possible to view past messages with users who aren't online
     	String sql = "SELECT username FROM users WHERE id = ?;";
     	
     	try {
@@ -247,8 +276,8 @@ public class DBManager implements DBListener, LoginListener {
             return rs.getString("username");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        	return null;
         }
-    	return "";
     }
     
     /**
@@ -267,8 +296,8 @@ public class DBManager implements DBListener, LoginListener {
             return rs.getString("id");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        	return null;
         }
-    	return "";
     }
     
     /**
@@ -284,22 +313,30 @@ public class DBManager implements DBListener, LoginListener {
         return rs.getString("password");
     }
     
-    public String getLocalUsername() throws SQLException {
+    /**
+     * Gets the username of the local user in the database
+     * 
+     * @return a string that is the username of the local user
+     */
+    public String getLocalUsername() {
     	String sql = "SELECT username FROM users WHERE password IS NOT NULL;";
-    	Statement stmt = this.conn.createStatement();
     	try {
+        	Statement stmt = this.conn.createStatement();
     		ResultSet rs = stmt.executeQuery(sql);
     		return rs.getString("username");
-    	} catch (SQLiteException e) {
+    	} catch (SQLException e) {
     		// The db doesn't contain the local user yet,
-    		// this is the first time the user opens the app
-    		return null;
+    		// this is the first time the user opens the app.
+    		// This shouldn't happen
+            System.out.println(e.getMessage());
+        	return null;
     	}
     }
     
     /**
+     * Gets the list of all known users' usernames
      * 
-     * @return all usernames in the database
+     * @return a list of all usernames in the database
      */
     public List<String> getAllUsernames() {
     	String sql = "SELECT username FROM users WHERE password IS NULL;";
