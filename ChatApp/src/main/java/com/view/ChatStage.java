@@ -128,6 +128,6 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 
 	@Override
 	public void onMessageToReceive(Message message) {
-		vector.add(message);
+		Platform.runLater(() -> vector.add(message));
 	}
 }
