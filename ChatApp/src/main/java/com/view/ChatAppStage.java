@@ -1,5 +1,6 @@
 package main.java.com.view;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,6 +43,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         scrollPane.setStyle("-fx-focus-color: transparent;");
     	this.userListVector = FXCollections.observableArrayList();
         this.users = new ListView<User>(this.userListVector);
+        scrollPane.setContent(this.users);
         
         GridPane usernamePane = new GridPane();
         this.usernameLabel = new Label("My username: " + OnlineUsersManager.getInstance().getLocalUser().getUsername());
@@ -103,26 +105,28 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 
 	@Override
 	public void onLogin(User remoteUser) {
-		this.userListVector.add(remoteUser);
+		Platform.runLater(() -> this.userListVector.add(remoteUser));
 	}
 
 
 	@Override
 	public void onLogout(User remoteUser) {
-		this.userListVector.remove(remoteUser);
+		Platform.runLater(() -> this.userListVector.remove(remoteUser));
 	}
 
 
 	@Override
 	public void onUsernameModification(User user, String newUsername) {
 		user.setUsername(newUsername);
-		this.userListVector.remove(user);
-		this.userListVector.add(user);
+		Platform.runLater(() -> {
+			this.userListVector.remove(user);
+			this.userListVector.add(user);
+		});
 	}
 
 
 	@Override
 	public void onSelfUsernameModification(String newUsername) {
-		this.usernameLabel.textProperty().bind(new SimpleStringProperty("My username: " + newUsername));;
+		Platform.runLater(() -> this.usernameLabel.textProperty().bind(new SimpleStringProperty("My username: " + newUsername)));
 	}
 }

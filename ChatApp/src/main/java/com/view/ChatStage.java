@@ -3,16 +3,22 @@ package main.java.com.view;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import main.java.com.controller.DBManager;
@@ -33,14 +39,20 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 	private User remoteUser;
 	private ObservableList<Message> vector = FXCollections.observableArrayList();
 	private ListView<Message> messageList = new ListView<>(vector);
-	private BorderPane rootPane;
+	private BorderPane rootPane = new BorderPane();
+	private Label inputLabel = new Label("Send message: ");
 	private TextField inputField = new TextField();
 	
 	public ChatStage(User remoteUser) {
 		this.remoteUser = remoteUser;
-		ScrollPane messagePane = new ScrollPane(messageList);
-		GridPane inputPane = new GridPane();
-		inputPane.add(inputField, 0, 0);
+		ScrollPane messagePane = new ScrollPane(this.messageList);
+		messagePane.setFitToWidth(true);
+		VBox inputBox = new VBox();
+		HBox hbox = new HBox(this.inputLabel, this.inputField);
+		HBox.setHgrow(this.inputField, Priority.ALWAYS);
+		hbox.setAlignment(Pos.CENTER);
+		hbox.setPadding(new Insets(8));
+		inputBox.getChildren().add(hbox);
 		
 		try {
 			vector.addAll(DBManager.getInstance().getConversationHistory(this.remoteUser.getId()));
@@ -66,7 +78,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
         });
         
         this.rootPane.setCenter(messagePane);
-        this.rootPane.setBottom(inputPane);
+        this.rootPane.setBottom(inputBox);
         Scene scene = new Scene(this.rootPane, 500, 500);
         this.setScene(scene);
         this.setTitle("Conversation with " + this.remoteUser.getUsername());
@@ -106,7 +118,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 
 	@Override
 	public void onChatClosure(User remoteUser) {
-		this.close();
+		Platform.runLater(() -> this.close());
 	}
 
 	@Override
