@@ -105,11 +105,30 @@ public class DBManager implements DBListener, LoginListener {
             pstmt.setString(3, null);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-        	if (e.getMessage().contains("SQLITE_CONSTRAINT_PRIMARYKEY")) {
-        		// TODO: user is already in db!
-        	}
             System.out.println(e.getMessage());
         }
+    }
+    
+    
+    /**
+     * Checks if the local user already exists in the database
+     * 
+     * @return true if the user is in the database, false otherwise
+     */
+    public boolean localUserIsInDB() {
+    	String sqlCheckExisting = "SELECT * FROM users WHERE password IS NOT NULL;";
+    	
+    	try {
+    		Statement stmt = this.conn.createStatement();
+    		ResultSet rs = stmt.executeQuery(sqlCheckExisting);
+            if (rs.isBeforeFirst()) {
+    			// local user already exists in the database
+            	return true;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
     
     /**
@@ -119,32 +138,21 @@ public class DBManager implements DBListener, LoginListener {
      * @param hashedPassword is a hash of the local user's password
      */
     private void insertThisUser(String username, String hashedPassword) {
-    	String sqlCheckExisting = "SELECT * FROM users WHERE password IS NOT NULL;";
-    	
-    	try {
-    		Statement stmt = this.conn.createStatement();
-    		ResultSet rs = stmt.executeQuery(sqlCheckExisting);
-            if (rs.isBeforeFirst()) {
-    			// local user already exists in the database, no need to insert them
-            	return;
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    	
-    	// On first login
-        String sql = "INSERT OR IGNORE INTO users(id, username, password) VALUES(?, ?, ?)";
-        String id = UUID.randomUUID().toString();
+    	if (!this.localUserIsInDB()) {
+    		// On first login only
+            String sql = "INSERT INTO users(id, username, password) VALUES(?, ?, ?)";
+            String id = UUID.randomUUID().toString();
 
-        try {
-            PreparedStatement pstmt = this.conn.prepareStatement(sql);
-            pstmt.setString(1, id);
-            pstmt.setString(2, username);
-            pstmt.setString(3, hashedPassword);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+            try {
+                PreparedStatement pstmt = this.conn.prepareStatement(sql);
+                pstmt.setString(1, id);
+                pstmt.setString(2, username);
+                pstmt.setString(3, hashedPassword);
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+    	}
     }
     
     /**

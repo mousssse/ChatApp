@@ -1,16 +1,28 @@
-package test;
+package main.java.com.view;
 
+import javafx.application.Application;
+import javafx.stage.Stage;
 import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.NetworkManager;
 import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.ThreadManager;
-import main.java.com.view.ChatApp;
 
-public class MachineA {
+/**
+ * @author sarah
+ * @author Sandro
+ *
+ */
+public class ChatApp extends Application {
 	
-	public static void main(String[] args) {
-		DBManager dbManager = DBManager.getInstance();
+    @Override
+    public void start(Stage primaryStage) {
+    	LoginStage.getInstance();
+    }
+    
+
+    public static void main(String[] args) {
+    	DBManager dbManager = DBManager.getInstance();
 		NetworkManager networkManager = NetworkManager.getInstance();
 		OnlineUsersManager onlineUsersManager = OnlineUsersManager.getInstance();
 		ThreadManager threadManager = ThreadManager.getInstance();
@@ -31,6 +43,6 @@ public class MachineA {
 		listenerManager.addLoginListener(threadManager);
 		listenerManager.addChatListener(threadManager);
 		
-		new ChatApp();
-	}
+        launch(args);
+    }
 }
