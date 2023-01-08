@@ -59,7 +59,6 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         for (Entry<String, String> usernameEntry : DBManager.getInstance().getAllUsernames().entrySet()) {
         	if (!this.idIsOnline(usernameEntry.getKey())) {
         		this.offlineUserListVector.add(usernameEntry.getValue());
-        		System.out.println(usernameEntry.getValue() + " is offline.");
         	}
         }
         this.offlineUsers = new ListView<String>();
@@ -105,6 +104,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         	// On double-click on an online user's username, open chat frame with that user
         	if (count.getClickCount() > 1) {
         		 User remoteUser = users.getSelectionModel().getSelectedItem();
+        		 if (remoteUser == null) return;
         		 ChatStage chatStage = new ChatStage(remoteUser, true);
                  ListenerManager.getInstance().addChatListener(chatStage);
                  ListenerManager.getInstance().addUsernameListener(chatStage);
@@ -118,6 +118,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         	// On double-click on an online user's username, open chat frame with that user
         	if (count.getClickCount() > 1) {
         		String username = offlineUsers.getSelectionModel().getSelectedItem();
+       		 if (username == null) return;
         		String id = DBManager.getInstance().getIdFromUsername(username);
         		new ChatStage(new User(id, username, null, 0), false);
         	}
