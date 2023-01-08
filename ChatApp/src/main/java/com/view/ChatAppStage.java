@@ -23,6 +23,7 @@ import javafx.stage.WindowEvent;
 import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
+import main.java.com.controller.ThreadManager;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.UsernameListener;
 import main.java.com.model.User;
@@ -104,10 +105,12 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         	// On double-click on an online user's username, open chat frame with that user
         	if (count.getClickCount() > 1) {
         		 User remoteUser = users.getSelectionModel().getSelectedItem();
-                 ListenerManager.getInstance().addChatListener(new ChatStage(remoteUser, true));
-                 // TODO Think more about this: the request will be sent from both PCs since both will double-click.
-                 // solution: auto-pop the frame for the receiving user? 
-                 ListenerManager.getInstance().fireOnChatRequest(remoteUser);
+        		 ChatStage chatStage = new ChatStage(remoteUser, true);
+                 ListenerManager.getInstance().addChatListener(chatStage);
+                 ListenerManager.getInstance().addUsernameListener(chatStage);
+                 // The chat request will only be sent from one person
+                 if (!ThreadManager.getInstance().conversationExists(remoteUser.getId())) ListenerManager.getInstance().fireOnChatRequest(remoteUser);
+                 // TODO accept chat request window
         	}
         });
         

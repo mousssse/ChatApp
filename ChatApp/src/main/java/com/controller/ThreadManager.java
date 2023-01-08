@@ -42,6 +42,16 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	}
 	
 	/**
+	 * Checks whether a connection has already been instantiated with a user.
+	 * 
+	 * @param id the id of the user which conversation we want to check
+	 * @return true if we already have a conversation running with the user
+	 */
+	public boolean conversationExists(String id) {
+		return this.conversationsMap.keySet().stream().filter(user -> user.getId().equals(id)).findFirst().isPresent();
+	}
+	
+	/**
 	 * 
 	 * @param remoteUser is the remote user
 	 * @param conversation is the conversation with the remote user

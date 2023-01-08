@@ -11,10 +11,13 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -45,6 +48,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 	
 	public ChatStage(User remoteUser, Boolean online) {
 		this.remoteUser = remoteUser;
+		this.updateMessageVector();
         this.messageList.setItems(this.vector);
         
     	ScrollPane messagePane = new ScrollPane(this.messageList);
@@ -63,23 +67,13 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
         	inputBox.getChildren().add(new Label(remoteUser.getUsername() + " is offline. You can't send them messages."));
         }
 		
-		try {
-			vector.addAll(DBManager.getInstance().getConversationHistory(this.remoteUser.getId()));
-		} catch (SQLException e) {
-			// Couldnt retrieve history -> TODO: show error message?
-			e.printStackTrace();
-		}
-		
         inputField.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
                 String messageContent = inputField.getText().trim();
                 // The empty string is not allowed.
                 if (!messageContent.isEmpty()) {
-                    Message message = new Message(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, messageContent, LocalDateTime.now(), MessageType.MESSAGE);
-    				ListenerManager.getInstance().fireOnMessageToSend(message.getFromUser(), message.getToUser(), message.getContent(), message.getDate(), message.getType());
-    				// Adding the message to the view.
-    				vector.add(message);
+    				ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, messageContent, LocalDateTime.now(), MessageType.MESSAGE);
     				// Resetting the text field.
     				inputField.setText(null);
                 }
@@ -107,16 +101,32 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
     private Stage getStage() {
 		return this;
 	}
+    
+    private void updateMessageVector() {
+    	this.vector.clear();
+    	try {
+			vector.addAll(DBManager.getInstance().getConversationHistory(this.remoteUser.getId()));
+		} catch (SQLException e) {
+			 //Display an error message if the database could not retrieve history
+			Alert historyNotLoaded = new Alert(AlertType.NONE);
+			historyNotLoaded.getDialogPane().getButtonTypes().add(ButtonType.OK);
+			historyNotLoaded.setTitle("History error");
+			historyNotLoaded.setContentText("Could not load conversation history with " + this.remoteUser.getUsername());
+			historyNotLoaded.showAndWait();
+		}
+    }
 
 	@Override
 	public void onUsernameModification(User user, String newUsername) {
 		user.setUsername(newUsername);
 		this.remoteUser = user;
+		this.updateMessageVector();
 	}
 
 	@Override
 	public void onSelfUsernameModification(String newUsername) {
-		// TODO update our name on the sent messages?
+		this.vector.clear();
+		this.updateMessageVector();
 	}
 
 	@Override
@@ -132,7 +142,10 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 
 	@Override
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date,	MessageType type) {
-		// Nothing to do
+		Platform.runLater(() -> {
+            Message message = new Message(localUser, remoteUser, messageContent, date, type);
+            vector.add(message);
+		});
 	}
 
 	@Override
