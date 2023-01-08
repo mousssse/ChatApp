@@ -43,17 +43,25 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 	private Label inputLabel = new Label("Send message: ");
 	private TextField inputField = new TextField();
 	
-	public ChatStage(User remoteUser) {
+	public ChatStage(User remoteUser, Boolean online) {
 		this.remoteUser = remoteUser;
         this.messageList.setItems(this.vector);
-		ScrollPane messagePane = new ScrollPane(this.messageList);
+        
+    	ScrollPane messagePane = new ScrollPane(this.messageList);
 		messagePane.setFitToWidth(true);
+		messagePane.setFitToHeight(true);
+
 		VBox inputBox = new VBox();
-		HBox hbox = new HBox(this.inputLabel, this.inputField);
-		HBox.setHgrow(this.inputField, Priority.ALWAYS);
-		hbox.setAlignment(Pos.CENTER);
-		hbox.setPadding(new Insets(8));
-		inputBox.getChildren().add(hbox);
+		inputBox.setPadding(new Insets(8));
+        if (online) {
+    		HBox hbox = new HBox(this.inputLabel, this.inputField);
+    		HBox.setHgrow(this.inputField, Priority.ALWAYS);
+    		hbox.setAlignment(Pos.CENTER);
+    		inputBox.getChildren().add(hbox);
+        }
+        else {
+        	inputBox.getChildren().add(new Label(remoteUser.getUsername() + " is offline. You can't send them messages."));
+        }
 		
 		try {
 			vector.addAll(DBManager.getInstance().getConversationHistory(this.remoteUser.getId()));
@@ -87,7 +95,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
         this.setOnCloseRequest(new EventHandler<WindowEvent>() {
         	@Override
         	public void handle(WindowEvent e) {
-        		ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CLOSING_CONVERSATION);
+        		if (online) ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CLOSING_CONVERSATION);
         		getStage().close();
         	}
         });

@@ -15,6 +15,16 @@ import main.java.com.controller.ThreadManager;
  */
 public class ChatApp extends Application {
 	
+	private static ChatApp chatApp = null;
+	
+	/**
+     * @return the ChatApp instance.
+     */
+    public static ChatApp getInstance() {
+    	if (chatApp == null) chatApp = new ChatApp();
+		return chatApp;
+	}
+	
     @Override
     public void start(Stage primaryStage) {
     	LoginStage.getInstance();

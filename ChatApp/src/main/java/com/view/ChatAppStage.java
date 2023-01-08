@@ -1,5 +1,7 @@
 package main.java.com.view;
 
+import java.util.Map.Entry;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -15,8 +17,10 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.listener.LoginListener;
@@ -33,18 +37,53 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	private BorderPane rootPane = new BorderPane();
 	private ListView<User> users;
 	private ObservableList<User> userListVector;
+	private ListView<String> offlineUsers;
+	private ObservableList<String> offlineUserListVector;
 	private Label usernameLabel;
 	private Button usernameButton;
 	
 	
-    private void init() {
-    	ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-focus-color: transparent;");
-    	this.userListVector = FXCollections.observableArrayList();
+	private boolean idIsOnline(final String id){
+	    return this.userListVector.stream().filter(user -> user.getId().equals(id)).findFirst().isPresent();
+	}
+	
+	private void initUserListVectors() {
+		// Online users
+		this.userListVector = FXCollections.observableArrayList();
         this.users = new ListView<User>();
         this.users.setItems(this.userListVector);
-        scrollPane.setContent(this.users);
+        
+        // Offline users
+        this.offlineUserListVector = FXCollections.observableArrayList();
+        for (Entry<String, String> usernameEntry : DBManager.getInstance().getAllUsernames().entrySet()) {
+        	if (!this.idIsOnline(usernameEntry.getKey())) {
+        		this.offlineUserListVector.add(usernameEntry.getValue());
+        		System.out.println(usernameEntry.getValue() + " is offline.");
+        	}
+        }
+        this.offlineUsers = new ListView<String>();
+		this.offlineUsers.setItems(this.offlineUserListVector);
+	}
+	
+	
+    private void init() {
+    	this.initUserListVectors();
+    	
+    	ScrollPane onlineScrollPane = new ScrollPane();
+    	onlineScrollPane.setFitToWidth(true);
+    	onlineScrollPane.setStyle("-fx-focus-color: transparent;");
+        onlineScrollPane.setContent(this.users);
+        VBox onlineBox = new VBox();
+        onlineBox.getChildren().add(new Label("Online users"));
+        onlineBox.getChildren().add(onlineScrollPane);
+
+        ScrollPane offlineScrollPane = new ScrollPane();
+    	offlineScrollPane.setFitToWidth(true);
+    	offlineScrollPane.setStyle("-fx-focus-color: transparent;");
+    	offlineScrollPane.setContent(this.offlineUsers);
+        VBox offlineBox = new VBox();
+        offlineBox.getChildren().add(new Label("Offline users"));
+        offlineBox.getChildren().add(offlineScrollPane);
         
         GridPane usernamePane = new GridPane();
         this.usernameLabel = new Label("My username: " + OnlineUsersManager.getInstance().getLocalUser().getUsername());
@@ -61,18 +100,28 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         usernamePane.setAlignment(Pos.BOTTOM_RIGHT);
         usernamePane.setStyle("-fx-focus-color: transparent;");
         
-        users.addEventHandler(MouseEvent.MOUSE_CLICKED, count -> {
+        this.users.addEventHandler(MouseEvent.MOUSE_CLICKED, count -> {
         	// On double-click on an online user's username, open chat frame with that user
         	if (count.getClickCount() > 1) {
         		 User remoteUser = users.getSelectionModel().getSelectedItem();
-                 ListenerManager.getInstance().addChatListener(new ChatStage(remoteUser));
+                 ListenerManager.getInstance().addChatListener(new ChatStage(remoteUser, true));
                  // TODO Think more about this: the request will be sent from both PCs since both will double-click.
                  // solution: auto-pop the frame for the receiving user? 
                  ListenerManager.getInstance().fireOnChatRequest(remoteUser);
         	}
         });
         
-        this.rootPane.setCenter(scrollPane);
+        this.offlineUsers.addEventHandler(MouseEvent.MOUSE_CLICKED, count -> {
+        	// On double-click on an online user's username, open chat frame with that user
+        	if (count.getClickCount() > 1) {
+        		String username = offlineUsers.getSelectionModel().getSelectedItem();
+        		String id = DBManager.getInstance().getIdFromUsername(username);
+        		new ChatStage(new User(id, username, null, 0), false);
+        	}
+        });
+        
+        this.rootPane.setTop(onlineBox);
+        this.rootPane.setCenter(offlineBox);
         this.rootPane.setBottom(usernamePane);
         Scene scene = new Scene(this.rootPane, 400, 600);
         this.setScene(scene);
@@ -82,8 +131,8 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         	@Override
         	public void handle(WindowEvent e) {
         		ListenerManager.getInstance().fireOnSelfLogout();
-        		chatAppStage.close();
-        		UsernameModificationStage.getInstance().close();
+        		Platform.exit();
+        		System.exit(0);
         	}
         });
 
@@ -106,13 +155,19 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 
 	@Override
 	public void onLogin(User remoteUser) {
-		Platform.runLater(() -> this.userListVector.add(remoteUser));
+		Platform.runLater(() -> {
+			this.userListVector.add(remoteUser);
+			this.offlineUserListVector.remove(remoteUser.getUsername());
+		});
 	}
 
 
 	@Override
 	public void onLogout(User remoteUser) {
-		Platform.runLater(() -> this.userListVector.remove(remoteUser));
+		Platform.runLater(() -> {
+			this.userListVector.remove(remoteUser);
+			this.offlineUserListVector.add(remoteUser.getUsername());
+		});
 	}
 
 

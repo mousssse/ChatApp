@@ -9,7 +9,9 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import main.java.com.controller.listener.DBListener;
@@ -260,6 +262,11 @@ public class DBManager implements DBListener, LoginListener {
 	    		fromUser = OnlineUsersManager.getInstance().getLocalUser();
 	    		toUser = OnlineUsersManager.getInstance().getUserFromID(remoteUserId);
 	    	}
+	    	
+	    	// This is for when we are looking at a conversation with an offline user
+	    	if (fromUser == null) fromUser = new User(remoteUserId, this.getUsernameFromId(remoteUserId), null, 0);
+	    	if (toUser == null) toUser = new User(remoteUserId, this.getUsernameFromId(remoteUserId), null, 0);
+	    	
 	    	Message message = new Message(fromUser, toUser, content, dateTime, MessageType.MESSAGE);
 	    	history.add(message);
 	    }
@@ -342,23 +349,23 @@ public class DBManager implements DBListener, LoginListener {
     }
     
     /**
-     * Gets the list of all known users' usernames
+     * Gets the map of all known users' ids and usernames
      * 
-     * @return a list of all usernames in the database
+     * @return a map of all usernames mapped to their id in the database
      */
-    public List<String> getAllUsernames() {
-    	String sql = "SELECT username FROM users WHERE password IS NULL;";
-    	List<String> usernamesList = new ArrayList<String>();
+    public Map<String, String> getAllUsernames() {
+    	String sql = "SELECT username, id FROM users WHERE password IS NULL;";
+    	Map<String, String> usernameMap = new HashMap<String, String>();
     	try {
     		Statement stmt = this.conn.createStatement();
     		ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-    			usernamesList.add(rs.getString("username"));
+            	usernameMap.put(rs.getString("id"), rs.getString("username"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    	return usernamesList;
+    	return usernameMap;
     }
 
 	@Override
