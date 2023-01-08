@@ -42,7 +42,8 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-focus-color: transparent;");
     	this.userListVector = FXCollections.observableArrayList();
-        this.users = new ListView<User>(this.userListVector);
+        this.users = new ListView<User>();
+        this.users.setItems(this.userListVector);
         scrollPane.setContent(this.users);
         
         GridPane usernamePane = new GridPane();

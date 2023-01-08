@@ -38,13 +38,14 @@ import main.java.com.model.User;
 public class ChatStage extends Stage implements ChatListener, UsernameListener {
 	private User remoteUser;
 	private ObservableList<Message> vector = FXCollections.observableArrayList();
-	private ListView<Message> messageList = new ListView<>(vector);
+	private ListView<Message> messageList = new ListView<>();
 	private BorderPane rootPane = new BorderPane();
 	private Label inputLabel = new Label("Send message: ");
 	private TextField inputField = new TextField();
 	
 	public ChatStage(User remoteUser) {
 		this.remoteUser = remoteUser;
+        this.messageList.setItems(this.vector);
 		ScrollPane messagePane = new ScrollPane(this.messageList);
 		messagePane.setFitToWidth(true);
 		VBox inputBox = new VBox();
