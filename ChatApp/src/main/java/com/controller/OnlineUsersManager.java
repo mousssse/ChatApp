@@ -1,7 +1,11 @@
 package main.java.com.controller;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,8 +87,29 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener, Use
 	@Override
 	public void onSelfLoginOnlineUsers(String username) {
 		try {
-			this.localUser = new User(DBManager.getInstance().getIdFromUsername(username), username, InetAddress.getLocalHost());
-		} catch (UnknownHostException e) {
+			InetAddress localIP = null;
+			// Not using InetAddress.getLocalHost() because it can return 
+			// 127.0.0.1 instead of an IP address associated with a network
+			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+			while (interfaces.hasMoreElements()) {
+                NetworkInterface iface = interfaces.nextElement();
+                // filters out 127.0.0.1 and inactive interfaces
+                if (iface.isLoopback() || !iface.isUp()) continue;
+
+                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                while(addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+                    if (addr instanceof Inet6Address) continue;
+
+                    String ip = addr.getHostAddress();
+                    localIP = InetAddress.getByName(ip);
+                    System.out.println(iface.getDisplayName() + " " + localIP);
+                    // We keep the first one
+                    break;
+                }
+            }
+			this.localUser = new User(DBManager.getInstance().getIdFromUsername(username), username, localIP);
+		} catch (UnknownHostException | SocketException e) {
 			e.printStackTrace();
 		}
 	}

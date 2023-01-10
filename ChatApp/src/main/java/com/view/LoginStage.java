@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
+import main.java.com.controller.OnlineUsersManager;
 
 public class LoginStage extends Stage {
 	private static LoginStage loginStage = null;
@@ -90,6 +91,15 @@ public class LoginStage extends Stage {
 			ListenerManager.getInstance().fireOnSelfLoginOnline(username);
 			// As soon as the user is logged in, the online users frame is created, and the login frame disappears.
 			ListenerManager.getInstance().addLoginListener(ChatAppStage.getInstance());
+			if (OnlineUsersManager.getInstance().getLocalUser().getIP() == null) {
+				// Display an error message if the user isn't connected to the Internet
+				Alert offline = new Alert(AlertType.NONE);
+				offline.getDialogPane().getButtonTypes().add(ButtonType.OK);
+				offline.setTitle("Network warning");
+				offline.setContentText("You are currently offline. You can still check past conversations. \nTo connect to the app, close the app, connect to the Internet and re-launch the app.");
+				offline.setHeight(200);
+				offline.showAndWait();
+			}
 			// This will send a broadcast to say we exist
 			ListenerManager.getInstance().fireOnSelfLoginNetwork();
 			

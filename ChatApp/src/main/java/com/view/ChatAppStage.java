@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -106,8 +107,11 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 			}
 		});
         usernamePane.add(usernameLabel, 0, 0);
-        usernamePane.add(this.usernameButton, 1, 0);
+        if (OnlineUsersManager.getInstance().getLocalUser().getIP() != null) {
+            usernamePane.add(this.usernameButton, 1, 0);
+        }
         usernamePane.setHgap(5);
+        usernamePane.setPadding(new Insets(5));
         usernamePane.setAlignment(Pos.BOTTOM_RIGHT);
         usernamePane.setStyle("-fx-focus-color: transparent;");
         
