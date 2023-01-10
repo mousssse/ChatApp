@@ -52,7 +52,7 @@ public class LoginStage extends Stage {
 			@Override
 			public void handle(ActionEvent event) {
 				try {
-					onLogin();
+					checkLogin();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -70,7 +70,7 @@ public class LoginStage extends Stage {
 	}
 	
 	
-	private void onLogin() throws SQLException {
+	private void checkLogin() throws SQLException {
     	String username = this.usernameField.getText();
     	String password = this.passwordField.getText();
     	
