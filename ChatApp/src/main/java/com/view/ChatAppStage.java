@@ -1,5 +1,8 @@
 package main.java.com.view;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javafx.application.Platform;
@@ -24,8 +27,11 @@ import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.ThreadManager;
+import main.java.com.controller.listener.ChatListener;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.UsernameListener;
+import main.java.com.model.Message;
+import main.java.com.model.MessageType;
 import main.java.com.model.User;
 
 /**
@@ -33,7 +39,7 @@ import main.java.com.model.User;
  * @author Sandro
  *
  */
-public class ChatAppStage extends Stage implements LoginListener, UsernameListener {
+public class ChatAppStage extends Stage implements LoginListener, UsernameListener, ChatListener {
     private static ChatAppStage chatAppStage = null;
 	private BorderPane rootPane = new BorderPane();
 	private ListView<User> users;
@@ -42,7 +48,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	private ObservableList<String> offlineUserListVector;
 	private Label usernameLabel;
 	private Button usernameButton;
-	
+	private Map<String, ChatStage> chatStageMap = new HashMap<String, ChatStage>();	
 	
 	private boolean idIsOnline(final String id){
 	    return this.userListVector.stream().filter(user -> user.getId().equals(id)).findFirst().isPresent();
@@ -105,12 +111,20 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         	if (count.getClickCount() > 1) {
         		 User remoteUser = users.getSelectionModel().getSelectedItem();
         		 if (remoteUser == null) return;
-        		 ChatStage chatStage = new ChatStage(remoteUser, true);
-                 ListenerManager.getInstance().addChatListener(chatStage);
-                 ListenerManager.getInstance().addUsernameListener(chatStage);
-                 // The chat request will only be sent from one person
-                 if (!ThreadManager.getInstance().conversationExists(remoteUser.getId())) ListenerManager.getInstance().fireOnChatRequest(remoteUser);
-                 // TODO accept chat request window
+        		 ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());
+        		 if (chatStage == null) {
+            		 ChatStage newChatStage = new ChatStage(remoteUser, true);
+            		 this.chatStageMap.put(remoteUser.getId(), newChatStage);
+                     ListenerManager.getInstance().addChatListener(newChatStage);
+                     ListenerManager.getInstance().addUsernameListener(newChatStage);
+                     // The chat request will only be sent from one person
+                     if (!ThreadManager.getInstance().conversationExists(remoteUser.getId())) ListenerManager.getInstance().fireOnChatRequest(remoteUser);
+                     // TODO accept chat request window
+        		 }
+        		 else {
+        			 chatStage.setIconified(false);
+        			 chatStage.toFront();
+        		 }
         	}
         });
         
@@ -120,7 +134,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         		String username = offlineUsers.getSelectionModel().getSelectedItem();
        		 if (username == null) return;
         		String id = DBManager.getInstance().getIdFromUsername(username);
-        		new ChatStage(new User(id, username, null, 0), false);
+        		this.chatStageMap.put(id, new ChatStage(new User(id, username, null, 0), false));
         	}
         });
         
@@ -188,5 +202,26 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	@Override
 	public void onSelfUsernameModification(String newUsername) {
 		Platform.runLater(() -> this.usernameLabel.textProperty().bind(new SimpleStringProperty("My username: " + newUsername)));
+	}
+
+	@Override
+	public void onChatRequest(User remoteUser) {
+		// Nothing to do
+		// TODO: are you sure abt that?
+	}
+
+	@Override
+	public void onChatClosure(User remoteUser) {
+		this.chatStageMap.remove(remoteUser.getId());
+	}
+
+	@Override
+	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
+		// Nothing to do
+	}
+
+	@Override
+	public void onMessageToReceive(Message message) {
+		// Nothing to do
 	}
 }

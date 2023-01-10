@@ -90,6 +90,7 @@ public class LoginStage extends Stage {
 			// As soon as the user is logged in, the online users frame is created, and the login frame disappears.
 			ListenerManager.getInstance().addLoginListener(ChatAppStage.getInstance());
 			ListenerManager.getInstance().addUsernameListener(ChatAppStage.getInstance());
+			ListenerManager.getInstance().addChatListener(ChatAppStage.getInstance());
 			this.close();
 		} else {
 			 //Display an error message if the user enters an invalid ID or password.

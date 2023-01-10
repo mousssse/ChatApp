@@ -40,6 +40,7 @@ import main.java.com.model.User;
  */
 public class ChatStage extends Stage implements ChatListener, UsernameListener {
 	private User remoteUser;
+	private boolean isOnline;
 	private ObservableList<Message> vector = FXCollections.observableArrayList();
 	private ListView<Message> messageList = new ListView<>();
 	private BorderPane rootPane = new BorderPane();
@@ -48,6 +49,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 	
 	public ChatStage(User remoteUser, Boolean online) {
 		this.remoteUser = remoteUser;
+		this.isOnline = online;
 		this.updateMessageVector();
         this.messageList.setItems(this.vector);
         
@@ -57,7 +59,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 
 		VBox inputBox = new VBox();
 		inputBox.setPadding(new Insets(8));
-        if (online) {
+        if (this.isOnline) {
     		HBox hbox = new HBox(this.inputLabel, this.inputField);
     		HBox.setHgrow(this.inputField, Priority.ALWAYS);
     		hbox.setAlignment(Pos.CENTER);
@@ -83,13 +85,15 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
         this.rootPane.setCenter(messagePane);
         this.rootPane.setBottom(inputBox);
         Scene scene = new Scene(this.rootPane, 500, 500);
+        this.setMinWidth(400);
+        this.setMinHeight(300);
         this.setScene(scene);
         this.setTitle("Conversation with " + this.remoteUser.getUsername());
         
         this.setOnCloseRequest(new EventHandler<WindowEvent>() {
         	@Override
         	public void handle(WindowEvent e) {
-        		if (online) ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CLOSING_CONVERSATION);
+        		if (isOnline) ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CLOSING_CONVERSATION);
         		getStage().close();
         	}
         });
@@ -120,7 +124,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 	public void onUsernameModification(User user, String newUsername) {
 		user.setUsername(newUsername);
 		this.remoteUser = user;
-		this.updateMessageVector();
+		Platform.runLater(() -> this.updateMessageVector());
 	}
 
 	@Override
