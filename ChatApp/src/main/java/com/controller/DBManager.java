@@ -375,8 +375,12 @@ public class DBManager implements DBListener, LoginListener {
 
 	@Override
 	public void onLogin(User remoteUser) {
-		this.insertUser(remoteUser.getUsername(), remoteUser.getId());
-		
+		if (this.getAllUsernames().keySet().contains(remoteUser.getId())) {
+			this.updateUsername(remoteUser.getId(), remoteUser.getUsername());
+		}
+		else {
+			this.insertUser(remoteUser.getUsername(), remoteUser.getId());
+		}
 	}
 
 	@Override

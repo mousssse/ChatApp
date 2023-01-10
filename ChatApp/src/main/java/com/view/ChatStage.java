@@ -111,7 +111,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
     	try {
 			vector.addAll(DBManager.getInstance().getConversationHistory(this.remoteUser.getId()));
 		} catch (SQLException e) {
-			 //Display an error message if the database could not retrieve history
+			//Display an error message if the database could not retrieve history
 			Alert historyNotLoaded = new Alert(AlertType.NONE);
 			historyNotLoaded.getDialogPane().getButtonTypes().add(ButtonType.OK);
 			historyNotLoaded.setTitle("History error");
@@ -124,6 +124,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 	public void onUsernameModification(User user, String newUsername) {
 		user.setUsername(newUsername);
 		this.remoteUser = user;
+		Platform.runLater(() -> this.setTitle("Conversation with " + newUsername));
 		Platform.runLater(() -> this.updateMessageVector());
 	}
 

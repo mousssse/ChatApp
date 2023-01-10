@@ -46,6 +46,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	private ObservableList<User> userListVector;
 	private ListView<String> offlineUsers;
 	private ObservableList<String> offlineUserListVector;
+	private Map<String, String> offlineUserMap;
 	private Label usernameLabel;
 	private Button usernameButton;
 	private Map<String, ChatStage> chatStageMap = new HashMap<String, ChatStage>();	
@@ -61,10 +62,12 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         this.users.setItems(this.userListVector);
         
         // Offline users
+        this.offlineUserMap = new HashMap<String, String>();
         this.offlineUserListVector = FXCollections.observableArrayList();
         for (Entry<String, String> usernameEntry : DBManager.getInstance().getAllUsernames().entrySet()) {
         	if (!this.idIsOnline(usernameEntry.getKey())) {
         		this.offlineUserListVector.add(usernameEntry.getValue());
+        		this.offlineUserMap.put(usernameEntry.getKey(), usernameEntry.getValue());
         	}
         }
         this.offlineUsers = new ListView<String>();
@@ -98,6 +101,8 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 			@Override
 			public void handle(ActionEvent event) {
 				UsernameModificationStage.getInstance().show();
+				UsernameModificationStage.getInstance().setIconified(false);
+				UsernameModificationStage.getInstance().toFront();
 			}
 		});
         usernamePane.add(usernameLabel, 0, 0);
@@ -175,7 +180,15 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	public void onLogin(User remoteUser) {
 		Platform.runLater(() -> {
 			this.userListVector.add(remoteUser);
-			this.offlineUserListVector.remove(remoteUser.getUsername());
+			
+			if (this.offlineUserMap.keySet().contains(remoteUser.getId())) {
+				String oldUsername = this.offlineUserMap.remove(remoteUser.getId());
+				this.offlineUserListVector.remove(oldUsername);
+			}
+			else {
+				this.offlineUserMap.remove(remoteUser.getId());
+				this.offlineUserListVector.remove(remoteUser.getUsername());
+			}
 		});
 	}
 
@@ -185,6 +198,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		Platform.runLater(() -> {
 			this.userListVector.remove(remoteUser);
 			this.offlineUserListVector.add(remoteUser.getUsername());
+			this.offlineUserMap.put(remoteUser.getUsername(), remoteUser.getId());
 		});
 	}
 
