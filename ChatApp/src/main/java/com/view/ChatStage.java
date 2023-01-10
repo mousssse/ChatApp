@@ -12,16 +12,19 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import main.java.com.controller.DBManager;
@@ -53,9 +56,28 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 		this.updateMessageVector();
         this.messageList.setItems(this.vector);
         
+        this.messageList.setCellFactory(param -> new ListCell<Message>(){
+        	@Override
+        	public void updateItem(Message message, boolean empty) {
+        	    super.updateItem(message, empty);
+        	    setText(null);
+
+        	    if (message != null) {
+        	        // Manage the text width
+        	        Text text = new Text(message.toString());
+        	        text.wrappingWidthProperty().bind(getListView().widthProperty().subtract(20));
+        	        setGraphic(text);
+        	    }
+        	    else {
+        	        setGraphic(null);
+        	    }
+        	}
+        });
+        
     	ScrollPane messagePane = new ScrollPane(this.messageList);
-		messagePane.setFitToWidth(true);
-		messagePane.setFitToHeight(true);
+    	messagePane.setFitToWidth(true);
+    	messagePane.setFitToHeight(true);
+    	messagePane.setHbarPolicy(ScrollBarPolicy.NEVER);
 
 		VBox inputBox = new VBox();
 		inputBox.setPadding(new Insets(8));
@@ -85,6 +107,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
         this.rootPane.setCenter(messagePane);
         this.rootPane.setBottom(inputBox);
         Scene scene = new Scene(this.rootPane, 500, 500);
+        //scene.getStylesheets().add("path to CSS file");
         this.setMinWidth(400);
         this.setMinHeight(300);
         this.setScene(scene);
@@ -109,7 +132,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
     private void updateMessageVector() {
     	this.vector.clear();
     	try {
-			vector.addAll(DBManager.getInstance().getConversationHistory(this.remoteUser.getId()));
+    		vector.addAll(DBManager.getInstance().getConversationHistory(this.remoteUser.getId()));
 		} catch (SQLException e) {
 			//Display an error message if the database could not retrieve history
 			Alert historyNotLoaded = new Alert(AlertType.NONE);
@@ -147,10 +170,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 
 	@Override
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date,	MessageType type) {
-		Platform.runLater(() -> {
-            Message message = new Message(localUser, remoteUser, messageContent, date, type);
-            vector.add(message);
-		});
+		Platform.runLater(() -> vector.add(new Message(localUser, remoteUser, messageContent, date, type)));
 	}
 
 	@Override
