@@ -145,10 +145,12 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 
 	@Override
 	public void onUsernameModification(User user, String newUsername) {
-		user.setUsername(newUsername);
-		this.remoteUser = user;
-		Platform.runLater(() -> this.setTitle("Conversation with " + newUsername));
-		Platform.runLater(() -> this.updateMessageVector());
+		if (user.getId().equals(this.remoteUser.getId())) {
+			user.setUsername(newUsername);
+			this.remoteUser = user;
+			Platform.runLater(() -> this.setTitle("Conversation with " + newUsername));
+			Platform.runLater(() -> this.updateMessageVector());
+		}
 	}
 
 	@Override
@@ -165,7 +167,9 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 
 	@Override
 	public void onChatClosure(User remoteUser) {
-		Platform.runLater(() -> this.close());
+		if (remoteUser.getId().equals(this.remoteUser.getId())) {
+			Platform.runLater(() -> this.close());
+		}
 	}
 
 	@Override
