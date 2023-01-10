@@ -28,6 +28,15 @@ public class UsernameModificationStage extends Stage {
 	private TextField usernameField = new TextField();
 	private Button usernameButton = new Button("OK");
 	
+	private boolean validUsernameFormat(String newUsername) {
+		if (newUsername.isEmpty()) return false;
+		if (newUsername.length() > 20) return false;
+		for (int i = 0; i < newUsername.length(); i++) {
+			if ((Character.isLetterOrDigit(newUsername.charAt(i)) == false)) return false;
+		}
+	    return true;
+	}
+	
 	
     private void init() {
     	this.rootPane.add(this.usernameLabel, 0, 0);
@@ -38,19 +47,28 @@ public class UsernameModificationStage extends Stage {
     	this.usernameButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				String newUsername = usernameField.getText();
-				if (DBManager.getInstance().updateUsername(OnlineUsersManager.getInstance().getLocalUser().getId(), newUsername)) {
+				String newUsername = usernameField.getText().trim();
+				if (newUsername == null) return;
+				if (!validUsernameFormat(newUsername)) {
+					//Display an error message if the username is not of valid format
+					Alert invalidUsername = new Alert(AlertType.NONE);
+					invalidUsername.getDialogPane().getButtonTypes().add(ButtonType.OK);
+					invalidUsername.setTitle("Username error");
+					invalidUsername.setContentText("A username can only contain letters and numbers, can't be longer than 20 characters, and shouldn't be empty.");
+					invalidUsername.showAndWait();
+				}
+				else if (DBManager.getInstance().updateUsername(OnlineUsersManager.getInstance().getLocalUser().getId(), newUsername)) {
 					ListenerManager.getInstance().fireOnSelfUsernameModification(newUsername);
 					usernameModifStage.hide();
 					usernameField.setText(null);
 				}
 				else {
 					//Display an error message if the username is already taken
-					Alert invalidCredentials = new Alert(AlertType.NONE);
-					invalidCredentials.getDialogPane().getButtonTypes().add(ButtonType.OK);
-					invalidCredentials.setTitle("Username error");
-					invalidCredentials.setContentText("Sorry, this username is already taken");
-					invalidCredentials.showAndWait();
+					Alert invalidUsername = new Alert(AlertType.NONE);
+					invalidUsername.getDialogPane().getButtonTypes().add(ButtonType.OK);
+					invalidUsername.setTitle("Username error");
+					invalidUsername.setContentText("Sorry, this username is already taken.");
+					invalidUsername.showAndWait();
 				}
 			}
     	});
