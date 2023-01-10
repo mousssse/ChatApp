@@ -103,7 +103,6 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener, Use
 
                     String ip = addr.getHostAddress();
                     localIP = InetAddress.getByName(ip);
-                    System.out.println(iface.getDisplayName() + " " + localIP);
                     // We keep the first one
                     break;
                 }
