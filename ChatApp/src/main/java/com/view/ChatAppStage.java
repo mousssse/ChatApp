@@ -101,9 +101,10 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
         this.usernameButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				UsernameModificationStage.getInstance().show();
-				UsernameModificationStage.getInstance().setIconified(false);
-				UsernameModificationStage.getInstance().toFront();
+				UsernameModificationStage usernameStage = UsernameModificationStage.getInstance();
+				usernameStage.show();
+				usernameStage.setIconified(false);
+				usernameStage.toFront();
 			}
 		});
         usernamePane.add(usernameLabel, 0, 0);

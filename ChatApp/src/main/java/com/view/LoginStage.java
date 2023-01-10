@@ -7,12 +7,13 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import main.java.com.controller.DBManager;
@@ -63,6 +64,11 @@ public class LoginStage extends Stage {
 		this.rootPane.add(this.loginButton, 1, 2, 1, 1);
 		
     	this.rootPane.setAlignment(Pos.CENTER);
+    	this.rootPane.setOnKeyPressed(event -> {
+		  if(event.getCode().equals(KeyCode.ENTER)) {
+		    this.loginButton.fire();
+		  }
+		});
         Scene scene = new Scene(this.rootPane, 300, 150);
         this.setScene(scene);
         this.setTitle("ChatApp - " + title);

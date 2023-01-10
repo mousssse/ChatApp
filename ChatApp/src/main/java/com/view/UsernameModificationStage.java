@@ -5,11 +5,12 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import main.java.com.controller.DBManager;
@@ -75,6 +76,11 @@ public class UsernameModificationStage extends Stage {
 
     	this.rootPane.setVgap(10);
     	this.rootPane.setAlignment(Pos.CENTER);
+    	this.rootPane.setOnKeyPressed(event -> {
+		  if(event.getCode().equals(KeyCode.ENTER)) {
+		    this.usernameButton.fire();
+		  }
+		});
     	
         Scene scene = new Scene(this.rootPane, 300, 100);
         this.setScene(scene);
