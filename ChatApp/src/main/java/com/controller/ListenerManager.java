@@ -148,20 +148,26 @@ public class ListenerManager {
 	}
 	
 	/**
-	 * When the local user logs in, this is the first set of listeners that will be fired.
-	 * @param id is the local user's id
+	 * When the local user logs in, DB self login listeners will be fired.
 	 * @param username is the local user's username
+	 * @param password is the local user's password
 	 */
-	public void fireOnSelfLogin(String username, String password) {
-		this.dbListeners.forEach(dbListener -> dbListener.onSelfLogin(username, password));
+	public void fireOnSelfLoginDB(String username, String password) {
+		this.dbListeners.forEach(dbListener -> dbListener.onSelfLoginDB(username, password));
 	}
 	
 	/**
-	 * When the local user logs in, this is the second set of listeners that will be fired.
+	 * When the local user logs in, OnlineUsersManager self login listeners will be fired.
 	 * @param username is the local user's username
 	 */
-	public void fireOnSelfLoginNext(String username) {
+	public void fireOnSelfLoginOnline(String username) {
 		this.selfLoginListeners.forEach(selfLoginListener -> selfLoginListener.onSelfLoginOnlineUsers(username));
+	}
+	
+	/**
+	 * When the local user logs in, NetworkManager self login listeners will be fired.
+	 */
+	public void fireOnSelfLoginNetwork() {
 		this.selfLoginListeners.forEach(SelfLoginListener::onSelfLoginNetwork);
 	}
 	

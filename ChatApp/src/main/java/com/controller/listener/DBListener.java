@@ -14,7 +14,7 @@ import main.java.com.model.User;
  */
 public interface DBListener {
 	
-	public void onSelfLogin(String username, String password);
+	public void onSelfLoginDB(String username, String password);
 	public void onMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type);
 	public void onMessageToReceiveDB(Message message);
 }

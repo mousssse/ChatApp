@@ -77,7 +77,7 @@ public class LoginStage extends Stage {
     	boolean connected = false;
 		String localUsername = DBManager.getInstance().getLocalUsername();
 		if (localUsername == null) {
-			ListenerManager.getInstance().fireOnSelfLogin(username, password);
+			ListenerManager.getInstance().fireOnSelfLoginDB(username, password);
 			connected = true;
 		}
 		else {
@@ -86,9 +86,13 @@ public class LoginStage extends Stage {
 		}
 		
 		if (connected) {
-			ListenerManager.getInstance().fireOnSelfLoginNext(username);
+			// This will create the local user in OnlineUsersManager
+			ListenerManager.getInstance().fireOnSelfLoginOnline(username);
 			// As soon as the user is logged in, the online users frame is created, and the login frame disappears.
 			ListenerManager.getInstance().addLoginListener(ChatAppStage.getInstance());
+			// This will send a broadcast to say we exist
+			ListenerManager.getInstance().fireOnSelfLoginNetwork();
+			
 			ListenerManager.getInstance().addUsernameListener(ChatAppStage.getInstance());
 			ListenerManager.getInstance().addChatListener(ChatAppStage.getInstance());
 			this.close();

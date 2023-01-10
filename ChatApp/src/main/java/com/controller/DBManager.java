@@ -369,7 +369,7 @@ public class DBManager implements DBListener, LoginListener {
     }
 
 	@Override
-	public void onSelfLogin(String username, String password) {
+	public void onSelfLoginDB(String username, String password) {
 		this.insertThisUser(username, password);
 	}
 
