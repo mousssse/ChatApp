@@ -1,6 +1,5 @@
 package main.java.com.view;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,6 +15,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
@@ -24,14 +24,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
-import main.java.com.controller.ThreadManager;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.UsernameListener;
-import main.java.com.model.MessageType;
 import main.java.com.model.User;
+import main.java.com.view.element.ButtonCell;
 
 /**
  * @author sarah
@@ -122,11 +122,6 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 					this.chatStageMap.put(remoteUser.getId(), chatStage);
 					ListenerManager.getInstance().addChatListener(chatStage);
 					ListenerManager.getInstance().addUsernameListener(chatStage);
-					// The chat request will only be sent from one person
-					if (!ThreadManager.getInstance().conversationExists(remoteUser.getId())) {
-						ListenerManager.getInstance().fireOnChatRequest(remoteUser);
-						// TODO accept chat request window?
-					}
 				} else {
 					chatStage.setIconified(false);
 					chatStage.toFront();
@@ -160,8 +155,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 				chatStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 					@Override
 					public void handle(WindowEvent e) {
-						ChatStage chatStage = chatStageMap.remove(remoteUser.getId());
-		        		if (chatStage.remoteUserIsOnline()) ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CLOSING_CONVERSATION);
+						chatStageMap.remove(remoteUser.getId());
 					}
 				});
 			}
@@ -182,7 +176,16 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 				System.exit(0);
 			}
 		});
-
+		
+		this.users.setFocusTraversable(false);
+		this.users.setStyle("-fx-selection-bar-non-focused: -fx-control-inner-background;");
+		this.users.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
+            @Override
+            public ListCell<User> call(ListView<User> param) {
+                return new ButtonCell();
+            }
+        });
+		
 		this.show();
 	}
 
@@ -238,7 +241,6 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 
 	@Override
 	public void onSelfUsernameModification(String newUsername) {
-		Platform.runLater(
-				() -> this.usernameLabel.textProperty().bind(new SimpleStringProperty("My username: " + newUsername)));
+		Platform.runLater(() -> this.usernameLabel.textProperty().bind(new SimpleStringProperty("My username: " + newUsername)));
 	}
 }

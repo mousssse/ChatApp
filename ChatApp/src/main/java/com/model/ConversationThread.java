@@ -33,8 +33,17 @@ public class ConversationThread implements Runnable {
 					case MESSAGE: 
 						ListenerManager.getInstance().fireOnMessageToReceive(message);
 						break;
-					case CLOSING_CONVERSATION:
+					case REQUEST_CONVERSATION:
+						ListenerManager.getInstance().fireOnChatRequestReceived(this.remoteUser);
+						break;
+					case END_CONVERSATION:
 						ListenerManager.getInstance().fireOnChatClosureReceived(this.remoteUser);
+						break;
+					case ACCEPT_REQUEST:
+						ListenerManager.getInstance().fireOnChatAcceptedRequest(this.remoteUser);
+						break;
+					case CANCEL_REQUEST:
+						ListenerManager.getInstance().fireOnChatCancelledRequest(this.remoteUser);
 						break;
 					default:
 						break;

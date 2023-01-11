@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import main.java.com.controller.listener.ChatListener;
+import main.java.com.controller.listener.ChatRequestListener;
 import main.java.com.controller.listener.DBListener;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.SelfLoginListener;
@@ -24,6 +25,7 @@ public class ListenerManager {
 	private static ListenerManager listenerManager = null;
 	
 	private List<ChatListener> chatListeners;
+	private List<ChatRequestListener> chatRequestListeners;
 	private List<LoginListener> loginListeners;
 	private List<SelfLoginListener> selfLoginListeners;
 	private List<DBListener> dbListeners;
@@ -31,6 +33,7 @@ public class ListenerManager {
 	
 	private ListenerManager() {
 		this.chatListeners = new ArrayList<>();
+		this.chatRequestListeners = new ArrayList<>();
 		this.loginListeners = new ArrayList<>();
 		this.selfLoginListeners = new ArrayList<>();
 		this.usernameListeners = new ArrayList<>();
@@ -48,7 +51,7 @@ public class ListenerManager {
 	
 	/**
 	 * 
-	 * @param chatListener is the chatListener instance
+	 * @param chatListener is the ChatListener listener
 	 */
 	public void addChatListener(ChatListener chatListener) {
 		this.chatListeners.add(chatListener);
@@ -56,7 +59,15 @@ public class ListenerManager {
 	
 	/**
 	 * 
-	 * @param loginListener is the loginListener instance
+	 * @param chatRequestListener is the ChatRequestListener listener
+	 */
+	public void addChatRequestListener(ChatRequestListener chatRequestListener) {
+		this.chatRequestListeners.add(chatRequestListener);
+	}
+	
+	/**
+	 * 
+	 * @param loginListener is the LoginListener listener
 	 */
 	public void addLoginListener(LoginListener loginListener) {
 		this.loginListeners.add(loginListener);
@@ -64,7 +75,7 @@ public class ListenerManager {
 	
 	/**
 	 * 
-	 * @param usernameListener is the usernameListener listener
+	 * @param usernameListener is the UsernameListener listener
 	 */
 	public void addUsernameListener(UsernameListener usernameListener) {
 		this.usernameListeners.add(usernameListener);
@@ -72,7 +83,7 @@ public class ListenerManager {
 	
 	/**
 	 * 
-	 * @param selfLoginListener is the selfLoginListener listener
+	 * @param selfLoginListener is the SelfLoginListener listener
 	 */
 	public void addSelfLoginListener(SelfLoginListener selfLoginListener) {
 		this.selfLoginListeners.add(selfLoginListener);
@@ -145,6 +156,34 @@ public class ListenerManager {
 	public void fireOnMessageToReceive(Message message) {
 		this.chatListeners.forEach(chatListener -> chatListener.onMessageToReceive(message));
 		this.dbListeners.forEach(dbListener -> dbListener.onMessageToReceiveDB(message));
+	}
+	
+	/**
+	 * @param remoteUser is the remote user
+	 */
+	public void fireOnChatAcceptRequest(User remoteUser) {
+		this.chatRequestListeners.forEach(chatRequestListener -> chatRequestListener.onChatAcceptRequest(remoteUser));
+	}
+	
+	/**
+	 * @param remoteUser is the remote user
+	 */
+	public void fireOnChatCancelRequest(User remoteUser) {
+		this.chatRequestListeners.forEach(chatRequestListener -> chatRequestListener.onChatCancelRequest(remoteUser));
+	}
+	
+	/**
+	 * @param remoteUser is the remote user
+	 */
+	public void fireOnChatAcceptedRequest(User remoteUser) {
+		this.chatRequestListeners.forEach(chatRequestListener -> chatRequestListener.onChatAcceptedRequest(remoteUser));
+	}
+	
+	/**
+	 * @param remoteUser is the remote user
+	 */
+	public void fireOnChatCancelledRequest(User remoteUser) {
+		this.chatRequestListeners.forEach(chatRequestListener -> chatRequestListener.onChatCancelledRequest(remoteUser));
 	}
 	
 	/**

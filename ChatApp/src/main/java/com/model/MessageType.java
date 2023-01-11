@@ -9,6 +9,8 @@ package main.java.com.model;
  */
 public enum MessageType {
 	MESSAGE,
-	CLOSING_CONVERSATION,
-	PSEUDO_CHANGE;
+	REQUEST_CONVERSATION,
+	END_CONVERSATION,
+	ACCEPT_REQUEST,
+	CANCEL_REQUEST;
 }

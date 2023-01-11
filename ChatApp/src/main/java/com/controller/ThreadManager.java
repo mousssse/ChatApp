@@ -42,16 +42,6 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	}
 	
 	/**
-	 * Checks whether a connection has already been instantiated with a user.
-	 * 
-	 * @param id the id of the user which conversation we want to check
-	 * @return true if we already have a conversation running with the user
-	 */
-	public boolean conversationExists(String id) {
-		return this.conversationsMap.keySet().stream().filter(user -> user.getId().equals(id)).findFirst().isPresent();
-	}
-	
-	/**
 	 * 
 	 * @param remoteUser is the remote user
 	 * @param conversation is the conversation with the remote user
@@ -111,7 +101,7 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
 		try {
 			this.conversationsMap.get(remoteUser).write(localUser, remoteUser, messageContent, date, type);
-			ListenerManager.getInstance().fireOnMessageSuccessfullySent(localUser, remoteUser, messageContent, date, MessageType.MESSAGE);
+			ListenerManager.getInstance().fireOnMessageSuccessfullySent(localUser, remoteUser, messageContent, date, type);
 		} catch (IOException | SQLException e) {
 			// Message was not received because chat has been closed
 			System.out.println("Chat was already closed.");
