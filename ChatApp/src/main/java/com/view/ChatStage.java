@@ -26,7 +26,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
@@ -47,7 +46,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 	private ObservableList<Message> vector = FXCollections.observableArrayList();
 	private ListView<Message> messageList = new ListView<>();
 	private BorderPane rootPane = new BorderPane();
-	private Label inputLabel = new Label("Send message: ");
+	private VBox inputBox = new VBox();
 	private TextField inputField = new TextField();
 	
 	public ChatStage(User remoteUser, Boolean online) {
@@ -78,17 +77,32 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
     	messagePane.setFitToWidth(true);
     	messagePane.setFitToHeight(true);
     	messagePane.setHbarPolicy(ScrollBarPolicy.NEVER);
-
-		VBox inputBox = new VBox();
-		inputBox.setPadding(new Insets(8));
+        
+    	this.updateInputBox();
+		this.inputBox.setPadding(new Insets(8));
+        this.rootPane.setCenter(messagePane);
+        this.rootPane.setBottom(this.inputBox);
+        Scene scene = new Scene(this.rootPane, 500, 500);
+        //scene.getStylesheets().add("path to CSS file");
+        this.setMinWidth(400);
+        this.setMinHeight(300);
+        this.setScene(scene);
+        this.setTitle("Conversation with " + this.remoteUser.getUsername());
+        
+        this.show();
+	}
+	
+	private void updateInputBox() {
+		this.inputBox.getChildren().clear();
         if (this.isOnline) {
-    		HBox hbox = new HBox(this.inputLabel, this.inputField);
+        	this.inputField.setPromptText("Write a message...");
+    		HBox hbox = new HBox(this.inputField);
     		HBox.setHgrow(this.inputField, Priority.ALWAYS);
     		hbox.setAlignment(Pos.CENTER);
-    		inputBox.getChildren().add(hbox);
+    		this.inputBox.getChildren().add(hbox);
         }
         else {
-        	inputBox.getChildren().add(new Label(remoteUser.getUsername() + " is offline. You can't send them messages."));
+        	this.inputBox.getChildren().add(new Label(remoteUser.getUsername() + " is offline. You can't send them messages."));
         }
 		
         inputField.setOnAction(new EventHandler<ActionEvent>() {
@@ -103,31 +117,11 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
                 }
             }
         });
-        
-        this.rootPane.setCenter(messagePane);
-        this.rootPane.setBottom(inputBox);
-        Scene scene = new Scene(this.rootPane, 500, 500);
-        //scene.getStylesheets().add("path to CSS file");
-        this.setMinWidth(400);
-        this.setMinHeight(300);
-        this.setScene(scene);
-        this.setTitle("Conversation with " + this.remoteUser.getUsername());
-        
-        this.setOnCloseRequest(new EventHandler<WindowEvent>() {
-        	@Override
-        	public void handle(WindowEvent e) {
-        		if (isOnline) ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CLOSING_CONVERSATION);
-        		getStage().close();
-        	}
-        });
-        
-        this.show();
 	}
     
-    
-    private Stage getStage() {
-		return this;
-	}
+    public boolean remoteUserIsOnline() {
+    	return this.isOnline;
+    }
     
     private void updateMessageVector() {
     	this.vector.clear();
@@ -155,20 +149,36 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 
 	@Override
 	public void onSelfUsernameModification(String newUsername) {
-		this.vector.clear();
 		this.updateMessageVector();
+	}
+	
+	@Override
+	public void onChatRequestReceived(User remoteUser) {
+		if (remoteUser.getId().equals(this.remoteUser.getId())) {
+			this.isOnline = true;
+			Platform.runLater(() -> this.updateInputBox());
+		}
 	}
 
 	@Override
 	public void onChatRequest(User remoteUser) {
 		// TODO automatically open the chat frame? create an accept / deny mechanism?
 		//ChatFrame newFrame = new ChatFrame(remoteUser);
+		if (remoteUser.getId().equals(this.remoteUser.getId())) {
+			this.isOnline = true;
+			Platform.runLater(() -> this.updateInputBox());
+		}
 	}
-
+	
+	// TODO this is apparently called twice when the remote user closes the convo...
 	@Override
 	public void onChatClosure(User remoteUser) {
 		if (remoteUser.getId().equals(this.remoteUser.getId())) {
-			Platform.runLater(() -> this.close());
+			this.isOnline = false;
+			Platform.runLater(() -> {
+				this.updateInputBox();
+				this.close();
+			});
 		}
 	}
 

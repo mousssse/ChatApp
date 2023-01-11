@@ -14,10 +14,8 @@ import main.java.com.model.User;
  */
 public interface ChatListener {
 
-	// TODO: are we sure we don't need this one?
 	// What happens when you receive a chat request?
-	//public void onChatRequestReceived(User user, int port);
-	
+	public void onChatRequestReceived(User remoteUser);
 	// What happens when you want to start a conversation
 	public void onChatRequest(User remoteUser);
 	// What happens when one of both parties decides to end the chat?

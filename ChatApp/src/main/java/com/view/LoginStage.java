@@ -110,7 +110,6 @@ public class LoginStage extends Stage {
 			ListenerManager.getInstance().fireOnSelfLoginNetwork();
 			
 			ListenerManager.getInstance().addUsernameListener(ChatAppStage.getInstance());
-			ListenerManager.getInstance().addChatListener(ChatAppStage.getInstance());
 			this.close();
 		} else {
 			 //Display an error message if the user enters an invalid ID or password.

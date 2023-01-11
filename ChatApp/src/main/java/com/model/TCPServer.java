@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
 import main.java.com.controller.ThreadManager;
 
@@ -56,8 +57,8 @@ public class TCPServer implements Runnable {
 				User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(socket.getInetAddress());
 				Conversation conversation = new Conversation(socket);
 				
-				// TODO onChatRequested listener missing
 				ThreadManager.getInstance().addConversation(remoteUser, conversation);
+				ListenerManager.getInstance().fireOnChatRequestReceived(remoteUser);
 				new Thread(new ConversationThread(conversation, remoteUser), "Conversation with " + remoteUser.getUsername()).start();
 				
 				newServer.close();

@@ -90,6 +90,14 @@ public class ListenerManager {
 	 * 
 	 * @param remoteUser is the remote user
 	 */
+	public void fireOnChatRequestReceived(User remoteUser) {
+		this.chatListeners.forEach(chatListener -> chatListener.onChatRequestReceived(remoteUser));
+	}
+	
+	/**
+	 * 
+	 * @param remoteUser is the remote user
+	 */
 	public void fireOnChatRequest(User remoteUser) {
 		this.chatListeners.forEach(chatListener -> chatListener.onChatRequest(remoteUser));
 	}

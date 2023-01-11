@@ -59,6 +59,12 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	public void addConversation(User remoteUser, Conversation conversation) {
 		this.conversationsMap.put(remoteUser, conversation);
 	}
+	
+	@Override
+	public void onChatRequestReceived(User remoteUser) {
+		// Nothing to do 
+		// TODO: think more about this
+	}
 
 	@Override
 	public void onChatRequest(User user) {
