@@ -35,6 +35,8 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 	private static NetworkManager networkManager = null;
 	
 	private NetworkManager() {
+		ListenerManager.getInstance().addSelfLoginListener(this);
+		ListenerManager.getInstance().addUsernameListener(this);
 		this.distantSockets = new ArrayList<>();
 		try {
 			this.distantIPs = this.listAllBroadcastAddresses();

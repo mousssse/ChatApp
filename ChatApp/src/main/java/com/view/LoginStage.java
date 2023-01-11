@@ -95,8 +95,10 @@ public class LoginStage extends Stage {
 		if (connected) {
 			// This will create the local user in OnlineUsersManager
 			ListenerManager.getInstance().fireOnSelfLoginOnline(username);
-			// As soon as the user is logged in, the online users frame is created, and the login frame disappears.
-			ListenerManager.getInstance().addLoginListener(ChatAppStage.getInstance());
+			
+			// As soon as the user is logged in, the ChatAppStage is created
+			ChatAppStage.getInstance();
+			
 			if (OnlineUsersManager.getInstance().getLocalUser().getIP() == null) {
 				// Display an error message if the user isn't connected to the Internet
 				Alert offline = new Alert(AlertType.NONE);
@@ -106,10 +108,11 @@ public class LoginStage extends Stage {
 				offline.setHeight(200);
 				offline.showAndWait();
 			}
+			
 			// This will send a broadcast to say we exist
 			ListenerManager.getInstance().fireOnSelfLoginNetwork();
 			
-			ListenerManager.getInstance().addUsernameListener(ChatAppStage.getInstance());
+			// Closing the login window
 			this.close();
 		} else {
 			 //Display an error message if the user enters an invalid ID or password.

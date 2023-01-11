@@ -29,6 +29,9 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	private Map<User, Conversation> conversationsMap;
 	
 	private ThreadManager() {
+		ListenerManager.getInstance().addChatListener(this);
+		ListenerManager.getInstance().addLoginListener(this);
+		ListenerManager.getInstance().addSelfLoginListener(this);
 		this.conversationsMap = new HashMap<User, Conversation>();
 	}
 	

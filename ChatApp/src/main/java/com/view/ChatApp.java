@@ -17,32 +17,16 @@ public class ChatApp extends Application {
 	
     @Override
     public void start(Stage primaryStage) {
+    	ListenerManager.getInstance();
+    	DBManager.getInstance();
+    	NetworkManager.getInstance();
+    	OnlineUsersManager.getInstance();
+    	ThreadManager.getInstance();
     	LoginStage.getInstance();
     }
     
 
     public static void main(String[] args) {
-    	DBManager dbManager = DBManager.getInstance();
-		NetworkManager networkManager = NetworkManager.getInstance();
-		OnlineUsersManager onlineUsersManager = OnlineUsersManager.getInstance();
-		ThreadManager threadManager = ThreadManager.getInstance();
-
-		ListenerManager listenerManager = ListenerManager.getInstance();
-		
-		listenerManager.addDBListener(dbManager);
-		listenerManager.addLoginListener(dbManager);
-		
-		listenerManager.addSelfLoginListener(networkManager);
-		listenerManager.addUsernameListener(networkManager);
-		
-		listenerManager.addLoginListener(onlineUsersManager);
-		listenerManager.addSelfLoginListener(onlineUsersManager);
-		listenerManager.addUsernameListener(onlineUsersManager);
-		
-		listenerManager.addSelfLoginListener(threadManager);
-		listenerManager.addLoginListener(threadManager);
-		listenerManager.addChatListener(threadManager);
-		
         launch(args);
     }
 }

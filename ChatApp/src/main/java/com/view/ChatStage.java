@@ -52,6 +52,8 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
 	private ChatRequestButton requestButton = new ChatRequestButton();
 	
 	public ChatStage(User remoteUser, boolean isOnline) {
+		ListenerManager.getInstance().addChatListener(this);
+		ListenerManager.getInstance().addUsernameListener(this);
 		ListenerManager.getInstance().addLoginListener(this);
 		this.remoteUser = remoteUser;
 		this.requestButton.setRemoteUser(this.remoteUser);

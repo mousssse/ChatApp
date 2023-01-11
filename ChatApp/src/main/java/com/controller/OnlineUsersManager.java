@@ -27,6 +27,9 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener, Use
 	private Map<InetAddress, User> accountsMap;
 	
 	private OnlineUsersManager() {
+		ListenerManager.getInstance().addLoginListener(this);
+		ListenerManager.getInstance().addSelfLoginListener(this);
+		ListenerManager.getInstance().addUsernameListener(this);
 		this.accountsMap = new HashMap<InetAddress, User>();
 	}
 	

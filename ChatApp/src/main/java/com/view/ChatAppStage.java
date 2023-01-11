@@ -48,6 +48,11 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	private Label usernameLabel;
 	private Button usernameButton;
 	private Map<String, ChatStage> chatStageMap = new HashMap<String, ChatStage>();
+	
+	public ChatAppStage() {
+		ListenerManager.getInstance().addLoginListener(this);
+		ListenerManager.getInstance().addUsernameListener(this);
+	}
 
 	private boolean idIsOnline(final String id) {
 		return this.userListVector.stream().filter(user -> user.getId().equals(id)).findFirst().isPresent();
@@ -120,8 +125,6 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 				if (chatStage == null) {
 					chatStage = new ChatStage(remoteUser, true);
 					this.chatStageMap.put(remoteUser.getId(), chatStage);
-					ListenerManager.getInstance().addChatListener(chatStage);
-					ListenerManager.getInstance().addUsernameListener(chatStage);
 				} else {
 					chatStage.setIconified(false);
 					chatStage.toFront();
@@ -146,8 +149,6 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 				if (chatStage == null) {
 					chatStage = new ChatStage(remoteUser, false);
 					this.chatStageMap.put(remoteUser.getId(), chatStage);
-					ListenerManager.getInstance().addChatListener(chatStage);
-					ListenerManager.getInstance().addUsernameListener(chatStage);
 				} else {
 					chatStage.setIconified(false);
 					chatStage.toFront();

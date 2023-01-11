@@ -33,6 +33,8 @@ public class DBManager implements DBListener, LoginListener {
 
 	private DBManager() {
 		super();
+		ListenerManager.getInstance().addDBListener(this);
+		ListenerManager.getInstance().addLoginListener(this);
 		this.connect();
 		this.initTables();
 	}
