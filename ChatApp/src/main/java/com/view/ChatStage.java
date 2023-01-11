@@ -55,32 +55,11 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 		this.updateMessageVector();
         this.messageList.setItems(this.vector);
         
-        this.messageList.setCellFactory(param -> new ListCell<Message>(){
-        	@Override
-        	public void updateItem(Message message, boolean empty) {
-        	    super.updateItem(message, empty);
-        	    setText(null);
-
-        	    if (message != null) {
-        	        // Manage the text width
-        	        Text text = new Text(message.toString());
-        	        text.wrappingWidthProperty().bind(getListView().widthProperty().subtract(20));
-        	        setGraphic(text);
-        	    }
-        	    else {
-        	        setGraphic(null);
-        	    }
-        	}
-        });
-        
-    	ScrollPane messagePane = new ScrollPane(this.messageList);
-    	messagePane.setFitToWidth(true);
-    	messagePane.setFitToHeight(true);
-    	messagePane.setHbarPolicy(ScrollBarPolicy.NEVER);
+        this.messageList.setStyle("-fx-focus-color: -fx-control-inner-background ; -fx-faint-focus-color: -fx-control-inner-background ;");
         
     	this.updateInputBox();
 		this.inputBox.setPadding(new Insets(8));
-        this.rootPane.setCenter(messagePane);
+        this.rootPane.setCenter(this.messageList);
         this.rootPane.setBottom(this.inputBox);
         Scene scene = new Scene(this.rootPane, 500, 500);
         //scene.getStylesheets().add("path to CSS file");
@@ -88,6 +67,28 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
         this.setMinHeight(300);
         this.setScene(scene);
         this.setTitle("Conversation with " + this.remoteUser.getUsername());
+        
+        this.messageList.setMinWidth(this.getWidth());    // don't ask questions
+
+        this.messageList.setCellFactory(param -> new ListCell<Message>(){
+            @Override
+            public void updateItem(Message message, boolean empty) {
+                super.updateItem(message, empty);
+                setText(null);
+
+                if (message != null) {
+                    setWrapText(true);
+                    setText(message.toString());
+                    
+                    setMinWidth(param.getMinWidth());
+                    setPrefWidth(param.getMinWidth());    // same here
+                }
+                else {
+                    setGraphic(null);
+                    setText(null);
+                }
+            }
+        });
         
         this.show();
 	}
