@@ -103,31 +103,31 @@ public class ChatRequestButton extends Button implements ChatListener, ChatReque
 
 	@Override
 	public void onChatAcceptRequest(User remoteUser) {
-		if (remoteUser.getId().equals(this.remoteUser.getId())) {
-			this.setText(this.endChat);
+		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
+			Platform.runLater(() -> this.setText(this.endChat));
 			ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), this.remoteUser, null, LocalDateTime.now(), MessageType.ACCEPT_REQUEST);
 		}
 	}
 
 	@Override
 	public void onChatCancelRequest(User remoteUser) {
-		if (remoteUser.getId().equals(this.remoteUser.getId())) {
-			this.setText(this.requestChat);
+		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
+			Platform.runLater(() -> this.setText(this.requestChat));
 			ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), this.remoteUser, null, LocalDateTime.now(), MessageType.CANCEL_REQUEST);
 		}
 	}
 
 	@Override
 	public void onChatAcceptedRequest(User remoteUser) {
-		if (remoteUser.getId().equals(this.remoteUser.getId())) {
-			this.setText(this.endChat);
+		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
+			Platform.runLater(() -> this.setText(this.endChat));
 		}
 	}
 
 	@Override
 	public void onChatCancelledRequest(User remoteUser) {
-		if (remoteUser.getId().equals(this.remoteUser.getId())) {
-			this.setText(this.requestChat);
+		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
+			Platform.runLater(() -> this.setText(this.requestChat));
 		}
 	}
 }
