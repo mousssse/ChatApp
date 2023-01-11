@@ -16,9 +16,11 @@ public interface ChatListener {
 
 	// What happens when you receive a chat request?
 	public void onChatRequestReceived(User remoteUser);
-	// What happens when you want to start a conversation
+	// What happens when you want to start a conversation with remoteUser
 	public void onChatRequest(User remoteUser);
-	// What happens when one of both parties decides to end the chat?
+	// What happens when the remoteUser ends the chat?
+	public void onChatClosureReceived(User remoteUser);
+	// What happens when you decide to end the chat with remoteUser?
 	public void onChatClosure(User remoteUser);
 	// What happens when a user wants to send a message?
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type);

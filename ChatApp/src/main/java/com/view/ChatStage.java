@@ -169,16 +169,19 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener {
 			Platform.runLater(() -> this.updateInputBox());
 		}
 	}
+
+	@Override
+	public void onChatClosureReceived(User remoteUser) {
+		if (remoteUser.getId().equals(this.remoteUser.getId())) {
+			this.isOnline = false;
+			Platform.runLater(() -> this.updateInputBox());
+		}
+	}
 	
-	// TODO this is apparently called twice when the remote user closes the convo...
 	@Override
 	public void onChatClosure(User remoteUser) {
 		if (remoteUser.getId().equals(this.remoteUser.getId())) {
-			this.isOnline = false;
-			Platform.runLater(() -> {
-				this.updateInputBox();
-				this.close();
-			});
+			ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CLOSING_CONVERSATION);
 		}
 	}
 

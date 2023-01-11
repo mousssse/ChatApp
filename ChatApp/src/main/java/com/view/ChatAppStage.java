@@ -134,8 +134,8 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 				chatStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 					@Override
 					public void handle(WindowEvent e) {
-						ChatStage chatStage = chatStageMap.remove(remoteUser.getId());
-		        		if (chatStage.remoteUserIsOnline()) ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CLOSING_CONVERSATION);
+						chatStageMap.remove(remoteUser.getId());
+		        		ListenerManager.getInstance().fireOnChatClosure(remoteUser);
 					}
 				});
 			}

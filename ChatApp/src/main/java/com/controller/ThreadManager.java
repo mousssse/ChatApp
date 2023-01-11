@@ -67,33 +67,43 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	}
 
 	@Override
-	public void onChatRequest(User user) {
+	public void onChatRequest(User remoteUser) {
 		try {
 			// Step 1: request a TCP connection to the listening server
 			System.out.println("Going to connect to the TCP listening server on port");
-			Socket socket = new Socket(user.getIP(), user.getTCPserverPort());
+			Socket socket = new Socket(remoteUser.getIP(), remoteUser.getTCPserverPort());
 			
 			// Step 2: Connecting to the redirected TCP server
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			int newTcpPort = in.readInt();
 			socket.close();
-			socket = new Socket(user.getIP(), newTcpPort);
-			User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(socket.getInetAddress());
+			socket = new Socket(remoteUser.getIP(), newTcpPort);
+			
+			// Step 3: creating a conversation
 			Conversation conversation = new Conversation(socket);
 			this.addConversation(remoteUser, conversation);
 			new Thread(new ConversationThread(conversation, remoteUser), "Conversation with " + remoteUser.getUsername()).start();
-			System.out.println("Conversation with " + remoteUser.getUsername() + " launched.");
+			System.out.println("Conversation with " + remoteUser.getUsername() + " requested.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public void onChatClosureReceived(User remoteUser) {
+		// Close the conversation socket and remove the conversation from the map
+		if (this.conversationsMap.get(remoteUser) != null) {
+			this.conversationsMap.remove(remoteUser).close();
+			System.out.println("Conversation with " + remoteUser.getUsername() + " requested to end.");
+		}
+	}
 
 	@Override
-	public void onChatClosure(User user) {
+	public void onChatClosure(User remoteUser) {
 		// Close the conversation socket and remove the conversation from the map
-		if (this.conversationsMap.get(user) != null) {
-			this.conversationsMap.remove(user).close();
-			System.out.println("Conversation with " + user.getUsername() + " closed.");
+		if (this.conversationsMap.get(remoteUser) != null) {
+			this.conversationsMap.remove(remoteUser).close();
+			System.out.println("Conversation with " + remoteUser.getUsername() + " ended.");
 		}
 	}
 

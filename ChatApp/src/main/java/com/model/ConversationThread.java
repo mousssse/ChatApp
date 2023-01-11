@@ -34,14 +34,14 @@ public class ConversationThread implements Runnable {
 						ListenerManager.getInstance().fireOnMessageToReceive(message);
 						break;
 					case CLOSING_CONVERSATION:
-						ListenerManager.getInstance().fireOnChatClosure(this.remoteUser);
+						ListenerManager.getInstance().fireOnChatClosureReceived(this.remoteUser);
 						break;
 					default:
 						break;
 				}
 			} catch (IOException e) {
 				// Chat was already closed
-				ListenerManager.getInstance().fireOnChatClosure(remoteUser);
+				ListenerManager.getInstance().fireOnChatClosureReceived(remoteUser);
 				return;
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
