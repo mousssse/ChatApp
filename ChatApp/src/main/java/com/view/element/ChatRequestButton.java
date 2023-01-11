@@ -67,26 +67,26 @@ public class ChatRequestButton extends Button implements ChatListener, ChatReque
 	public void onChatRequest(User remoteUser) {
 		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
 			this.requestSent = true;
-			this.setText(this.cancelRequest);
+			Platform.runLater(() -> this.setText(this.cancelRequest));
 			ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), this.remoteUser, null, LocalDateTime.now(), MessageType.REQUEST_CONVERSATION);
 		}
 	}
 
 	@Override
 	public void onChatClosureReceived(User remoteUser) {
-		if (remoteUser.getId().equals(this.remoteUser.getId())) {
+		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
 			this.requestSent = false;
 			this.requestReceived = false;
-			this.setText(this.requestChat);
+			Platform.runLater(() -> this.setText(this.requestChat));
 		}
 	}
 
 	@Override
 	public void onChatClosure(User remoteUser) {
-		if (remoteUser.getId().equals(this.remoteUser.getId())) {
+		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
 			this.requestSent = false;
 			this.requestReceived = false;
-			this.setText(this.requestChat);
+			Platform.runLater(() -> this.setText(this.requestChat));
 			ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), this.remoteUser, null, LocalDateTime.now(), MessageType.END_CONVERSATION);
 		}
 	}
