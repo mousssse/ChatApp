@@ -149,6 +149,8 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
     	this.vector.clear();
     	try {
     		vector.addAll(DBManager.getInstance().getConversationHistory(this.remoteUser.getId()));
+    		// TODO : the following line doesn't seem to work
+    		this.messageList.scrollTo(this.vector.size());
 		} catch (SQLException e) {
 			//Display an error message if the database could not retrieve history
 			Alert historyNotLoaded = new Alert(AlertType.NONE);
@@ -203,13 +205,19 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
 	@Override
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date,	MessageType type) {
 		Platform.runLater(() -> {
-			if (type == MessageType.MESSAGE) vector.add(new Message(localUser, remoteUser, messageContent, date, type));
+			if (type == MessageType.MESSAGE) {
+				vector.add(new Message(localUser, remoteUser, messageContent, date, type));
+				this.messageList.scrollTo(this.vector.size());
+			}
 		});
 	}
 
 	@Override
 	public void onMessageToReceive(Message message) {
-		Platform.runLater(() -> vector.add(message));
+		Platform.runLater(() -> {
+			vector.add(message);
+			this.messageList.scrollTo(this.vector.size());
+		});
 	}
 
 	@Override
