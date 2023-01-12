@@ -326,13 +326,19 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	@Override
 	public void onChatClosureReceived(User remoteUser) {
 		this.updateButtons(remoteUser.getId(), ChatRequestButton.requestChat);
-		this.chatStageMap.get(remoteUser.getId()).setConversationLaunched(true);
+		ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());
+		if (chatStage != null) {
+			chatStage.setConversationLaunched(false);
+		}
 	}
 
 	@Override
 	public void onChatClosure(User remoteUser) {
 		this.updateButtons(remoteUser.getId(), ChatRequestButton.requestChat);
-		this.chatStageMap.get(remoteUser.getId()).setConversationLaunched(false);
+		ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());
+		if (chatStage != null) {
+			chatStage.setConversationLaunched(false);
+		}
 	}
 
 	@Override
@@ -348,7 +354,10 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	@Override
 	public void onChatAcceptRequest(User remoteUser) {
 		this.updateButtons(remoteUser.getId(), ChatRequestButton.endChat);
-		this.chatStageMap.get(remoteUser.getId()).setConversationLaunched(true);
+		ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());
+		if (chatStage != null) {
+			chatStage.setConversationLaunched(true);
+		}
 	}
 
 	@Override
@@ -359,7 +368,10 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	@Override
 	public void onChatAcceptedRequest(User remoteUser) {
 		this.updateButtons(remoteUser.getId(), ChatRequestButton.endChat);
-		this.chatStageMap.get(remoteUser.getId()).setConversationLaunched(true);
+		ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());
+		if (chatStage != null) {
+			chatStage.setConversationLaunched(true);
+		}
 	}
 
 	@Override
