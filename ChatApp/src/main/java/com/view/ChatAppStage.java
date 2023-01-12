@@ -1,6 +1,10 @@
 package main.java.com.view;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -28,30 +32,43 @@ import javafx.util.Callback;
 import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
+import main.java.com.controller.listener.ChatListener;
+import main.java.com.controller.listener.ChatRequestListener;
 import main.java.com.controller.listener.LoginListener;
 import main.java.com.controller.listener.UsernameListener;
+import main.java.com.model.Message;
+import main.java.com.model.MessageType;
 import main.java.com.model.User;
 import main.java.com.view.element.ButtonCell;
+import main.java.com.view.element.ChatRequestButton;
 
 /**
  * @author sarah
  * @author Sandro
  *
  */
-public class ChatAppStage extends Stage implements LoginListener, UsernameListener {
+public class ChatAppStage extends Stage implements LoginListener, UsernameListener, ChatListener, ChatRequestListener {
+	
 	private static ChatAppStage chatAppStage = null;
 	private BorderPane rootPane = new BorderPane();
+	
+	private Label usernameLabel;
+	private Button usernameButton;
+	
 	private ListView<User> users;
 	private ObservableList<User> userListVector;
 	private ListView<User> offlineUsers;
 	private ObservableList<User> offlineUserListVector;
-	private Label usernameLabel;
-	private Button usernameButton;
+
 	private Map<String, ChatStage> chatStageMap = new HashMap<String, ChatStage>();
+	
+	private Map<String, List<ChatRequestButton>> chatRequestButtons = new HashMap<String, List<ChatRequestButton>>();
 	
 	public ChatAppStage() {
 		ListenerManager.getInstance().addLoginListener(this);
 		ListenerManager.getInstance().addUsernameListener(this);
+		ListenerManager.getInstance().addChatListener(this);
+		ListenerManager.getInstance().addChatRequestListener(this);
 	}
 
 	private boolean idIsOnline(String id) {
@@ -116,14 +133,14 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		usernamePane.setStyle("-fx-focus-color: transparent;");
 
 		this.users.addEventHandler(MouseEvent.MOUSE_CLICKED, count -> {
-			// On double-click on an online user's username, open chat frame with that user
+			// On double-click on an online user's username, open chat window with that user
 			if (count.getClickCount() > 1) {
 				User remoteUser = users.getSelectionModel().getSelectedItem();
 				if (remoteUser == null)
 					return;
 				ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());
 				if (chatStage == null) {
-					chatStage = new ChatStage(remoteUser, true);
+					chatStage = new ChatStage(remoteUser, getButtonCurrentString(remoteUser.getId()), true, conversationLaunchedWith(remoteUser.getId()));
 					this.chatStageMap.put(remoteUser.getId(), chatStage);
 				} else {
 					chatStage.setIconified(false);
@@ -139,14 +156,15 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		});
 
 		this.offlineUsers.addEventHandler(MouseEvent.MOUSE_CLICKED, count -> {
-			// On double-click on an online user's username, open chat frame with that user
+			// On double-click on an online user's username, open chat window with that user
 			if (count.getClickCount() > 1) {
 				User remoteUser = offlineUsers.getSelectionModel().getSelectedItem();
 				if (remoteUser == null)
 					return;
 				ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());
 				if (chatStage == null) {
-					chatStage = new ChatStage(remoteUser, false);
+					chatStage = new ChatStage(remoteUser, getButtonCurrentString(remoteUser.getId()), false, false);
+					chatStage.setConversationLaunched(false);
 					this.chatStageMap.put(remoteUser.getId(), chatStage);
 				} else {
 					chatStage.setIconified(false);
@@ -200,6 +218,50 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		}
 		return chatAppStage;
 	}
+	
+	/**
+	 * adds a button to the map of all request buttons
+	 * 
+	 * @param id the user's id to which the button is associated to
+	 * @param button the button to add
+	 */
+	public void addButton(String id, ChatRequestButton button) {
+		List<ChatRequestButton> buttons = this.chatRequestButtons.get(id);
+		if (buttons == null) {
+			this.chatRequestButtons.put(id, new ArrayList<ChatRequestButton>(Arrays.asList(button)));
+		}
+		else {
+			buttons.add(button);
+		}
+	}
+	
+	/**
+	 * Updates the text shown on all the buttons associated with the same user
+	 * 
+	 * @param id the id of the user associated to the buttons we want to update
+	 * @param updatedText the text to be shown on the buttons
+	 */
+	public void updateButtons(String id, String updatedText) {
+		for (ChatRequestButton button : this.chatRequestButtons.get(id)) {
+			Platform.runLater(() -> button.setText(updatedText));
+		}
+	}
+	
+	/**
+	 * @param id the id of the user associated with the button we want to get the current text from
+	 * @return the string that's currently set on the first button in the map
+	 */
+	private String getButtonCurrentString(String id) {
+		return this.chatRequestButtons.get(id).get(0).getText();
+	}
+	
+	/**
+	 * @param id the id of the user associated with the conversation
+	 * @return true if the conversation has been accepted already
+	 */
+	private boolean conversationLaunchedWith(String id) {
+		return this.chatRequestButtons.get(id).get(0).getText().equals(ChatRequestButton.endChat);
+	}
 
 	@Override
 	public void onLogin(User remoteUser) {
@@ -242,5 +304,59 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	@Override
 	public void onSelfUsernameModification(String newUsername) {
 		Platform.runLater(() -> this.usernameLabel.textProperty().bind(new SimpleStringProperty("My username: " + newUsername)));
+	}
+
+	@Override
+	public void onChatRequestReceived(User remoteUser) {
+		this.updateButtons(remoteUser.getId(), ChatRequestButton.acceptRequest);
+	}
+
+	@Override
+	public void onChatRequest(User remoteUser) {
+		this.updateButtons(remoteUser.getId(), ChatRequestButton.cancelRequest);
+	}
+
+	@Override
+	public void onChatClosureReceived(User remoteUser) {
+		this.updateButtons(remoteUser.getId(), ChatRequestButton.requestChat);
+		this.chatStageMap.get(remoteUser.getId()).setConversationLaunched(true);
+	}
+
+	@Override
+	public void onChatClosure(User remoteUser) {
+		this.updateButtons(remoteUser.getId(), ChatRequestButton.requestChat);
+		this.chatStageMap.get(remoteUser.getId()).setConversationLaunched(false);
+	}
+
+	@Override
+	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
+		// Nothing to do
+	}
+
+	@Override
+	public void onMessageToReceive(Message message) {
+		// Nothing to do
+	}
+
+	@Override
+	public void onChatAcceptRequest(User remoteUser) {
+		this.updateButtons(remoteUser.getId(), ChatRequestButton.endChat);
+		this.chatStageMap.get(remoteUser.getId()).setConversationLaunched(true);
+	}
+
+	@Override
+	public void onChatCancelRequest(User remoteUser) {
+		this.updateButtons(remoteUser.getId(), ChatRequestButton.requestChat);
+	}
+
+	@Override
+	public void onChatAcceptedRequest(User remoteUser) {
+		this.updateButtons(remoteUser.getId(), ChatRequestButton.endChat);
+		this.chatStageMap.get(remoteUser.getId()).setConversationLaunched(true);
+	}
+
+	@Override
+	public void onChatCancelledRequest(User remoteUser) {
+		this.updateButtons(remoteUser.getId(), ChatRequestButton.requestChat);
 	}
 }

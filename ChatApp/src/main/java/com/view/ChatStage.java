@@ -51,14 +51,15 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
 	private TextField inputField = new TextField();
 	private ChatRequestButton requestButton = new ChatRequestButton();
 	
-	public ChatStage(User remoteUser, boolean isOnline) {
+	public ChatStage(User remoteUser, String initButtonText, boolean isOnline, boolean conversationLaunched) {
 		ListenerManager.getInstance().addChatListener(this);
 		ListenerManager.getInstance().addUsernameListener(this);
 		ListenerManager.getInstance().addLoginListener(this);
 		this.remoteUser = remoteUser;
 		this.requestButton.setRemoteUser(this.remoteUser);
+		this.requestButton.setText(initButtonText);
 		this.isOnline = isOnline;
-		this.conversationLaunched = false;
+		this.conversationLaunched = conversationLaunched;
 		this.updateMessageVector();
         this.messageList.setItems(this.vector);
         
@@ -75,7 +76,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
         this.setScene(scene);
         this.setTitle("Conversation with " + this.remoteUser.getUsername());
         
-        this.messageList.setMinWidth(this.getWidth());    // don't ask questions
+        this.messageList.setMinWidth(this.getWidth());
 
         this.messageList.setCellFactory(param -> new ListCell<Message>(){
             @Override
@@ -88,7 +89,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
                     setText(message.toString());
                     
                     setMinWidth(param.getMinWidth());
-                    setPrefWidth(param.getMinWidth());    // same here
+                    setPrefWidth(param.getMinWidth());
                 }
                 else {
                     setGraphic(null);
@@ -102,7 +103,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
 	
 	public void setConversationLaunched(boolean conversationLaunched) {
 		this.conversationLaunched = conversationLaunched;
-		this.updateInputBox();
+		Platform.runLater(() -> this.updateInputBox());
 	}
 	
 	private void updateInputBox() {
