@@ -54,7 +54,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		ListenerManager.getInstance().addUsernameListener(this);
 	}
 
-	private boolean idIsOnline(final String id) {
+	private boolean idIsOnline(String id) {
 		return this.userListVector.stream().filter(user -> user.getId().equals(id)).findFirst().isPresent();
 	}
 
@@ -133,7 +133,6 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 					@Override
 					public void handle(WindowEvent e) {
 						chatStageMap.remove(remoteUser.getId());
-		        		ListenerManager.getInstance().fireOnChatClosure(remoteUser);
 					}
 				});
 			}

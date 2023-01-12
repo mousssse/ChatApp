@@ -8,17 +8,17 @@ import javafx.scene.layout.Priority;
 import main.java.com.model.User;
 
 public class ButtonCell extends ListCell<User> {
-    HBox hbox = new HBox();
-    TextField text = new TextField("(empty)");
-    Pane pane = new Pane();
-    ChatRequestButton button;
-    User remoteUser;
+    private HBox hbox = new HBox();
+    private TextField text = new TextField("(empty)");
+    private Pane pane = new Pane();
+    private ChatRequestButton button;
+    private User remoteUser;
 
     public ButtonCell() {
         super();
         this.text.setEditable(false);
         this.text.setStyle("-fx-text-box-border: transparent; -fx-background-color: transparent;");
-        this.text.setPrefWidth(this.text.getText().length() * 8);
+        this.text.setPrefWidth(this.text.getText().length() * 9);
         this.button = new ChatRequestButton();
         this.hbox.getChildren().addAll(this.text, this.pane, this.button);
         HBox.setHgrow(this.pane, Priority.ALWAYS);

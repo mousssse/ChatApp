@@ -16,36 +16,36 @@ import main.java.com.model.User;
 
 public class ChatRequestButton extends Button implements ChatListener, ChatRequestListener {
 
-    boolean requestSent;
-    boolean requestReceived;
-    User remoteUser;
-    String requestChat = "Invite to chat";
-    String cancelRequest = "Cancel";
-    String acceptRequest = "Accept";
-    String endChat = "End chat";
+    private User remoteUser;
+    private final String requestChat = "Invite to chat";
+    private final String cancelRequest = "Cancel";
+    private final String acceptRequest = "Accept";
+    private final String endChat = "End chat";
     
 	public ChatRequestButton() {
 		ListenerManager.getInstance().addChatRequestListener(this);
 		ListenerManager.getInstance().addChatListener(this);
-		this.requestSent = false;
-		this.requestReceived = false;
 		this.setStyle("-fx-faint-focus-color: -fx-control-inner-background;");
 		this.setText(this.requestChat);
 		
 		this.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				if (getText().equals(acceptRequest)) {
-					ListenerManager.getInstance().fireOnChatAcceptRequest(remoteUser);
-				}
-				if (getText().equals(cancelRequest)) {
-					ListenerManager.getInstance().fireOnChatCancelRequest(remoteUser);
-				}
-				else if (getText().equals(requestChat)) {
-					ListenerManager.getInstance().fireOnChatRequest(remoteUser);
-				}
-				else {
-					ListenerManager.getInstance().fireOnChatClosure(remoteUser);
+				switch (getText()) {
+					case acceptRequest:
+						ListenerManager.getInstance().fireOnChatAcceptRequest(remoteUser);
+						break;
+					case cancelRequest:
+						ListenerManager.getInstance().fireOnChatCancelRequest(remoteUser);
+						break;
+					case requestChat:
+						ListenerManager.getInstance().fireOnChatRequest(remoteUser);
+						break;
+					case endChat:
+						ListenerManager.getInstance().fireOnChatClosure(remoteUser);
+						break;
+					default:
+						break;
 				}
 			}
 		});
@@ -58,7 +58,6 @@ public class ChatRequestButton extends Button implements ChatListener, ChatReque
 	@Override
 	public void onChatRequestReceived(User remoteUser) {
 		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
-			this.requestReceived = true;
 			Platform.runLater(() -> this.setText(this.acceptRequest));
 		}
 	}
@@ -66,7 +65,6 @@ public class ChatRequestButton extends Button implements ChatListener, ChatReque
 	@Override
 	public void onChatRequest(User remoteUser) {
 		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
-			this.requestSent = true;
 			Platform.runLater(() -> this.setText(this.cancelRequest));
 			ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), this.remoteUser, null, LocalDateTime.now(), MessageType.REQUEST_CONVERSATION);
 		}
@@ -75,8 +73,6 @@ public class ChatRequestButton extends Button implements ChatListener, ChatReque
 	@Override
 	public void onChatClosureReceived(User remoteUser) {
 		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
-			this.requestSent = false;
-			this.requestReceived = false;
 			Platform.runLater(() -> this.setText(this.requestChat));
 		}
 	}
@@ -84,8 +80,6 @@ public class ChatRequestButton extends Button implements ChatListener, ChatReque
 	@Override
 	public void onChatClosure(User remoteUser) {
 		if (this.remoteUser != null && remoteUser.getId().equals(this.remoteUser.getId())) {
-			this.requestSent = false;
-			this.requestReceived = false;
 			Platform.runLater(() -> this.setText(this.requestChat));
 			ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), this.remoteUser, null, LocalDateTime.now(), MessageType.END_CONVERSATION);
 		}
