@@ -102,15 +102,15 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 
 	@Override
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
-		try {
-			this.conversationsMap.get(remoteUser).write(localUser, remoteUser, messageContent, date, type);
-			ListenerManager.getInstance().fireOnMessageSuccessfullySent(localUser, remoteUser, messageContent, date, type);
-		} catch (IOException | SQLException e) {
-			// Message was not received because chat has been closed
-			System.out.println("Chat was already closed.");
-			e.printStackTrace();
+		Conversation conversation = this.conversationsMap.get(remoteUser);
+		if (conversation != null) {
+			try {
+				conversation.write(localUser, remoteUser, messageContent, date, type);
+				ListenerManager.getInstance().fireOnMessageSuccessfullySent(localUser, remoteUser, messageContent, date, type);
+			} catch (IOException | SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		
 	}
 
 	@Override
