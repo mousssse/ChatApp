@@ -242,8 +242,11 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	 * @param updatedText the text to be shown on the buttons
 	 */
 	public void updateButtons(String id, String updatedText) {
-		for (ChatRequestButton button : this.chatRequestButtons.get(id)) {
-			Platform.runLater(() -> button.setText(updatedText));
+		List<ChatRequestButton> buttons = this.chatRequestButtons.get(id);
+		if (buttons != null) {
+			for (ChatRequestButton button : buttons) {
+				Platform.runLater(() -> button.setText(updatedText));
+			}
 		}
 	}
 	
