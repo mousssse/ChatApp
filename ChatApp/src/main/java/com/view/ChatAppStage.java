@@ -252,7 +252,11 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	 * @return the string that's currently set on the first button in the map
 	 */
 	private String getButtonCurrentString(String id) {
-		return this.chatRequestButtons.get(id).get(0).getText();
+		List<ChatRequestButton> buttons = this.chatRequestButtons.get(id);
+		if (buttons != null) {
+			return buttons.get(0).getText();
+		}
+		return null;
 	}
 	
 	/**
