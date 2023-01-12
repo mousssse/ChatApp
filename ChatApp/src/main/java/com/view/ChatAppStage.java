@@ -21,10 +21,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -50,7 +50,7 @@ import main.java.com.view.element.ChatRequestButton;
 public class ChatAppStage extends Stage implements LoginListener, UsernameListener, ChatListener, ChatRequestListener {
 	
 	private static ChatAppStage chatAppStage = null;
-	private BorderPane rootPane = new BorderPane();
+	private VBox rootBox = new VBox();
 	
 	private Label usernameLabel;
 	private Button usernameButton;
@@ -94,22 +94,18 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 
 	private void init() {
 		this.initUserListVectors();
-
-		ScrollPane onlineScrollPane = new ScrollPane();
-		onlineScrollPane.setFitToWidth(true);
-		onlineScrollPane.setStyle("-fx-focus-color: transparent;");
-		onlineScrollPane.setContent(this.users);
-		VBox onlineBox = new VBox();
-		onlineBox.getChildren().add(new Label("Online users"));
-		onlineBox.getChildren().add(onlineScrollPane);
-
-		ScrollPane offlineScrollPane = new ScrollPane();
-		offlineScrollPane.setFitToWidth(true);
-		offlineScrollPane.setStyle("-fx-focus-color: transparent;");
-		offlineScrollPane.setContent(this.offlineUsers);
-		VBox offlineBox = new VBox();
-		offlineBox.getChildren().add(new Label("Offline users"));
-		offlineBox.getChildren().add(offlineScrollPane);
+		
+		GridPane grid = new GridPane();
+		grid.setStyle("-fx-focus-color: -fx-control-inner-background ; -fx-faint-focus-color: -fx-control-inner-background ;");
+		Label onlineLabel = new Label("Online users");
+		onlineLabel.setPadding(new Insets(2));
+		Label offlineLabel = new Label("Offline users");
+		offlineLabel.setPadding(new Insets(2));
+		
+		grid.add(onlineLabel, 0, 0);
+		grid.add(this.users, 0, 1);
+		grid.add(offlineLabel, 0, 2);
+		grid.add(this.offlineUsers, 0, 3);
 
 		GridPane usernamePane = new GridPane();
 		this.usernameLabel = new Label("My username: " + OnlineUsersManager.getInstance().getLocalUser().getUsername());
@@ -178,11 +174,13 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 				});
 			}
 		});
-
-		this.rootPane.setTop(onlineBox);
-		this.rootPane.setCenter(offlineBox);
-		this.rootPane.setBottom(usernamePane);
-		Scene scene = new Scene(this.rootPane, 400, 600);
+		
+		ColumnConstraints cc = new ColumnConstraints();
+		cc.setHgrow(Priority.ALWAYS);
+		grid.getColumnConstraints().add(cc);
+		
+		this.rootBox.getChildren().addAll(Arrays.asList(grid, usernamePane));
+		Scene scene = new Scene(this.rootBox, 400, 600);
 		this.setScene(scene);
 		this.setTitle("ChatApp");
 
@@ -204,6 +202,8 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
             }
         });
 		
+		this.setMinHeight(400);
+		this.setMinWidth(250);
 		this.show();
 	}
 
