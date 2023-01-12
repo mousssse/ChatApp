@@ -203,7 +203,7 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
 	@Override
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date,	MessageType type) {
 		Platform.runLater(() -> {
-			if (type != MessageType.MESSAGE) vector.add(new Message(localUser, remoteUser, messageContent, date, type));
+			if (type == MessageType.MESSAGE) vector.add(new Message(localUser, remoteUser, messageContent, date, type));
 		});
 	}
 
