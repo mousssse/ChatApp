@@ -22,8 +22,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -92,20 +93,13 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		this.offlineUsers.setItems(this.offlineUserListVector);
 	}
 
-	private void init() {
+	private void initLocalUserOnline() {
 		this.initUserListVectors();
 		
-		GridPane grid = new GridPane();
-		grid.setStyle("-fx-focus-color: -fx-control-inner-background ; -fx-faint-focus-color: -fx-control-inner-background ;");
 		Label onlineLabel = new Label("Online users");
 		onlineLabel.setPadding(new Insets(2));
 		Label offlineLabel = new Label("Offline users");
 		offlineLabel.setPadding(new Insets(2));
-		
-		grid.add(onlineLabel, 0, 0);
-		grid.add(this.users, 0, 1);
-		grid.add(offlineLabel, 0, 2);
-		grid.add(this.offlineUsers, 0, 3);
 
 		GridPane usernamePane = new GridPane();
 		this.usernameLabel = new Label("My username: " + OnlineUsersManager.getInstance().getLocalUser().getUsername());
@@ -175,11 +169,10 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 			}
 		});
 		
-		ColumnConstraints cc = new ColumnConstraints();
-		cc.setHgrow(Priority.ALWAYS);
-		grid.getColumnConstraints().add(cc);
+		VBox.setVgrow(this.users, Priority.ALWAYS);
+		VBox.setVgrow(this.offlineUsers, Priority.ALWAYS);
 		
-		this.rootBox.getChildren().addAll(Arrays.asList(grid, usernamePane));
+		this.rootBox.getChildren().addAll(onlineLabel, this.users, offlineLabel, this.offlineUsers, usernamePane);
 		Scene scene = new Scene(this.rootBox, 400, 600);
 		this.setScene(scene);
 		this.setTitle("ChatApp");
@@ -206,6 +199,72 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		this.setMinWidth(250);
 		this.show();
 	}
+	
+	private void initLocalUserOffline() {
+		this.offlineUserListVector = FXCollections.observableArrayList();
+		for (Entry<String, String> usernameEntry : DBManager.getInstance().getAllUsernames().entrySet()) {
+			this.offlineUserListVector.add(new User(usernameEntry.getKey(), usernameEntry.getValue(), null, 0));
+		}
+		this.offlineUsers = new ListView<User>();
+		this.offlineUsers.setItems(this.offlineUserListVector);
+		
+		Label offlineLabel = new Label("Offline users");
+		offlineLabel.setPadding(new Insets(2));
+
+		HBox usernameBox = new HBox();
+		Label offlineWarning = new Label("You are currently offline.");
+		Pane pane = new Pane();
+		this.usernameLabel = new Label("My username: " + OnlineUsersManager.getInstance().getLocalUser().getUsername());
+		usernameBox.getChildren().addAll(offlineWarning, pane, this.usernameLabel);
+		
+		HBox.setHgrow(pane, Priority.ALWAYS);
+		usernameBox.setPadding(new Insets(5));
+		usernameBox.setStyle("-fx-focus-color: transparent;");
+
+		this.offlineUsers.addEventHandler(MouseEvent.MOUSE_CLICKED, count -> {
+			// On double-click on an online user's username, open chat window with that user
+			if (count.getClickCount() > 1) {
+				User remoteUser = offlineUsers.getSelectionModel().getSelectedItem();
+				if (remoteUser == null)
+					return;
+				ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());
+				if (chatStage == null) {
+					chatStage = new ChatStage(remoteUser, getButtonCurrentString(remoteUser.getId()), false, false);
+					chatStage.setConversationLaunched(false);
+					this.chatStageMap.put(remoteUser.getId(), chatStage);
+				} else {
+					chatStage.setIconified(false);
+					chatStage.toFront();
+				}
+				chatStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+					@Override
+					public void handle(WindowEvent e) {
+						chatStageMap.remove(remoteUser.getId());
+					}
+				});
+			}
+		});
+		
+		VBox.setVgrow(this.offlineUsers, Priority.ALWAYS);
+		
+		this.rootBox.getChildren().addAll(offlineLabel, this.offlineUsers, usernameBox);
+		Scene scene = new Scene(this.rootBox, 400, 600);
+		this.setScene(scene);
+		this.setTitle("ChatApp");
+
+		this.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent e) {
+				ListenerManager.getInstance().fireOnSelfLogout();
+				Platform.exit();
+				System.exit(0);
+			}
+		});
+		
+		this.setMinHeight(400);
+		this.setMinWidth(300);
+		this.show();
+	}
 
 	/**
 	 * 
@@ -214,7 +273,12 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	public static ChatAppStage getInstance() {
 		if (chatAppStage == null) {
 			chatAppStage = new ChatAppStage();
-			chatAppStage.init();
+			if (OnlineUsersManager.getInstance().getLocalUser().getIP() == null) {
+				chatAppStage.initLocalUserOffline();
+			}
+			else {
+				chatAppStage.initLocalUserOnline();
+			}
 		}
 		return chatAppStage;
 	}
