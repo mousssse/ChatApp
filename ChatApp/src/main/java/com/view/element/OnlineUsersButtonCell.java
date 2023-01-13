@@ -18,12 +18,11 @@ public class OnlineUsersButtonCell extends ListCell<User> {
         super();
         this.text.setEditable(false);
         this.text.setStyle("-fx-text-box-border: transparent; -fx-background-color: transparent;");
-        this.text.setPrefWidth(this.getWidth());
+        this.text.setPrefWidth(this.text.getText().length() * 10);
         this.button = new ChatRequestButton();
         this.button.setText(ChatRequestButton.requestChat);
         this.hbox.getChildren().addAll(this.text, this.pane, this.button);
-        HBox.setHgrow(this.text, Priority.ALWAYS);
-        HBox.setHgrow(this.pane, Priority.SOMETIMES);
+        HBox.setHgrow(this.pane, Priority.ALWAYS);
     }
 
     @Override
