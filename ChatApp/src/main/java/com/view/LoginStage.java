@@ -108,9 +108,10 @@ public class LoginStage extends Stage {
 				offline.setHeight(200);
 				offline.showAndWait();
 			}
-			
-			// This will send a broadcast to say we exist
-			ListenerManager.getInstance().fireOnSelfLoginNetwork();
+			else {
+				// This will send a broadcast to say we exist
+				ListenerManager.getInstance().fireOnSelfLoginNetwork();
+			}
 			
 			// Closing the login window
 			this.close();
