@@ -97,35 +97,6 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
                 }
             }
         });
-        
-        this.show();
-	}
-	
-	public void setConversationLaunched(boolean conversationLaunched) {
-		this.conversationLaunched = conversationLaunched;
-		Platform.runLater(() -> this.updateInputBox());
-	}
-	
-	private void updateInputBox() {
-		this.inputBox.getChildren().clear();
-        if (this.isOnline && this.conversationLaunched) {
-        	this.inputField.setPromptText("Write a message...");
-    		HBox hbox = new HBox(this.inputField);
-    		HBox.setHgrow(this.inputField, Priority.ALWAYS);
-    		hbox.setAlignment(Pos.CENTER);
-    		this.inputBox.getChildren().add(hbox);
-        }
-        else if (this.isOnline) {
-        	Label label = new Label("Conversation with " + this.remoteUser.getUsername() + " hasn't been requested/accepted.");
-        	Pane pane = new Pane();
-        	HBox hbox = new HBox(label, pane, this.requestButton);
-        	HBox.setHgrow(pane, Priority.ALWAYS);
-        	hbox.setAlignment(Pos.CENTER_LEFT);
-        	this.inputBox.getChildren().add(hbox);
-        }
-        else {
-        	this.inputBox.getChildren().add(new Label(this.remoteUser.getUsername() + " is offline. You can't send them messages."));
-        }
 		
         this.inputField.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -139,6 +110,36 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
                 }
             }
         });
+        
+        this.show();
+	}
+	
+	public void setConversationLaunched(boolean conversationLaunched) {
+		this.conversationLaunched = conversationLaunched;
+		Platform.runLater(() -> this.updateInputBox());
+	}
+	
+	private void updateInputBox() {
+		this.inputBox.getChildren().clear();
+        if (this.isOnline && this.conversationLaunched) {
+        	this.inputField.setPromptText("Write a message...");
+    		HBox hbox = new HBox(this.inputField, this.requestButton);
+    		HBox.setHgrow(this.inputField, Priority.ALWAYS);
+    		hbox.setAlignment(Pos.CENTER);
+    		hbox.setSpacing(5);
+    		this.inputBox.getChildren().add(hbox);
+        }
+        else if (this.isOnline) {
+        	Label label = new Label("Conversation with " + this.remoteUser.getUsername() + " hasn't been requested/accepted.");
+        	Pane pane = new Pane();
+        	HBox hbox = new HBox(label, pane, this.requestButton);
+        	HBox.setHgrow(pane, Priority.ALWAYS);
+        	hbox.setAlignment(Pos.CENTER_LEFT);
+        	this.inputBox.getChildren().add(hbox);
+        }
+        else {
+        	this.inputBox.getChildren().add(new Label(this.remoteUser.getUsername() + " is offline. You can't send them messages."));
+        }
 	}
     
     public boolean remoteUserIsOnline() {
