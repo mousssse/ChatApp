@@ -40,7 +40,7 @@ import main.java.com.controller.listener.UsernameListener;
 import main.java.com.model.Message;
 import main.java.com.model.MessageType;
 import main.java.com.model.User;
-import main.java.com.view.element.ButtonCell;
+import main.java.com.view.element.OnlineUsersButtonCell;
 import main.java.com.view.element.ChatRequestButton;
 
 /**
@@ -191,7 +191,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		this.users.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
             @Override
             public ListCell<User> call(ListView<User> param) {
-                return new ButtonCell();
+                return new OnlineUsersButtonCell();
             }
         });
 		
@@ -412,6 +412,11 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 
 	@Override
 	public void onMessageToReceive(Message message) {
+		// Nothing to do
+	}
+
+	@Override
+	public void onMessageToDelete(Message message) {
 		// Nothing to do
 	}
 

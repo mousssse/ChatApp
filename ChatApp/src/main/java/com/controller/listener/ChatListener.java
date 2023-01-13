@@ -19,6 +19,7 @@ public interface ChatListener {
 	// What happens when you want to start a conversation with remoteUser
 	public void onChatRequest(User remoteUser);
 	// What happens when the remoteUser ends the chat?
+	// TODO the following is useless, we always do the same as chat closure
 	public void onChatClosureReceived(User remoteUser);
 	// What happens when you decide to end the chat with remoteUser?
 	public void onChatClosure(User remoteUser);
@@ -26,5 +27,7 @@ public interface ChatListener {
 	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type);
 	// What happens when a user has to receive a message?
 	public void onMessageToReceive(Message message);
+	// What happens when a user deletes a message?
+	public void onMessageToDelete(Message message);
 
 }

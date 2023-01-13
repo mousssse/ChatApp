@@ -30,6 +30,8 @@ public class DBManager implements DBListener, LoginListener {
 	private static DBManager dbManager = null;
 	private String url = "jdbc:sqlite:chatApp.db";
 	private Connection conn;
+	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	public final static String deletedMessage = "This message was deleted";
 
 	private DBManager() {
 		super();
@@ -219,14 +221,19 @@ public class DBManager implements DBListener, LoginListener {
      * @param fromId The id of the sender
      * @param toId The id of the receiver
      */
-    private void removeMessage(String time, String fromId, String toId) {
-    	String sql = "DELETE FROM messages WHERE time = ? AND fromId = ? AND toId = ?;";
+    private void removeMessage(Message message) {
+    	String time = message.getDate().format(this.formatter);
+    	String fromId = message.getFromUser().getId();
+    	String toId = message.getToUser().getId();
+    	
+    	String sql = "UPDATE messages SET content = ? WHERE time = ? AND fromId = ? AND toId = ?;";
     	
     	try {
             PreparedStatement pstmt = this.conn.prepareStatement(sql);
-            pstmt.setString(1, time);
-            pstmt.setString(2, fromId);
-            pstmt.setString(3, toId);
+            pstmt.setString(1, DBManager.deletedMessage);
+            pstmt.setString(2, time);
+            pstmt.setString(3, fromId);
+            pstmt.setString(4, toId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -252,8 +259,7 @@ public class DBManager implements DBListener, LoginListener {
 	    while (res.next()) {
 	    	String content = res.getString("content");
 	    	String timeString = res.getString("time");
-	    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-	    	LocalDateTime dateTime = LocalDateTime.parse(timeString, formatter);
+	    	LocalDateTime dateTime = LocalDateTime.parse(timeString, this.formatter);
 	    	String fromId = res.getString("fromId");
 	    	User fromUser = null, toUser = null;
 	    	if (fromId.equals(remoteUserId)) {
@@ -282,8 +288,6 @@ public class DBManager implements DBListener, LoginListener {
      * @return the username associated with the user id
      */
     public String getUsernameFromId(String id) {
-    	// TODO this function is never used, it would be useful only if
-    	// we make it possible to view past messages with users who aren't online
     	String sql = "SELECT username FROM users WHERE id = ?;";
     	
     	try {
@@ -393,11 +397,16 @@ public class DBManager implements DBListener, LoginListener {
 	
 	@Override
 	public void onMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
-		this.insertMessage(messageContent, date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), localUser.getId(), remoteUser.getId(), type);
+		this.insertMessage(messageContent, date.format(this.formatter), localUser.getId(), remoteUser.getId(), type);
 	}
 
 	@Override
 	public void onMessageToReceiveDB(Message message) {
 		this.insertMessage(message.getContent(), message.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), message.getFromUser().getId(), message.getToUser().getId(), message.getType());
+	}
+
+	@Override
+	public void onMessageToDeleteDB(Message message) {
+		this.removeMessage(message);
 	}
 }

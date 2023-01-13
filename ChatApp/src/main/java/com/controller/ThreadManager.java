@@ -116,6 +116,11 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 	}
 
 	@Override
+	public void onMessageToDelete(Message message) {
+		// Nothing to do
+	}
+
+	@Override
 	public void onLogin(User remoteUser) {
 		// Nothing to do
 	}

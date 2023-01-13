@@ -56,7 +56,6 @@ public class LoginStage extends Stage {
 				try {
 					checkLogin();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

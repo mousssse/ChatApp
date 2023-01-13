@@ -24,6 +24,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
@@ -34,6 +35,7 @@ import main.java.com.model.Message;
 import main.java.com.model.MessageType;
 import main.java.com.model.User;
 import main.java.com.view.element.ChatRequestButton;
+import main.java.com.view.element.MessageButtonCell;
 
 /**
  * @author sarah
@@ -41,29 +43,38 @@ import main.java.com.view.element.ChatRequestButton;
  *
  */
 public class ChatStage extends Stage implements ChatListener, UsernameListener, LoginListener {
+	
 	private User remoteUser;
 	private boolean isOnline;
 	private boolean conversationLaunched;
+	
 	private ObservableList<Message> vector = FXCollections.observableArrayList();
 	private ListView<Message> messageList = new ListView<>();
+	
 	private BorderPane rootPane = new BorderPane();
 	private VBox inputBox = new VBox();
 	private TextField inputField = new TextField();
 	private ChatRequestButton requestButton = new ChatRequestButton();
+	private Label onlineLabel = new Label();
+	
+	private Double minWidth = (double) 400;
+	private Double minHeight = (double) 300;
 	
 	public ChatStage(User remoteUser, String initButtonText, boolean isOnline, boolean conversationLaunched) {
 		ListenerManager.getInstance().addChatListener(this);
 		ListenerManager.getInstance().addUsernameListener(this);
 		ListenerManager.getInstance().addLoginListener(this);
+		
 		this.remoteUser = remoteUser;
 		this.requestButton.setRemoteUser(this.remoteUser);
 		this.requestButton.setText(initButtonText);
 		this.isOnline = isOnline;
 		this.conversationLaunched = conversationLaunched;
+
 		this.updateMessageVector();
         this.messageList.setItems(this.vector);
-        
         this.messageList.setStyle("-fx-focus-color: -fx-control-inner-background ; -fx-faint-focus-color: -fx-control-inner-background ;");
+		this.messageList.scrollTo(this.vector.size());
         
     	this.updateInputBox();
 		this.inputBox.setPadding(new Insets(8));
@@ -71,30 +82,21 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
         this.rootPane.setBottom(this.inputBox);
         Scene scene = new Scene(this.rootPane, 500, 500);
         //scene.getStylesheets().add("path to CSS file");
-        this.setMinWidth(400);
-        this.setMinHeight(300);
+        this.setMinWidth(this.minWidth);
+        this.setMinHeight(this.minHeight);
         this.setScene(scene);
         this.setTitle("Conversation with " + this.remoteUser.getUsername());
         
         this.messageList.setMinWidth(this.getWidth());
-
-        this.messageList.setCellFactory(param -> new ListCell<Message>(){
-            @Override
-            public void updateItem(Message message, boolean empty) {
-                super.updateItem(message, empty);
-                setText(null);
-
-                if (message != null) {
-                    setWrapText(true);
-                    setText(message.toString());
-                    
-                    setMinWidth(param.getMinWidth());
-                    setPrefWidth(param.getMinWidth());
-                }
-                else {
-                    setGraphic(null);
-                    setText(null);
-                }
+        
+        this.messageList.setFocusTraversable(false);
+		this.messageList.setStyle("-fx-selection-bar-non-focused: -fx-control-inner-background;");
+		this.messageList.setCellFactory(new Callback<ListView<Message>, ListCell<Message>>() {
+			@Override
+            public ListCell<Message> call(ListView<Message> param) {
+                MessageButtonCell cell = new MessageButtonCell();
+                cell.setPrefWidth(minWidth);
+                return cell;
             }
         });
 		
@@ -130,9 +132,9 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
     		this.inputBox.getChildren().add(hbox);
         }
         else if (this.isOnline) {
-        	Label label = new Label("Conversation with " + this.remoteUser.getUsername() + " hasn't been requested/accepted.");
+        	this.onlineLabel.setText("Conversation with " + this.remoteUser.getUsername() + " hasn't been requested/accepted.");
         	Pane pane = new Pane();
-        	HBox hbox = new HBox(label, pane, this.requestButton);
+        	HBox hbox = new HBox(onlineLabel, pane, this.requestButton);
         	HBox.setHgrow(pane, Priority.ALWAYS);
         	hbox.setAlignment(Pos.CENTER_LEFT);
         	this.inputBox.getChildren().add(hbox);
@@ -150,8 +152,6 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
     	this.vector.clear();
     	try {
     		vector.addAll(DBManager.getInstance().getConversationHistory(this.remoteUser.getId()));
-    		// TODO : the following line doesn't seem to work
-    		this.messageList.scrollTo(this.vector.size());
 		} catch (SQLException e) {
 			//Display an error message if the database could not retrieve history
 			Alert historyNotLoaded = new Alert(AlertType.NONE);
@@ -167,8 +167,11 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
 		if (user.getId().equals(this.remoteUser.getId())) {
 			user.setUsername(newUsername);
 			this.remoteUser = user;
-			Platform.runLater(() -> this.setTitle("Conversation with " + newUsername));
-			Platform.runLater(() -> this.updateMessageVector());
+			Platform.runLater(() -> {
+				this.setTitle("Conversation with " + newUsername);
+				this.updateMessageVector();
+				this.onlineLabel.setText("Conversation with " + this.remoteUser.getUsername() + " hasn't been requested/accepted.");
+			});
 		}
 	}
 
@@ -237,6 +240,13 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
 		if (remoteUser.getId().equals(this.remoteUser.getId())) {
 			this.isOnline = false;
 			Platform.runLater(() -> this.updateInputBox());
+		}
+	}
+
+	@Override
+	public void onMessageToDelete(Message message) {
+		if (message.getToUser().getId().equals(this.remoteUser.getId()) || message.getFromUser().getId().equals(this.remoteUser.getId())) {
+			Platform.runLater(() -> this.updateMessageVector());
 		}
 	}
 }

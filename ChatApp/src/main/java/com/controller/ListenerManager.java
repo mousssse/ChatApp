@@ -150,6 +150,14 @@ public class ListenerManager {
 	}
 	
 	/**
+	 * @param message the message to delete
+	 */
+	public void fireOnMessageToDelete(Message message) {
+		this.dbListeners.forEach(dbListener -> dbListener.onMessageToDeleteDB(message));
+		this.chatListeners.forEach(chatListener -> chatListener.onMessageToDelete(message));
+	}
+	
+	/**
 	 * 
 	 * @param message is the message to receive
 	 */
