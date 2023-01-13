@@ -1,10 +1,15 @@
 package main.java.com.view.element;
 
+import java.time.LocalDateTime;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import main.java.com.controller.ListenerManager;
+import main.java.com.controller.OnlineUsersManager;
 import main.java.com.model.Message;
+import main.java.com.model.MessageType;
+import main.java.com.model.User;
 
 public class DeleteMessageButton extends Button {
 	
@@ -17,7 +22,16 @@ public class DeleteMessageButton extends Button {
 		this.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				User remoteUser;
+				User localUser = OnlineUsersManager.getInstance().getLocalUser();
+				if (message.getToUser().getId().equals(localUser.getId())) {
+					remoteUser = message.getFromUser();
+				}
+				else {
+					remoteUser = message.getToUser();
+				}
 				ListenerManager.getInstance().fireOnMessageToDelete(message);
+				ListenerManager.getInstance().fireOnMessageToSend(localUser, remoteUser, null, LocalDateTime.now(), MessageType.DELETE_MESSAGE);
 			}
 		});
 	}

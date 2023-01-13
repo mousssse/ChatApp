@@ -35,7 +35,7 @@ public class MessageButtonCell extends ListCell<Message> implements UsernameList
         HBox.setHgrow(pane, Priority.SOMETIMES);
         
         this.hoverProperty().addListener((obs, wasHovered, isNowHovered) -> {
-            if (isNowHovered && !this.isEmpty() && !this.message.getContent().equals(DBManager.deletedMessage)) {
+            if (isNowHovered && !this.isEmpty() && this.message.getFromUser().getId().equals(OnlineUsersManager.getInstance().getLocalUser().getId()) && !this.message.getContent().equals(DBManager.deletedMessage)) {
                 button.setVisible(true);
             } else {
                 button.setVisible(false);
