@@ -27,16 +27,16 @@ public class ChatRequestButton extends Button {
 			public void handle(ActionEvent event) {
 				switch (getText()) {
 					case acceptRequest:
-						ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.ACCEPT_REQUEST);
 						ListenerManager.getInstance().fireOnChatAcceptRequest(remoteUser);
+						ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.ACCEPT_REQUEST);
 						break;
 					case cancelRequest:
-						ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CANCEL_REQUEST);
 						ListenerManager.getInstance().fireOnChatCancelRequest(remoteUser);
+						ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.CANCEL_REQUEST);
 						break;
 					case requestChat:
-						ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.REQUEST_CONVERSATION);
 						ListenerManager.getInstance().fireOnChatRequest(remoteUser);
+						ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.REQUEST_CONVERSATION);
 						break;
 					case endChat:
 						ListenerManager.getInstance().fireOnMessageToSend(OnlineUsersManager.getInstance().getLocalUser(), remoteUser, null, LocalDateTime.now(), MessageType.END_CONVERSATION);
