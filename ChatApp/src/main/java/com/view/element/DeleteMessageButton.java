@@ -1,7 +1,5 @@
 package main.java.com.view.element;
 
-import java.time.LocalDateTime;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -31,7 +29,7 @@ public class DeleteMessageButton extends Button {
 					remoteUser = message.getToUser();
 				}
 				ListenerManager.getInstance().fireOnMessageToDelete(message);
-				ListenerManager.getInstance().fireOnMessageToSend(localUser, remoteUser, null, LocalDateTime.now(), MessageType.DELETE_MESSAGE);
+				ListenerManager.getInstance().fireOnMessageToSend(localUser, remoteUser, null, message.getDate(), MessageType.DELETE_MESSAGE);
 			}
 		});
 	}
