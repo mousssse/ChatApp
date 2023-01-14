@@ -330,7 +330,8 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	 * @param id the id of the user associated with the conversation
 	 * @return true if the conversation has been accepted already
 	 */
-	private boolean conversationLaunchedWith(String id) {
+	public boolean conversationLaunchedWith(String id) {
+		if (this.chatRequestButtons.get(id).get(0).getText() == null) return false;
 		return this.chatRequestButtons.get(id).get(0).getText().equals(ChatRequestButton.endChat);
 	}
 

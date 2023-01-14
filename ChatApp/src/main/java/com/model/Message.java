@@ -17,6 +17,8 @@ public class Message implements Serializable {
     private String content;
     private LocalDateTime date;
     private MessageType type;
+
+	public final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
 	public Message(User fromUser, User toUser, String content, LocalDateTime date, MessageType type) {
 		super();
@@ -32,8 +34,7 @@ public class Message implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		return "[" + this.date.format(formatter) + "]" + " " +  this.fromUser.getUsername() + ": " + this.content;
+		return "[" + this.date.format(Message.formatter) + "]" + " " +  this.fromUser.getUsername() + ": " + this.content;
 	}
 
 	/**

@@ -30,7 +30,6 @@ public class DBManager implements DBListener, LoginListener {
 	private static DBManager dbManager = null;
 	private String url = "jdbc:sqlite:chatApp.db";
 	private Connection conn;
-	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	public final static String deletedMessage = "This message was deleted";
 
 	private DBManager() {
@@ -222,7 +221,7 @@ public class DBManager implements DBListener, LoginListener {
      * @param toId The id of the receiver
      */
     private void removeMessage(Message message) {
-    	String time = message.getDate().format(this.formatter);
+    	String time = message.getDate().format(Message.formatter);
     	String fromId = message.getFromUser().getId();
     	String toId = message.getToUser().getId();
     	
@@ -259,7 +258,7 @@ public class DBManager implements DBListener, LoginListener {
 	    while (res.next()) {
 	    	String content = res.getString("content");
 	    	String timeString = res.getString("time");
-	    	LocalDateTime dateTime = LocalDateTime.parse(timeString, this.formatter);
+	    	LocalDateTime dateTime = LocalDateTime.parse(timeString, Message.formatter);
 	    	String fromId = res.getString("fromId");
 	    	User fromUser = null, toUser = null;
 	    	if (fromId.equals(remoteUserId)) {
@@ -397,7 +396,7 @@ public class DBManager implements DBListener, LoginListener {
 	
 	@Override
 	public void onMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
-		this.insertMessage(messageContent, date.format(this.formatter), localUser.getId(), remoteUser.getId(), type);
+		this.insertMessage(messageContent, date.format(Message.formatter), localUser.getId(), remoteUser.getId(), type);
 	}
 
 	@Override
