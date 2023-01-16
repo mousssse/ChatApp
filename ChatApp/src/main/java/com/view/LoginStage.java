@@ -127,7 +127,7 @@ public class LoginStage extends Stage {
 			Alert invalidCredentials = new Alert(AlertType.NONE);
 			invalidCredentials.getDialogPane().getButtonTypes().add(ButtonType.OK);
 			invalidCredentials.setTitle("Login error");
-			invalidCredentials.setContentText("Invalid ID/password.");
+			invalidCredentials.setContentText("Invalid username / password.");
 			invalidCredentials.showAndWait();
 		}
 	}
