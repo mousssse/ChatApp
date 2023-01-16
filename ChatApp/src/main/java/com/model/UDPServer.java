@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
+import main.java.com.controller.DBManager;
 import main.java.com.controller.ListenerManager;
 import main.java.com.controller.OnlineUsersManager;
 
@@ -53,6 +54,8 @@ public class UDPServer implements Runnable {
 					String remoteUsername = parts[1];
 					System.out.println(
 							"firing username change from " + remoteUser.getUsername() + " to " + remoteUsername);
+					// TODO Remove this todo when following line deemed necessary
+					DBManager.getInstance().updateUsername(remoteUser.getId(), remoteUsername);
 					ListenerManager.getInstance().fireOnUsernameModification(remoteUser, remoteUsername);
 				} else {
 					// This packet is a broadcast to notify a login or the answer to a login
