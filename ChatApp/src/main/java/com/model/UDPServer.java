@@ -54,7 +54,6 @@ public class UDPServer implements Runnable {
 					String remoteUsername = parts[1];
 					System.out.println(
 							"firing username change from " + remoteUser.getUsername() + " to " + remoteUsername);
-					// TODO Remove this todo when following line deemed necessary
 					DBManager.getInstance().updateUsername(remoteUser.getId(), remoteUsername);
 					ListenerManager.getInstance().fireOnUsernameModification(remoteUser, remoteUsername);
 				} else {
