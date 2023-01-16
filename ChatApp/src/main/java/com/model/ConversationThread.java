@@ -40,7 +40,7 @@ public class ConversationThread implements Runnable {
 						ListenerManager.getInstance().fireOnChatRequestReceived(this.remoteUser);
 						break;
 					case END_CONVERSATION:
-						ListenerManager.getInstance().fireOnChatClosureReceived(this.remoteUser);
+						ListenerManager.getInstance().fireOnChatClosure(this.remoteUser);
 						break;
 					case ACCEPT_REQUEST:
 						ListenerManager.getInstance().fireOnChatAcceptedRequest(this.remoteUser);
@@ -53,7 +53,7 @@ public class ConversationThread implements Runnable {
 				}
 			} catch (IOException e) {
 				// Chat was already closed
-				ListenerManager.getInstance().fireOnChatClosureReceived(remoteUser);
+				ListenerManager.getInstance().fireOnChatClosure(remoteUser);
 				return;
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();

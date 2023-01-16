@@ -389,15 +389,6 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	}
 
 	@Override
-	public void onChatClosureReceived(User remoteUser) {
-		this.updateButtons(remoteUser.getId(), ChatRequestButton.requestChat);
-		ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());
-		if (chatStage != null) {
-			chatStage.setConversationLaunched(false);
-		}
-	}
-
-	@Override
 	public void onChatClosure(User remoteUser) {
 		this.updateButtons(remoteUser.getId(), ChatRequestButton.requestChat);
 		ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());

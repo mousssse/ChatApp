@@ -81,15 +81,6 @@ public class ThreadManager implements ChatListener, LoginListener, SelfLoginList
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
-	public void onChatClosureReceived(User remoteUser) {
-		// Close the conversation socket and remove the conversation from the map
-		if (this.conversationsMap.get(remoteUser) != null) {
-			this.conversationsMap.remove(remoteUser).close();
-			System.out.println("Conversation with " + remoteUser.getUsername() + " requested to end.");
-		}
-	}
 
 	@Override
 	public void onChatClosure(User remoteUser) {

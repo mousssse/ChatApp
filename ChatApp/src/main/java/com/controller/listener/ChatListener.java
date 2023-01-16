@@ -18,9 +18,6 @@ public interface ChatListener {
 	public void onChatRequestReceived(User remoteUser);
 	// What happens when you want to start a conversation with remoteUser
 	public void onChatRequest(User remoteUser);
-	// What happens when the remoteUser ends the chat?
-	// TODO the following is useless, we always do the same as chat closure
-	public void onChatClosureReceived(User remoteUser);
 	// What happens when you decide to end the chat with remoteUser?
 	public void onChatClosure(User remoteUser);
 	// What happens when a user wants to send a message?

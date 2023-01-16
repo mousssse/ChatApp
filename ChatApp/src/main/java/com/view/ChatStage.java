@@ -189,14 +189,6 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
 	public void onChatRequest(User remoteUser) {
 		// Nothing to do
 	}
-
-	@Override
-	public void onChatClosureReceived(User remoteUser) {
-		if (remoteUser.getId().equals(this.remoteUser.getId())) {
-			this.conversationLaunched = false;
-			Platform.runLater(() -> this.updateInputBox());
-		}
-	}
 	
 	@Override
 	public void onChatClosure(User remoteUser) {

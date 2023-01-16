@@ -117,14 +117,6 @@ public class ListenerManager {
 	 * 
 	 * @param remoteUser is the remote user
 	 */
-	public void fireOnChatClosureReceived(User remoteUser) {
-		this.chatListeners.forEach(chatListener -> chatListener.onChatClosureReceived(remoteUser));
-	}
-	
-	/**
-	 * 
-	 * @param remoteUser is the remote user
-	 */
 	public void fireOnChatClosure(User remoteUser) {
 		this.chatListeners.forEach(chatListener -> chatListener.onChatClosure(remoteUser));
 	}
