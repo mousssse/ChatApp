@@ -137,8 +137,8 @@ public class ListenerManager {
 	 * @param messageContent is the content of the message
 	 * @param date is the date and time at which the message was sent
 	 */
-	public void fireOnMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
-		this.dbListeners.forEach(dbListener -> dbListener.onMessageSuccessfullySent(localUser, remoteUser, messageContent, date, type));
+	public void fireOnMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
+		this.dbListeners.forEach(dbListener -> dbListener.onMessageSuccessfullySent(localUser, remoteUser, messageContent, date));
 	}
 	
 	/**

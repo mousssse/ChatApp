@@ -197,8 +197,7 @@ public class DBManager implements DBListener, LoginListener {
      * @param toId The user id of the receiver
      * @param type The message type
      */
-    private void insertMessage(String content, String time, String fromId, String toId, MessageType type) {
-    	if (type != MessageType.MESSAGE) return;
+    private void insertMessage(String content, String time, String fromId, String toId) {
     	String sql = "INSERT INTO messages(content, time, fromId, toId) VALUES(?, ?, ?, ?);";
     	
         try {
@@ -395,13 +394,13 @@ public class DBManager implements DBListener, LoginListener {
 	}
 	
 	@Override
-	public void onMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
-		this.insertMessage(messageContent, date.format(Message.formatter), localUser.getId(), remoteUser.getId(), type);
+	public void onMessageSuccessfullySent(User localUser, User remoteUser, String messageContent, LocalDateTime date) {
+		this.insertMessage(messageContent, date.format(Message.formatter), localUser.getId(), remoteUser.getId());
 	}
 
 	@Override
 	public void onMessageToReceiveDB(Message message) {
-		this.insertMessage(message.getContent(), message.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), message.getFromUser().getId(), message.getToUser().getId(), message.getType());
+		this.insertMessage(message.getContent(), message.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), message.getFromUser().getId(), message.getToUser().getId());
 	}
 
 	@Override
