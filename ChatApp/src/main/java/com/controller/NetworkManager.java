@@ -27,7 +27,7 @@ import main.java.com.model.User;
 public class NetworkManager implements SelfLoginListener, UsernameListener {
 	
 	private List<Socket> distantSockets;
-	private List<InetAddress> distantIPs;
+	private List<InetAddress> broadcastAddresses;
 	private UDPServer UDPserver;
 	private TCPServer TCPserver;
 	
@@ -39,7 +39,7 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 		ListenerManager.getInstance().addUsernameListener(this);
 		this.distantSockets = new ArrayList<>();
 		try {
-			this.distantIPs = this.listAllBroadcastAddresses();
+			this.broadcastAddresses = this.listAllBroadcastAddresses();
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
@@ -55,8 +55,8 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 	}
 	
 	/**
-	 * Method used to obtain all IPs on the local network prior to broadcasting
-	 * @return the distant IPs
+	 * Method used to obtain all broadcast addresses of the local networks to which the machine belongs
+	 * @return the list of broadcast addresses
 	 * @throws SocketException - SocketException
 	 */
 	private List<InetAddress> listAllBroadcastAddresses() throws SocketException {
@@ -112,7 +112,7 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 		// Login message format: "login username port UUID"
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();
 		String loginMessage = "login " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " " + localUser.getId();
-		for (InetAddress address : this.distantIPs) {
+		for (InetAddress address : this.broadcastAddresses) {
 			try {
 				this.broadcast(loginMessage, address);
 			} catch (IOException e) {
@@ -128,7 +128,7 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 	public void onSelfLogout() {
 		// Logout message format: "logout"
 		String logoutMessage = "logout";
-		for (InetAddress address : this.distantIPs) {
+		for (InetAddress address : this.broadcastAddresses) {
 			try {
 				this.broadcast(logoutMessage, address);
 			} catch (IOException e) {
@@ -145,7 +145,7 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 	@Override
 	public void onSelfUsernameModification(String newUsername) {
 		String usernameUpdateMessage = "username " + newUsername;
-		for (InetAddress address : this.distantIPs) {
+		for (InetAddress address : this.broadcastAddresses) {
 			try {
 				this.broadcast(usernameUpdateMessage, address);
 			} catch (IOException e) {
