@@ -20,78 +20,82 @@ import main.java.com.model.User;
 
 /**
  * The NetworkManager manages a user's UDP and TCP servers.
+ * 
  * @author Sandro
  * @author sarah
  *
  */
 public class NetworkManager implements SelfLoginListener, UsernameListener {
-	
+
 	private List<Socket> distantSockets;
 	private List<InetAddress> broadcastAddresses;
 	private UDPServer UDPserver;
 	private TCPServer TCPserver;
-	
-	
+
 	private static NetworkManager networkManager = null;
-	
+
 	private NetworkManager() {
 		ListenerManager.getInstance().addSelfLoginListener(this);
 		ListenerManager.getInstance().addUsernameListener(this);
 		this.distantSockets = new ArrayList<>();
 		try {
-			this.broadcastAddresses = this.listAllBroadcastAddresses();
+			this.broadcastAddresses = this.findBroadcastAddresses();
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return the NetworkManager singleton
 	 */
 	public static NetworkManager getInstance() {
-		if (networkManager == null) networkManager = new NetworkManager();
+		if (networkManager == null)
+			networkManager = new NetworkManager();
 		return networkManager;
 	}
-	
+
 	/**
-	 * Method used to obtain all broadcast addresses of the local networks to which the machine belongs
+	 * Method used to obtain all broadcast addresses of the local networks to which
+	 * the machine belongs
+	 * 
 	 * @return the list of broadcast addresses
 	 * @throws SocketException - SocketException
 	 */
-	private List<InetAddress> listAllBroadcastAddresses() throws SocketException {
-	    List<InetAddress> broadcastList = new ArrayList<>();
-	    Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-	    while (interfaces.hasMoreElements()) {
-	        NetworkInterface networkInterface = interfaces.nextElement();
+	private List<InetAddress> findBroadcastAddresses() throws SocketException {
+		List<InetAddress> broadcastList = new ArrayList<>();
+		Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+		while (interfaces.hasMoreElements()) {
+			NetworkInterface networkInterface = interfaces.nextElement();
 
-	        if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-	            continue;
-	        }
+			if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+				continue;
+			}
 
-	        networkInterface.getInterfaceAddresses().stream() 
-	          .map(a -> a.getBroadcast())
-	          .filter(Objects::nonNull)
-	          .forEach(broadcastList::add);
-	    }
-	    return broadcastList;
+			// Performs getBroadcast() on each element of the stream and adds non-null ones
+			// to broadcastList
+			networkInterface.getInterfaceAddresses().stream().map(a -> a.getBroadcast()).filter(Objects::nonNull)
+					.forEach(broadcastList::add);
+		}
+		return broadcastList;
 	}
-	
+
 	/**
 	 * Method used to broadcast
-	 * @param broadcastMessage is the message to broadcast
-	 * @param address is the IP address that will receive the broadcast
+	 * 
+	 * @param message is the message to broadcast
+	 * @param address is the broadcast address
 	 * @throws IOException - IOException
 	 */
-    public void broadcast(String broadcastMessage, InetAddress address) throws IOException {
-        DatagramSocket socket = new DatagramSocket();
-        socket.setBroadcast(true);
-        byte[] buffer = broadcastMessage.getBytes();
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, UDPServer.UDPserverPort);
-        socket.send(packet);
-        socket.close();
-    }
-	
+	public void broadcast(String message, InetAddress address) throws IOException {
+		DatagramSocket socket = new DatagramSocket();
+		socket.setBroadcast(true);
+		byte[] buffer = message.getBytes();
+		DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, UDPServer.UDPserverPort);
+		socket.send(packet);
+		socket.close();
+	}
+
 	/**
 	 * 
 	 * @param socket is the socket to be added
@@ -99,7 +103,7 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 	public void addDistantSocket(Socket socket) {
 		this.distantSockets.add(socket);
 	}
-	
+
 	/**
 	 * Broadcasting online status
 	 */
@@ -111,7 +115,8 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 		(new Thread(this.TCPserver, "TCP Server")).start();
 		// Login message format: "login username port UUID"
 		User localUser = OnlineUsersManager.getInstance().getLocalUser();
-		String loginMessage = "login " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " " + localUser.getId();
+		String loginMessage = "login " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " "
+				+ localUser.getId();
 		for (InetAddress address : this.broadcastAddresses) {
 			try {
 				this.broadcast(loginMessage, address);
@@ -120,7 +125,7 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 			}
 		}
 	}
-	
+
 	/**
 	 * Broadcasting offline status
 	 */
@@ -136,14 +141,15 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 			}
 		}
 	}
-	
+
 	@Override
 	public void onSelfLoginOnlineUsers(String username) {
 		// Nothing to do
 	}
-	
+
 	@Override
 	public void onSelfUsernameModification(String newUsername) {
+		// Username modification message format: "username newUsername"
 		String usernameUpdateMessage = "username " + newUsername;
 		for (InetAddress address : this.broadcastAddresses) {
 			try {
@@ -153,10 +159,10 @@ public class NetworkManager implements SelfLoginListener, UsernameListener {
 			}
 		}
 	}
-	
+
 	@Override
 	public void onUsernameModification(User user, String newUsername) {
 		// Nothing to do
 	}
-	
+
 }

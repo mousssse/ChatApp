@@ -14,6 +14,11 @@ import main.java.com.model.Message;
 import main.java.com.model.User;
 import main.java.com.view.ChatAppStage;
 
+/**
+ * @author sarah
+ * @author Sandro
+ *
+ */
 public class MessageButtonCell extends ListCell<Message> implements UsernameListener {
     
 	private HBox hbox = new HBox();
@@ -51,6 +56,11 @@ public class MessageButtonCell extends ListCell<Message> implements UsernameList
         });
     }
     
+    /**
+     * 
+     * @param user is the user
+     * @param newUsername is the user's new username
+     */
     private void updateUsername(User user, String newUsername) {
     	if (this.message.getFromUser().getId().equals(user.getId())) {
     		this.message.getFromUser().setUsername(newUsername);

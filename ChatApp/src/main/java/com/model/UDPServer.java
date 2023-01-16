@@ -17,7 +17,7 @@ import main.java.com.controller.OnlineUsersManager;
 public class UDPServer implements Runnable {
 	public static final int UDPserverPort = 8025;
 	private DatagramSocket serverDatagram;
-	
+
 	@Override
 	public void run() {
 		try {
@@ -25,37 +25,36 @@ public class UDPServer implements Runnable {
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
-		while (true) {			
+		while (true) {
 			try {
-				// waiting for new message
+				// Waiting for a message
 				System.out.println("UDP: Waiting for someone to say something");
 				byte[] content = new byte[100];
 				DatagramPacket received = new DatagramPacket(content, content.length);
 				this.serverDatagram.receive(received);
-				
-				// The string received will have the format: 
-				// "flag username port UUID" with flag being "login"/"ack"
-				// or just "flag" with flag being "logout"
+
+				// The received message is treated depending on its format
 				String contentReceived = new String(content).trim();
 				System.out.println(contentReceived);
-				if (received.getAddress().getHostAddress().equals(OnlineUsersManager.getInstance().getLocalUser().getIP().getHostAddress())) {
+				if (received.getAddress().getHostAddress()
+						.equals(OnlineUsersManager.getInstance().getLocalUser().getIP().getHostAddress())) {
 					// This packet comes from the local user, it should be ignored.
 					System.out.println("Packet from self, ignored.");
 					continue;
 				}
 				if (contentReceived.contains("logout")) {
 					// This packet is a broadcast to notify a logout
-					ListenerManager.getInstance().fireOnLogout(OnlineUsersManager.getInstance().getUserFromIP(received.getAddress()));
-				}
-				else if (contentReceived.contains("username")) {
+					ListenerManager.getInstance()
+							.fireOnLogout(OnlineUsersManager.getInstance().getUserFromIP(received.getAddress()));
+				} else if (contentReceived.contains("username")) {
 					// This packet is a broadcast to notify a username update
 					User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(received.getAddress());
 					String[] parts = contentReceived.split(" ");
 					String remoteUsername = parts[1];
-					System.out.println("firing username change from " + remoteUser.getUsername() + " to " + remoteUsername);
+					System.out.println(
+							"firing username change from " + remoteUser.getUsername() + " to " + remoteUsername);
 					ListenerManager.getInstance().fireOnUsernameModification(remoteUser, remoteUsername);
-				}
-				else {
+				} else {
 					// This packet is a broadcast to notify a login or the answer to a login
 					String[] parts = contentReceived.split(" ");
 					String flag = parts[0];
@@ -64,12 +63,14 @@ public class UDPServer implements Runnable {
 					String remoteId = parts[3];
 					User remoteUser = new User(remoteId, remoteUsername, received.getAddress(), remoteTCPServerPort);
 					ListenerManager.getInstance().fireOnLogin(remoteUser);
-					
+
 					if (flag.equals("login")) {
 						// We should send an ack back to say who we are
 						User localUser = OnlineUsersManager.getInstance().getLocalUser();
-						String ackMessage = "ack " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " " + localUser.getId();
-						this.serverDatagram.send(new DatagramPacket(ackMessage.getBytes(), ackMessage.length(), received.getAddress(), UDPserverPort));
+						String ackMessage = "ack " + localUser.getUsername() + " " + localUser.getTCPserverPort() + " "
+								+ localUser.getId();
+						this.serverDatagram.send(new DatagramPacket(ackMessage.getBytes(), ackMessage.length(),
+								received.getAddress(), UDPserverPort));
 					}
 				}
 			} catch (IOException e) {

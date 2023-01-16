@@ -18,7 +18,7 @@ public class TCPServer implements Runnable {
 	private static int TCPserverPort = 1026;
 	private int availablePort;
 	private ServerSocket TCPserver = null;
-	
+
 	/**
 	 * 
 	 * @return the TCP server port.
@@ -26,7 +26,7 @@ public class TCPServer implements Runnable {
 	public static int getTCPserverPort() {
 		return TCPserverPort;
 	}
-	
+
 	@Override
 	public void run() {
 		while (this.TCPserver == null) {
@@ -48,17 +48,18 @@ public class TCPServer implements Runnable {
 				ServerSocket newServer = new ServerSocket(this.availablePort);
 				out.writeInt(this.availablePort++);
 				socket.close();
-				
+
 				// Step 3: socket is now on the new port
 				socket = newServer.accept();
 				System.out.println("TCP: Socket connected on new server");
 
 				User remoteUser = OnlineUsersManager.getInstance().getUserFromIP(socket.getInetAddress());
 				Conversation conversation = new Conversation(socket);
-				
+
 				ThreadManager.getInstance().addConversation(remoteUser, conversation);
-				new Thread(new ConversationThread(conversation, remoteUser), "Conversation with " + remoteUser.getUsername()).start();
-				
+				new Thread(new ConversationThread(conversation, remoteUser),
+						"Conversation with " + remoteUser.getUsername()).start();
+
 				newServer.close();
 			} catch (IOException e) {
 				e.printStackTrace();

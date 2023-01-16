@@ -1,4 +1,5 @@
 package main.java.com.model;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,16 +11,16 @@ import java.time.format.DateTimeFormatter;
  *
  */
 public class Message implements Serializable {
-	
+
 	private static final long serialVersionUID = -2950854009692914838L;
 	private User fromUser;
 	private User toUser;
-    private String content;
-    private LocalDateTime date;
-    private MessageType type;
+	private String content;
+	private LocalDateTime date;
+	private MessageType type;
 
 	public final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    
+
 	public Message(User fromUser, User toUser, String content, LocalDateTime date, MessageType type) {
 		super();
 		this.fromUser = fromUser;
@@ -28,13 +29,14 @@ public class Message implements Serializable {
 		this.date = date;
 		this.type = type;
 	}
-	
+
 	/**
 	 * Message as displayed in the chat frame
 	 */
 	@Override
 	public String toString() {
-		return "[" + this.date.format(Message.formatter) + "]" + " " +  this.fromUser.getUsername() + ": " + this.content;
+		return "[" + this.date.format(Message.formatter) + "]" + " " + this.fromUser.getUsername() + ": "
+				+ this.content;
 	}
 
 	/**
@@ -44,7 +46,7 @@ public class Message implements Serializable {
 	public String getContent() {
 		return this.content;
 	}
-	
+
 	/**
 	 * 
 	 * @return the message's date and time.
@@ -52,7 +54,7 @@ public class Message implements Serializable {
 	public LocalDateTime getDate() {
 		return this.date;
 	}
-	
+
 	/**
 	 * 
 	 * @return the sending user.

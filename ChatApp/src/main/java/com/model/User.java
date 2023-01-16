@@ -3,7 +3,6 @@ package main.java.com.model;
 import java.io.Serializable;
 import java.net.InetAddress;
 
-
 /**
  * 
  * @author sarah
@@ -14,16 +13,17 @@ public class User implements Serializable {
 
 	private static final long serialVersionUID = 3935125359654183855L;
 	private String id;
-    private String username;
-    private InetAddress userIP;
-    private int TCPserverPort;
+	private String username;
+	private InetAddress userIP;
+	private int TCPserverPort;
 
-    /**
-     * This constructor is used for the local user.
-     * @param id is the local user's id.
-     * @param username is the local user's username.
-     * @param userIP is the local user's IP address
-     */
+	/**
+	 * This constructor is used for the local user.
+	 * 
+	 * @param id       is the local user's id.
+	 * @param username is the local user's username.
+	 * @param userIP   is the local user's IP address
+	 */
 	public User(String id, String username, InetAddress userIP) {
 		super();
 		this.id = id;
@@ -31,13 +31,14 @@ public class User implements Serializable {
 		this.userIP = userIP;
 		this.TCPserverPort = TCPServer.getTCPserverPort();
 	}
-	
+
 	/**
 	 * This constructor is used for remote users.
-	 * @param id is the remote user's id.
+	 * 
+	 * @param id       is the remote user's id.
 	 * @param username is the remote user's username.
-	 * @param userIP is the remote user's IP address.
-	 * @param port is the remote user's TCP server port.
+	 * @param userIP   is the remote user's IP address.
+	 * @param port     is the remote user's TCP server port.
 	 */
 	public User(String id, String username, InetAddress userIP, int port) {
 		super();
@@ -46,7 +47,7 @@ public class User implements Serializable {
 		this.userIP = userIP;
 		this.TCPserverPort = port;
 	}
-	
+
 	/**
 	 * User as displayed in the chat frame
 	 */
@@ -62,7 +63,7 @@ public class User implements Serializable {
 	public String getId() {
 		return this.id;
 	}
-	
+
 	/**
 	 * 
 	 * @return the user's username
@@ -70,7 +71,7 @@ public class User implements Serializable {
 	public String getUsername() {
 		return this.username;
 	}
-	
+
 	/**
 	 * 
 	 * @param username is the chosen username
@@ -78,7 +79,7 @@ public class User implements Serializable {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
+
 	/**
 	 * 
 	 * @return is the user's IP address
@@ -86,7 +87,7 @@ public class User implements Serializable {
 	public InetAddress getIP() {
 		return this.userIP;
 	}
-	
+
 	/**
 	 * 
 	 * @return is the user's TCP server port.
@@ -94,5 +95,5 @@ public class User implements Serializable {
 	public int getTCPserverPort() {
 		return this.TCPserverPort;
 	}
-    
+
 }

@@ -15,45 +15,48 @@ import main.java.com.controller.listener.UsernameListener;
 import main.java.com.model.User;
 
 /**
- * The OnlineUsersManager locally manages the active users as well as the local user.
+ * The OnlineUsersManager locally manages the active users as well as the local
+ * user.
+ * 
  * @author Sandro
  * @author sarah
  *
  */
 public class OnlineUsersManager implements LoginListener, SelfLoginListener, UsernameListener {
-	
+
 	private static OnlineUsersManager onlineUsersManager = null;
 	private User localUser;
 	private Map<InetAddress, User> accountsMap;
-	
+
 	private OnlineUsersManager() {
 		ListenerManager.getInstance().addLoginListener(this);
 		ListenerManager.getInstance().addSelfLoginListener(this);
 		ListenerManager.getInstance().addUsernameListener(this);
 		this.accountsMap = new HashMap<InetAddress, User>();
 	}
-	
+
 	/**
 	 * 
 	 * @return the OnlineUsersManager singleton
 	 */
 	public static OnlineUsersManager getInstance() {
-		if (onlineUsersManager == null) onlineUsersManager = new OnlineUsersManager();
+		if (onlineUsersManager == null)
+			onlineUsersManager = new OnlineUsersManager();
 		return onlineUsersManager;
 	}
-	
+
 	/**
 	 * 
 	 * @param IP is the IP address associated to the user in question.
 	 * @return the user connected to the ChatApp from IP.
 	 */
 	public User getUserFromIP(InetAddress IP) {
-		return this.accountsMap.get(IP);	
+		return this.accountsMap.get(IP);
 	}
-	
+
 	/**
 	 * @param userId is the ID associated to the user in question
-	 * @return the user connected to the ChatApp from IP, or null if not found
+	 * @return the user whose ID is userId
 	 */
 	public User getUserFromID(String userId) {
 		for (User user : this.accountsMap.values()) {
@@ -63,7 +66,7 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener, Use
 		}
 		return null;
 	}
-	
+
 	public User getLocalUser() {
 		return this.localUser;
 	}
@@ -91,31 +94,33 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener, Use
 	public void onSelfLoginOnlineUsers(String username) {
 		try {
 			InetAddress localIP = null;
-			// Not using InetAddress.getLocalHost() because it can return 
+			// Not using InetAddress.getLocalHost() because it can return
 			// 127.0.0.1 instead of an IP address associated with a network
 			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
 			while (interfaces.hasMoreElements()) {
-                NetworkInterface iface = interfaces.nextElement();
-                // filters out 127.0.0.1 and inactive interfaces
-                if (iface.isLoopback() || !iface.isUp()) continue;
+				NetworkInterface iface = interfaces.nextElement();
+				// filters out 127.0.0.1 and inactive interfaces
+				if (iface.isLoopback() || !iface.isUp())
+					continue;
 
-                Enumeration<InetAddress> addresses = iface.getInetAddresses();
-                while(addresses.hasMoreElements()) {
-                    InetAddress addr = addresses.nextElement();
-                    if (addr instanceof Inet6Address) continue;
+				Enumeration<InetAddress> addresses = iface.getInetAddresses();
+				while (addresses.hasMoreElements()) {
+					InetAddress addr = addresses.nextElement();
+					if (addr instanceof Inet6Address)
+						continue;
 
-                    String ip = addr.getHostAddress();
-                    localIP = InetAddress.getByName(ip);
-                    // We keep the first one
-                    break;
-                }
-            }
+					String ip = addr.getHostAddress();
+					localIP = InetAddress.getByName(ip);
+					// We keep the first one
+					break;
+				}
+			}
 			this.localUser = new User(DBManager.getInstance().getIdFromUsername(username), username, localIP);
 		} catch (UnknownHostException | SocketException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void onSelfLoginNetwork() {
 		// Nothing to do
@@ -137,5 +142,5 @@ public class OnlineUsersManager implements LoginListener, SelfLoginListener, Use
 	public void onSelfUsernameModification(String newUsername) {
 		this.localUser.setUsername(newUsername);
 	}
-	
+
 }

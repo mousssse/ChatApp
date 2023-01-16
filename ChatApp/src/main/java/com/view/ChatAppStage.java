@@ -44,27 +44,30 @@ import main.java.com.view.element.OnlineUsersButtonCell;
 import main.java.com.view.element.ChatRequestButton;
 
 /**
+ * ChatAppStage is the window where all ChatApp users are displayed, separated
+ * into online and offline categories.
+ * 
  * @author sarah
  * @author Sandro
  *
  */
 public class ChatAppStage extends Stage implements LoginListener, UsernameListener, ChatListener, ChatRequestListener {
-	
+
 	private static ChatAppStage chatAppStage = null;
 	private VBox rootBox = new VBox();
-	
+
 	private Label usernameLabel;
 	private Button usernameButton;
-	
+
 	private ListView<User> users;
 	private ObservableList<User> userListVector;
 	private ListView<User> offlineUsers;
 	private ObservableList<User> offlineUserListVector;
 
 	private Map<String, ChatStage> chatStageMap = new HashMap<String, ChatStage>();
-	
+
 	private Map<String, List<ChatRequestButton>> chatRequestButtons = new HashMap<String, List<ChatRequestButton>>();
-	
+
 	public ChatAppStage() {
 		ListenerManager.getInstance().addLoginListener(this);
 		ListenerManager.getInstance().addUsernameListener(this);
@@ -72,6 +75,11 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		ListenerManager.getInstance().addChatRequestListener(this);
 	}
 
+	/**
+	 * 
+	 * @param id is the user ID
+	 * @return true if the user associated to id is online; false otherwise.
+	 */
 	private boolean idIsOnline(String id) {
 		return this.userListVector.stream().filter(user -> user.getId().equals(id)).findFirst().isPresent();
 	}
@@ -95,7 +103,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 
 	private void initLocalUserOnline() {
 		this.initUserListVectors();
-		
+
 		Label onlineLabel = new Label("Online users");
 		onlineLabel.setPadding(new Insets(2));
 		Label offlineLabel = new Label("Offline users");
@@ -130,7 +138,8 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 					return;
 				ChatStage chatStage = this.chatStageMap.get(remoteUser.getId());
 				if (chatStage == null) {
-					chatStage = new ChatStage(remoteUser, getButtonCurrentString(remoteUser.getId()), true, conversationLaunchedWith(remoteUser.getId()));
+					chatStage = new ChatStage(remoteUser, getButtonCurrentString(remoteUser.getId()), true,
+							conversationLaunchedWith(remoteUser.getId()));
 					this.chatStageMap.put(remoteUser.getId(), chatStage);
 				} else {
 					chatStage.setIconified(false);
@@ -168,10 +177,10 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 				});
 			}
 		});
-		
+
 		VBox.setVgrow(this.users, Priority.ALWAYS);
 		VBox.setVgrow(this.offlineUsers, Priority.ALWAYS);
-		
+
 		this.rootBox.getChildren().addAll(onlineLabel, this.users, offlineLabel, this.offlineUsers, usernamePane);
 		Scene scene = new Scene(this.rootBox, 400, 600);
 		this.setScene(scene);
@@ -185,21 +194,21 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 				System.exit(0);
 			}
 		});
-		
+
 		this.users.setFocusTraversable(false);
 		this.users.setStyle("-fx-selection-bar-non-focused: -fx-control-inner-background;");
 		this.users.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
-            @Override
-            public ListCell<User> call(ListView<User> param) {
-                return new OnlineUsersButtonCell();
-            }
-        });
-		
+			@Override
+			public ListCell<User> call(ListView<User> param) {
+				return new OnlineUsersButtonCell();
+			}
+		});
+
 		this.setMinHeight(400);
 		this.setMinWidth(250);
 		this.show();
 	}
-	
+
 	private void initLocalUserOffline() {
 		this.offlineUserListVector = FXCollections.observableArrayList();
 		for (Entry<String, String> usernameEntry : DBManager.getInstance().getAllUsernames().entrySet()) {
@@ -207,7 +216,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		}
 		this.offlineUsers = new ListView<User>();
 		this.offlineUsers.setItems(this.offlineUserListVector);
-		
+
 		Label offlineLabel = new Label("Offline users");
 		offlineLabel.setPadding(new Insets(2));
 
@@ -216,7 +225,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		Pane pane = new Pane();
 		this.usernameLabel = new Label("My username: " + OnlineUsersManager.getInstance().getLocalUser().getUsername());
 		usernameBox.getChildren().addAll(offlineWarning, pane, this.usernameLabel);
-		
+
 		HBox.setHgrow(pane, Priority.ALWAYS);
 		usernameBox.setPadding(new Insets(5));
 		usernameBox.setStyle("-fx-focus-color: transparent;");
@@ -244,9 +253,9 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 				});
 			}
 		});
-		
+
 		VBox.setVgrow(this.offlineUsers, Priority.ALWAYS);
-		
+
 		this.rootBox.getChildren().addAll(offlineLabel, this.offlineUsers, usernameBox);
 		Scene scene = new Scene(this.rootBox, 400, 600);
 		this.setScene(scene);
@@ -260,7 +269,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 				System.exit(0);
 			}
 		});
-		
+
 		this.setMinHeight(400);
 		this.setMinWidth(300);
 		this.show();
@@ -268,41 +277,40 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 
 	/**
 	 * 
-	 * @return the ChatApp stage instance.
+	 * @return the ChatAppStage instance.
 	 */
 	public static ChatAppStage getInstance() {
 		if (chatAppStage == null) {
 			chatAppStage = new ChatAppStage();
 			if (OnlineUsersManager.getInstance().getLocalUser().getIP() == null) {
 				chatAppStage.initLocalUserOffline();
-			}
-			else {
+			} else {
 				chatAppStage.initLocalUserOnline();
 			}
 		}
 		return chatAppStage;
 	}
-	
+
 	/**
 	 * adds a button to the map of all request buttons
 	 * 
-	 * @param id the user's id to which the button is associated to
+	 * @param id     the user's id to which the button is associated to
 	 * @param button the button to add
 	 */
 	public void addButton(String id, ChatRequestButton button) {
 		List<ChatRequestButton> buttons = this.chatRequestButtons.get(id);
 		if (buttons == null) {
 			this.chatRequestButtons.put(id, new ArrayList<ChatRequestButton>(Arrays.asList(button)));
-		}
-		else {
+		} else {
 			buttons.add(button);
 		}
 	}
-	
+
 	/**
 	 * Updates the text shown on all the buttons associated with the same user
 	 * 
-	 * @param id the id of the user associated to the buttons we want to update
+	 * @param id          the id of the user associated to the buttons we want to
+	 *                    update
 	 * @param updatedText the text to be shown on the buttons
 	 */
 	public void updateButtons(String id, String updatedText) {
@@ -313,9 +321,10 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 			}
 		}
 	}
-	
+
 	/**
-	 * @param id the id of the user associated with the button we want to get the current text from
+	 * @param id the id of the user associated with the button we want to get the
+	 *           current text from
 	 * @return the string that's currently set on the first button in the map
 	 */
 	private String getButtonCurrentString(String id) {
@@ -325,13 +334,14 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @param id the id of the user associated with the conversation
-	 * @return true if the conversation has been accepted already
+	 * @return true if the conversation has been accepted already; false otherwise
 	 */
 	public boolean conversationLaunchedWith(String id) {
-		if (this.chatRequestButtons.get(id).get(0).getText() == null) return false;
+		if (this.chatRequestButtons.get(id).get(0).getText() == null)
+			return false;
 		return this.chatRequestButtons.get(id).get(0).getText().equals(ChatRequestButton.endChat);
 	}
 
@@ -375,7 +385,8 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 
 	@Override
 	public void onSelfUsernameModification(String newUsername) {
-		Platform.runLater(() -> this.usernameLabel.textProperty().bind(new SimpleStringProperty("My username: " + newUsername)));
+		Platform.runLater(
+				() -> this.usernameLabel.textProperty().bind(new SimpleStringProperty("My username: " + newUsername)));
 	}
 
 	@Override
@@ -398,7 +409,8 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 	}
 
 	@Override
-	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date, MessageType type) {
+	public void onMessageToSend(User localUser, User remoteUser, String messageContent, LocalDateTime date,
+			MessageType type) {
 		// Nothing to do
 	}
 

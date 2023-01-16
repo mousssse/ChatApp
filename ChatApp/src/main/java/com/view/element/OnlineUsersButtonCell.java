@@ -7,6 +7,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import main.java.com.model.User;
 
+/**
+ * @author sarah
+ * @author Sandro
+ *
+ */
 public class OnlineUsersButtonCell extends ListCell<User> {
     private HBox hbox = new HBox();
     private TextField text = new TextField("(empty)");

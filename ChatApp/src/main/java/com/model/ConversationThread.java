@@ -13,11 +13,12 @@ import main.java.com.controller.ListenerManager;
 public class ConversationThread implements Runnable {
 	private Conversation conversation;
 	private User remoteUser;
-	
+
 	/**
 	 * 
 	 * @param conversation is the conversation instance
-	 * @param remoteUser is the remote user with which this conversation is occurring
+	 * @param remoteUser   is the remote user with which this conversation is
+	 *                     occurring
 	 */
 	public ConversationThread(Conversation conversation, User remoteUser) {
 		this.conversation = conversation;
@@ -30,26 +31,26 @@ public class ConversationThread implements Runnable {
 			try {
 				Message message = this.conversation.read();
 				switch (message.getType()) {
-					case MESSAGE: 
-						ListenerManager.getInstance().fireOnMessageToReceive(message);
-						break;
-					case DELETE_MESSAGE:
-						ListenerManager.getInstance().fireOnMessageToDelete(message);
-						break;
-					case REQUEST_CONVERSATION:
-						ListenerManager.getInstance().fireOnChatRequestReceived(this.remoteUser);
-						break;
-					case END_CONVERSATION:
-						ListenerManager.getInstance().fireOnChatClosure(this.remoteUser);
-						break;
-					case ACCEPT_REQUEST:
-						ListenerManager.getInstance().fireOnChatAcceptedRequest(this.remoteUser);
-						break;
-					case CANCEL_REQUEST:
-						ListenerManager.getInstance().fireOnChatCancelledRequest(this.remoteUser);
-						break;
-					default:
-						break;
+				case MESSAGE:
+					ListenerManager.getInstance().fireOnMessageToReceive(message);
+					break;
+				case DELETE_MESSAGE:
+					ListenerManager.getInstance().fireOnMessageToDelete(message);
+					break;
+				case REQUEST_CONVERSATION:
+					ListenerManager.getInstance().fireOnChatRequestReceived(this.remoteUser);
+					break;
+				case END_CONVERSATION:
+					ListenerManager.getInstance().fireOnChatClosure(this.remoteUser);
+					break;
+				case ACCEPT_REQUEST:
+					ListenerManager.getInstance().fireOnChatAcceptedRequest(this.remoteUser);
+					break;
+				case CANCEL_REQUEST:
+					ListenerManager.getInstance().fireOnChatCancelledRequest(this.remoteUser);
+					break;
+				default:
+					break;
 				}
 			} catch (IOException e) {
 				// Chat was already closed
@@ -60,5 +61,5 @@ public class ConversationThread implements Runnable {
 			}
 		}
 	}
-	
+
 }
