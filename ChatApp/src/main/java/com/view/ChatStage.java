@@ -83,8 +83,9 @@ public class ChatStage extends Stage implements ChatListener, UsernameListener, 
 		this.inputBox.setPadding(new Insets(8));
 		this.rootPane.setCenter(this.messageList);
 		this.rootPane.setBottom(this.inputBox);
+		
 		Scene scene = new Scene(this.rootPane, 500, 500);
-		// scene.getStylesheets().add("path to CSS file");
+		scene.getStylesheets().add("css/style.css");
 		this.setMinWidth(this.minWidth);
 		this.setMinHeight(this.minHeight);
 		this.setScene(scene);

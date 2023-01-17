@@ -94,6 +94,7 @@ public class UsernameModificationStage extends Stage {
 		});
 
 		Scene scene = new Scene(this.rootPane, 300, 100);
+		scene.getStylesheets().add("css/style.css");
 		this.setScene(scene);
 		this.setTitle("Username modification");
 		this.setScene(scene);

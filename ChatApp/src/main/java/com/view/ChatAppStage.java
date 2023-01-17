@@ -258,6 +258,7 @@ public class ChatAppStage extends Stage implements LoginListener, UsernameListen
 
 		this.rootBox.getChildren().addAll(offlineLabel, this.offlineUsers, usernameBox);
 		Scene scene = new Scene(this.rootBox, 400, 600);
+		scene.getStylesheets().add("css/style.css");
 		this.setScene(scene);
 		this.setTitle("ChatApp");
 

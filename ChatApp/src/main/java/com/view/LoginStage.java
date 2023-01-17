@@ -75,6 +75,7 @@ public class LoginStage extends Stage {
 			}
 		});
 		Scene scene = new Scene(this.rootPane, 300, 150);
+		scene.getStylesheets().add("css/style.css");
 		this.setScene(scene);
 		this.setTitle("ChatApp - " + title);
 		this.setResizable(false);
