@@ -28,12 +28,16 @@ import main.java.com.controller.OnlineUsersManager;
  *
  */
 public class LoginStage extends Stage {
+	
 	private static LoginStage loginStage = null;
+	
 	private GridPane rootPane = new GridPane();
 	private Label usernameLabel, passwordLabel;
 	private TextField usernameField;
 	private PasswordField passwordField;
 	private Button loginButton;
+	
+	private int errorCount = 0;
 
 	private void init() {
 		String title;
@@ -128,7 +132,11 @@ public class LoginStage extends Stage {
 			Alert invalidCredentials = new Alert(AlertType.NONE);
 			invalidCredentials.getDialogPane().getButtonTypes().add(ButtonType.OK);
 			invalidCredentials.setTitle("Login error");
-			invalidCredentials.setContentText("Invalid username / password.");
+			String content = "Invalid username / password.";
+			if (++this.errorCount > 2) {
+				content += "\nTo reset the app, delete the chatApp.db file. You will lose all\npast conversations but will be able to create a new account.";
+			}
+			invalidCredentials.setContentText(content);;
 			invalidCredentials.showAndWait();
 		}
 	}
