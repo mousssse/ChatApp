@@ -2,7 +2,7 @@
 This project was developed by Sandro Chalhoub and Sarah Mousset. It's a decentralized multi-user chat application that operates on local networks.
 
 ## Sources and build
-git clone https://github.com/mousssse/ProjetJava.git
+git clone https://github.com/mousssse/ProjetJava.git.
 Maven was used as the build automation tool; all dependencies are included in the pom.xml file.
 
 ## Run
