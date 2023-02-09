@@ -1,4 +1,4 @@
-# ProjetJava
+# ChatApp
 This project was developed by [Sandro Chalhoub](https://github.com/54ndro18) and [Sarah Mousset](https://github.com/mousssse). It's a decentralized multi-user chat application that operates on local networks.
 
 ## Sources and build
